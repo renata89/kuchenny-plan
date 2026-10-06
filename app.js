@@ -382,20 +382,7 @@ app.dashboard = {
       });
     }
     this.renderUsers(usersContainer, renataKcal, husbandKcal);
-    
-    // Render meals or empty state
-    if (!plan || !plan.meals || plan.meals.length === 0) {
-      mealsContainer.innerHTML = `
-        <div class="card empty-state">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 12px;opacity:0.4"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
-          <p style="margin-bottom:12px">Brak posiłków na dzisiaj.</p>
-          <button class="btn-sm" onclick="app.mealplan.generateToday()">Generuj dzisiaj</button>
-        </div>
-      `;
-      return;
-    }
-
-    this.renderMeals(mealsContainer, plan, today);
+    mealsContainer.innerHTML = '';
   },
 
   renderUsers(container, renataKcal, husbandKcal) {

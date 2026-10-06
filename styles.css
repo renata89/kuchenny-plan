@@ -23,7 +23,6 @@ body {
   border: 8px solid #2C332D;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 /* Organic background */
@@ -36,7 +35,7 @@ body {
 }
 
 /* Content layers */
-.content { position: relative; z-index: 10; flex: 1; display: flex; flex-direction: column; }
+.content { position: relative; z-index: 10; flex: 1; display: flex; flex-direction: column; height: 100%; }
 
 /* Status bar */
 .status-bar {
@@ -61,11 +60,11 @@ body {
 .scroll-main {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 20px 100px;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 20px 96px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Screen header */
