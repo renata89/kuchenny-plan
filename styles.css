@@ -354,7 +354,11 @@ body {
   color: #647468;
   transition: all 0.15s;
 }
-.nav-btn .nav-icon { font-size: 20px; line-height: 1.2; }
+.nav-btn .nav-icon { 
+  width: 22px;
+  height: 22px;
+  display: block;
+}
 .nav-btn .nav-label {
   font-size: 10px;
   font-weight: 500;

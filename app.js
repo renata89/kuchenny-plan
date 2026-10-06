@@ -386,7 +386,7 @@ app.dashboard = {
     if (!plan || !plan.meals || plan.meals.length === 0) {
       mealsContainer.innerHTML = `
         <div class="card empty-state">
-          <div class="big" style="font-size:40px">🍽️</div>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 12px;opacity:0.4"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
           <p style="margin-bottom:12px">Brak posiłków na dzisiaj.</p>
           <button class="btn-sm" onclick="app.mealplan.generateToday()">Generuj dzisiaj</button>
         </div>
@@ -474,8 +474,14 @@ app.dashboard = {
           </div>
           ${macrosHtml}
           <div class="meal-actions">
-            <button class="btn-sm" onclick="app.mealplan.showMealDetail('${m.recipeId}')">📖 Przepis</button>
-            <button class="btn-sm" onclick="app.mealplan.swapMeal('${today}', '${m.recipeId}', '${m.category}')">🔄 Zamień</button>
+            <button class="btn-sm" onclick="app.mealplan.showMealDetail('${m.recipeId}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Przepis
+            </button>
+            <button class="btn-sm" onclick="app.mealplan.swapMeal('${today}', '${m.recipeId}', '${m.category}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+              Zamień
+            </button>
           </div>
         </div>`;
     });
