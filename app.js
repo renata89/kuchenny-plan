@@ -398,9 +398,6 @@ app.dashboard = {
     const activeUser = app.auth.getActiveUser();
     const target = activeUser.kcal;
     
-    // Render user tabs
-    this.renderUserTabs();
-    
     // Calculate consumed calories from meal plan
     const plan = app.data.mealPlan[today];
     let consumed = 0;
