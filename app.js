@@ -240,9 +240,10 @@ const Store = {
 
   defaults() {
     return {
+      activeUser: null,
       users: [
-        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25 },
-        { id: 'husband', name: 'Mąż', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30 }
+        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, avatar: '👩' },
+        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, avatar: '👨' }
       ],
       pantry: [
         { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', emoji: '🥚', inStock: true },
@@ -325,6 +326,31 @@ function scaleMacros(macros, factor) {
 // ========== APP STATE ==========
 app.data = Store.get();
 
+// ========== AUTH ==========
+app.auth = {
+  select(userId) {
+    app.data.activeUser = userId;
+    Store.save(app.data);
+    document.getElementById('view-start').style.display = 'none';
+    document.getElementById('view-dashboard').style.display = 'block';
+    app.dashboard.render();
+  },
+
+  switchUser() {
+    document.getElementById('view-dashboard').style.display = 'none';
+    document.getElementById('view-start').style.display = 'flex';
+    document.getElementById('view-start').style.height = '100%';
+  },
+
+  getActiveUser() {
+    return app.data.users.find(u => u.id === app.data.activeUser) || app.data.users[0];
+  },
+
+  isActive(userId) {
+    return app.data.activeUser === userId;
+  }
+};
+
 // ========== CORE APP ==========
 
 // --- NAV ---
@@ -369,112 +395,69 @@ app.dashboard = {
     const today = getToday();
     document.getElementById('dash-date').textContent = formatDatePL(today);
     
+    const activeUser = app.auth.getActiveUser();
+    const target = activeUser.kcal;
+    
+    // Render user tabs
+    this.renderUserTabs();
+    
+    // Calculate consumed calories from meal plan
     const plan = app.data.mealPlan[today];
-    const usersContainer = document.getElementById('dash-users');
-    const mealsContainer = document.getElementById('dash-meals');
-
-    // Render user profiles
-    let renataKcal = 0, husbandKcal = 0;
+    let consumed = 0;
     if (plan && plan.meals) {
       plan.meals.forEach(m => {
-        if (m.renata) renataKcal += m.renata.kcal || 0;
-        if (m.husband) husbandKcal += m.husband.kcal || 0;
+        if (activeUser.id === 'renata' && m.renata) consumed += m.renata.kcal || 0;
+        if (activeUser.id === 'rafal' && m.husband) consumed += m.husband.kcal || 0;
       });
     }
-    this.renderUsers(usersContainer, renataKcal, husbandKcal);
-    mealsContainer.innerHTML = '';
-  },
-
-  renderUsers(container, renataKcal, husbandKcal) {
-    const renataTarget = app.data.users.find(u => u.id === 'renata')?.kcal || 1600;
-    const husbandTarget = app.data.users.find(u => u.id === 'husband')?.kcal || 2100;
     
-    container.innerHTML = `
+    // Render user card
+    const cardContainer = document.getElementById('dash-user-card');
+    cardContainer.innerHTML = `
       <div class="card">
         <div class="user-card">
           <div class="user-card-left">
-            <div class="avatar female">👩</div>
+            <div class="avatar ${activeUser.id === 'renata' ? 'female' : 'male'}">${activeUser.avatar}</div>
             <div>
-              <div class="user-name">Renata</div>
+              <div class="user-name">${activeUser.name}</div>
             </div>
           </div>
           <div class="user-card-right">
-            <div class="kcal-current">${renataKcal}</div>
-            <div class="kcal-target">/ ${renataTarget} kcal</div>
+            <div class="kcal-current">${consumed}</div>
+            <div class="kcal-target">/ ${target} kcal</div>
           </div>
         </div>
         <div class="progress-track">
-          <div class="progress-fill" style="width:${Math.min(100, (renataKcal/renataTarget)*100)}%"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="user-card">
-          <div class="user-card-left">
-            <div class="avatar male">👨</div>
-            <div>
-              <div class="user-name">Mąż</div>
-            </div>
-          </div>
-          <div class="user-card-right">
-            <div class="kcal-current">${husbandKcal}</div>
-            <div class="kcal-target">/ ${husbandTarget} kcal</div>
-          </div>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" style="width:${Math.min(100, (husbandKcal/husbandTarget)*100)}%"></div>
+          <div class="progress-fill" style="width:${Math.min(100, (consumed/target)*100)}%"></div>
         </div>
       </div>
     `;
+    
+    // Update water
+    this.updateWater();
   },
 
-  renderMeals(container, plan, today) {
-    let html = '';
-    
-    plan.meals.forEach(m => {
-      let macrosHtml = '';
-      if (m.shared && m.renata) {
-        macrosHtml = `
-          <div class="meal-macros">
-            <span class="meal-macro">R: 🔥${m.renata.kcal}kcal | <span class="p">B${m.renata.protein}g</span> <span class="f">T${m.renata.fat}g</span> <span class="c">W${m.renata.carbs}g</span> <span class="p">Bł${m.renata.fiber}g</span></span>
-            <span class="meal-macro">M: 🔥${m.husband.kcal}kcal | <span class="p">B${m.husband.protein}g</span> <span class="f">T${m.husband.fat}g</span> <span class="c">W${m.husband.carbs}g</span></span>
-          </div>`;
-      } else if (m.renata) {
-        macrosHtml = `<div class="meal-macros"><span class="meal-macro">🔥${m.renata.kcal}kcal | <span class="p">B${m.renata.protein}g</span> <span class="f">T${m.renata.fat}g</span> <span class="c">W${m.renata.carbs}g</span></span></div>`;
-      }
+  renderUserTabs() {
+    const container = document.getElementById('dash-user-tabs');
+    const activeId = app.data.activeUser;
+    container.innerHTML = app.data.users.map(u => `
+      <button class="user-tab ${u.id === activeId ? 'active' : ''}" onclick="app.dashboard.switchUser('${u.id}')">
+        <span class="tab-avatar">${u.avatar}</span>
+        <span class="tab-name">${u.name}</span>
+      </button>
+    `).join('');
+  },
 
-      let tagsHtml = '';
-      if (m.tags) {
-        m.tags.forEach(t => {
-          if (t === 'airfryer') tagsHtml += `<span class="meal-tag airfryer">🔥 Air Fryer</span>`;
-          else if (t === 'thermomix') tagsHtml += `<span class="meal-tag tm6">⚙️ TM6</span>`;
-          else tagsHtml += `<span class="meal-tag">${t}</span>`;
-        });
-      }
+  switchUser(userId) {
+    app.data.activeUser = userId;
+    Store.save(app.data);
+    this.render();
+  },
 
-      html += `
-        <div class="card meal-card">
-          <div class="meal-header">
-            <div>
-              <div class="meal-name">${m.name}</div>
-              <div class="meal-time">${m.time || ''}</div>
-            </div>
-            <div>${tagsHtml}</div>
-          </div>
-          ${macrosHtml}
-          <div class="meal-actions">
-            <button class="btn-sm" onclick="app.mealplan.showMealDetail('${m.recipeId}')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-              Przepis
-            </button>
-            <button class="btn-sm" onclick="app.mealplan.swapMeal('${today}', '${m.recipeId}', '${m.category}')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
-              Zamień
-            </button>
-          </div>
-        </div>`;
-    });
-    
-    container.innerHTML = html;
+  updateWater() {
+    const total = app.water.getTotal();
+    const countEl = document.getElementById('dash-water-count');
+    if (countEl) countEl.textContent = `${total} ml`;
   }
 };
 
@@ -929,7 +912,8 @@ app.pantry = {
 app.water = {
   getTodayLog() {
     const today = getToday();
-    return (app.data.water || []).filter(w => w.date === today);
+    const activeUser = app.auth.getActiveUser();
+    return (app.data.water || []).filter(w => w.date === today && w.userId === activeUser.id);
   },
 
   getTotal() {
@@ -938,7 +922,13 @@ app.water = {
 
   add(ml) {
     const today = getToday();
-    const entry = { date: today, ml, time: new Date().toLocaleTimeString('pl-PL', {hour:'2-digit',minute:'2-digit'}) };
+    const activeUser = app.auth.getActiveUser();
+    const entry = { 
+      userId: activeUser.id, 
+      date: today, 
+      ml, 
+      time: new Date().toLocaleTimeString('pl-PL', {hour:'2-digit',minute:'2-digit'}) 
+    };
     if (!app.data.water) app.data.water = [];
     app.data.water.push(entry);
     Store.save(app.data);
@@ -948,7 +938,8 @@ app.water = {
 
   reset() {
     const today = getToday();
-    app.data.water = (app.data.water || []).filter(w => w.date !== today);
+    const activeUser = app.auth.getActiveUser();
+    app.data.water = (app.data.water || []).filter(w => !(w.date === today && w.userId === activeUser.id));
     Store.save(app.data);
     this.updateUI();
     this.updateFull();
@@ -1121,15 +1112,19 @@ app.settings = {
 app.init = function() {
   this.nav.init();
   this.pantry.initFilters();
-  this.water.updateUI();
   
-  // Generate today if empty
-  const today = getToday();
-  if (!this.data.mealPlan[today] || !this.data.mealPlan[today].meals) {
-    this.mealplan.generateDay(today);
+  if (!app.data.activeUser) {
+    // Show start screen
+    document.getElementById('view-start').style.display = 'flex';
+    document.getElementById('view-start').style.height = '100%';
+    document.getElementById('view-dashboard').style.display = 'none';
+    document.querySelectorAll('#views > section:not(#view-start):not(#view-dashboard)').forEach(v => v.style.display = 'none');
+  } else {
+    document.getElementById('view-start').style.display = 'none';
+    document.getElementById('view-dashboard').style.display = 'block';
+    this.dashboard.render();
+    this.water.updateUI();
   }
-  
-  this.dashboard.render();
 };
 
 // document.addEventListener('DOMContentLoaded', () => app.init());

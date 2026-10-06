@@ -369,6 +369,33 @@ body {
 }
 .nav-btn.active .nav-label { font-weight: 600; }
 
+/* User tabs */
+.user-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.user-tab {
+  flex: 1;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.7);
+  border: 2px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  color: #4F5E53;
+}
+.user-tab.active {
+  border-color: #98AD98;
+  background: rgba(152,173,152,0.12);
+  color: #1F2621;
+}
+.user-tab .tab-avatar { font-size: 24px; display: block; margin-bottom: 4px; }
+.user-tab .tab-name { font-size: 14px; }
+
 /* Week tabs */
 .week-tabs {
   display: flex;
