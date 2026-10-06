@@ -312,7 +312,7 @@
         console.log('App initialized successfully');
       } catch(e) {
         console.error('App init error:', e);
-        document.getElementById('dash-users').innerHTML = '<div class="card empty-state"><p>Błąd: ' + e.message + '</p></div>';
+        document.getElementById('view-start').innerHTML = '<p style="color:#c0392b">Błąd: ' + e.message + '</p>';
       }
     } else {
       setTimeout(checkApp, 200);
