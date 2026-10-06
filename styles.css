@@ -423,6 +423,12 @@ body {
   display: flex; gap: 6px; overflow-x: auto; padding: 8px 0;
   margin-bottom: 8px; -webkit-overflow-scrolling: touch;
 }
+.filter-bar {
+  display: flex; gap: 6px; overflow-x: auto; padding: 8px 0;
+  margin-bottom: 4px; -webkit-overflow-scrolling: touch;
+}
+.recipe-cats { margin-bottom: 4px; }
+.recipe-list { display: flex; flex-direction: column; gap: 4px; }
 .filter-btn {
   flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
   background: rgba(255,255,255,0.7); color: #4F5E53;

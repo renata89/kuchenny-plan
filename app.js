@@ -344,6 +344,7 @@ app.nav = {
     // Refresh views
     if (viewId === 'dashboard') app.dashboard.render();
     if (viewId === 'mealplan') app.mealplan.render();
+    if (viewId === 'recipes') app.recipes.render();
     if (viewId === 'pantry') app.pantry.render();
     if (viewId === 'water') app.water.renderFull();
     if (viewId === 'settings') app.settings.render();
@@ -729,6 +730,127 @@ app.mealplan = {
     app.ui.closeModal();
     this.renderDay(dateStr);
     if (dateStr === getToday()) app.dashboard.render();
+  }
+};
+
+// --- RECIPES ---
+app.recipes = {
+  currentFilter: 'all',
+
+  render() {
+    this.renderCategories();
+    this.renderList();
+  },
+
+  renderCategories() {
+    const container = document.getElementById('recipe-categories');
+    const categories = [
+      { id: 'all', label: 'Wszystkie' },
+      { id: 'breakfast', label: 'Śniadania' },
+      { id: 'lunch', label: 'Obiady' },
+      { id: 'dinner', label: 'Kolacje' }
+    ];
+    // Add appliance filters only if set
+    const appliances = app.data.appliances || [];
+    if (appliances.includes('airfryer')) categories.push({ id: 'airfryer', label: '🔥 Air Fryer' });
+    if (appliances.includes('thermomix')) categories.push({ id: 'thermomix', label: '⚙️ TM6' });
+
+    let html = '<div class="filter-bar">';
+    categories.forEach(c => {
+      html += `<button class="filter-btn ${this.currentFilter === c.id ? 'active' : ''}" onclick="app.recipes.setFilter('${c.id}')">${c.label}</button>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  },
+
+  setFilter(filterId) {
+    this.currentFilter = filterId;
+    this.render();
+  },
+
+  renderList() {
+    const container = document.getElementById('recipe-list');
+    const all = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+    const appliances = app.data.appliances || [];
+    
+    let filtered = all;
+    if (this.currentFilter !== 'all') {
+      if (this.currentFilter === 'airfryer' || this.currentFilter === 'thermomix') {
+        filtered = all.filter(r => r.appliances.includes(this.currentFilter));
+      } else {
+        filtered = all.filter(r => r.category === this.currentFilter);
+      }
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div class="card empty-state"><p style="color:#68776D">Brak przepisów w tej kategorii.</p></div>';
+      return;
+    }
+
+    let html = '';
+    filtered.forEach(r => {
+      let tags = '';
+      r.tags.forEach(t => {
+        if (t === 'airfryer') tags += `<span class="meal-tag airfryer">🔥 Air Fryer</span>`;
+        else if (t === 'thermomix') tags += `<span class="meal-tag tm6">⚙️ TM6</span>`;
+        else tags += `<span class="meal-tag">${t}</span>`;
+      });
+
+      const macrosR = calcMacros(r, 'renata');
+      const macrosH = calcMacros(r, 'husband');
+
+      html += `
+        <div class="card meal-card" style="margin-bottom:10px;cursor:pointer" onclick="app.recipes.showDetail('${r.id}')">
+          <div class="meal-header">
+            <div>
+              <div class="meal-name">${r.name}</div>
+              <div class="meal-time">${r.time} • ${r.ingredients.length} składników</div>
+            </div>
+            <div>${tags}</div>
+          </div>
+          <div class="meal-macros">
+            <span class="meal-macro">R: 🔥${macrosR.kcal}kcal | <span class="p">B${macrosR.protein}g</span> <span class="f">T${macrosR.fat}g</span> <span class="c">W${macrosR.carbs}g</span></span>
+            <span class="meal-macro">M: 🔥${macrosH.kcal}kcal | <span class="p">B${macrosH.protein}g</span> <span class="f">T${macrosH.fat}g</span> <span class="c">W${macrosH.carbs}g</span></span>
+          </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+  },
+
+  showDetail(recipeId) {
+    const all = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+    const r = all.find(x => x.id === recipeId);
+    if (!r) return;
+
+    let tags = '';
+    r.tags.forEach(t => {
+      if (t === 'airfryer') tags += '<span class="meal-tag airfryer">🔥 Air Fryer</span> ';
+      else if (t === 'thermomix') tags += '<span class="meal-tag tm6">⚙️ TM6</span> ';
+      else tags += `<span class="meal-tag">${t}</span> `;
+    });
+
+    const macrosR = calcMacros(r, 'renata');
+    const macrosH = calcMacros(r, 'husband');
+
+    app.ui.openModal(r.name, `
+      <div style="margin-bottom:12px">${tags}</div>
+      <h4 style="margin-bottom:6px;color:#1F2621">🥘 Sposób przygotowania:</h4>
+      <p style="color:#4F5E53;line-height:1.6;margin-bottom:12px;font-size:13px">${r.instructions}</p>
+      <h4 style="margin-bottom:6px;color:#1F2621">🛒 Składniki:</h4>
+      <ul style="padding-left:18px;margin-bottom:12px;color:#4F5E53;font-size:13px">
+        ${r.ingredients.map(i => `<li>${i}</li>`).join('')}
+      </ul>
+      <h4 style="margin-bottom:6px;color:#1F2621">📊 Makro na porcję:</h4>
+      <table style="width:100%;color:#4F5E53;font-size:12px">
+        <tr><td></td><td style="color:#728E7C;font-weight:600">Renata</td><td style="color:#5297C7;font-weight:600">Mąż</td></tr>
+        <tr><td>Kalorie</td><td style="color:#728E7C">${macrosR.kcal}</td><td style="color:#5297C7">${macrosH.kcal}</td></tr>
+        <tr><td>Białko</td><td style="color:#728E7C">${macrosR.protein}g</td><td style="color:#5297C7">${macrosH.protein}g</td></tr>
+        <tr><td>Tłuszcz</td><td style="color:#728E7C">${macrosR.fat}g</td><td style="color:#5297C7">${macrosH.fat}g</td></tr>
+        <tr><td>Węglowodany</td><td style="color:#728E7C">${macrosR.carbs}g</td><td style="color:#5297C7">${macrosH.carbs}g</td></tr>
+        <tr><td>Błonnik</td><td style="color:#728E7C">${macrosR.fiber}g</td><td style="color:#5297C7">${macrosH.fiber}g</td></tr>
+      </table>
+      <button class="btn-primary" onclick="app.ui.closeModal()" style="margin-top:12px">Zamknij</button>
+    `);
   }
 };
 
