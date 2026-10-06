@@ -335,11 +335,11 @@ app.nav = {
     });
   },
   switch(viewId) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('#views > section').forEach(v => v.style.display = 'none');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     const view = document.getElementById(`view-${viewId}`);
     const btn = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
-    if (view) view.classList.add('active');
+    if (view) view.style.display = 'block';
     if (btn) btn.classList.add('active');
     // Refresh views
     if (viewId === 'dashboard') app.dashboard.render();
@@ -369,65 +369,89 @@ app.dashboard = {
     document.getElementById('dash-date').textContent = formatDatePL(today);
     
     const plan = app.data.mealPlan[today];
-    const container = document.getElementById('dash-meals');
+    const usersContainer = document.getElementById('dash-users');
+    const mealsContainer = document.getElementById('dash-meals');
+
+    // Render user profiles
+    let renataKcal = 0, husbandKcal = 0;
+    if (plan && plan.meals) {
+      plan.meals.forEach(m => {
+        if (m.renata) renataKcal += m.renata.kcal || 0;
+        if (m.husband) husbandKcal += m.husband.kcal || 0;
+      });
+    }
+    this.renderUsers(usersContainer, renataKcal, husbandKcal);
     
+    // Render meals or empty state
     if (!plan || !plan.meals || plan.meals.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="big">🍽️</div>
-          <p>Brak posiłków na dzisiaj.</p>
-          <button class="btn-sm" onclick="app.mealplan.generateToday()" style="margin-top:12px">
-            Generuj dzisiaj
-          </button>
+      mealsContainer.innerHTML = `
+        <div class="card empty-state">
+          <div class="big" style="font-size:40px">🍽️</div>
+          <p style="margin-bottom:12px">Brak posiłków na dzisiaj.</p>
+          <button class="btn-sm" onclick="app.mealplan.generateToday()">Generuj dzisiaj</button>
         </div>
       `;
-      this.updateSummary(0, 0);
       return;
     }
 
-    // Calculate totals
-    let renataKcal = 0, husbandKcal = 0;
-    plan.meals.forEach(m => {
-      if (m.renata) renataKcal += m.renata.kcal || 0;
-      if (m.husband) husbandKcal += m.husband.kcal || 0;
-    });
-
-    this.updateSummary(renataKcal, husbandKcal);
-    this.renderMeals(container, plan);
+    this.renderMeals(mealsContainer, plan, today);
   },
 
-  updateSummary(renataKcal, husbandKcal) {
+  renderUsers(container, renataKcal, husbandKcal) {
     const renataTarget = app.data.users.find(u => u.id === 'renata')?.kcal || 1600;
     const husbandTarget = app.data.users.find(u => u.id === 'husband')?.kcal || 2100;
     
-    document.getElementById('dash-renata-kcal').textContent = `${renataKcal} / ${renataTarget} kcal`;
-    document.getElementById('dash-husband-kcal').textContent = `${husbandKcal} / ${husbandTarget} kcal`;
-    document.getElementById('dash-renata-bar').style.width = `${Math.min(100, (renataKcal/renataTarget)*100)}%`;
-    document.getElementById('dash-husband-bar').style.width = `${Math.min(100, (husbandKcal/husbandTarget)*100)}%`;
+    container.innerHTML = `
+      <div class="card">
+        <div class="user-card">
+          <div class="user-card-left">
+            <div class="avatar female">👩</div>
+            <div>
+              <div class="user-name">Renata</div>
+            </div>
+          </div>
+          <div class="user-card-right">
+            <div class="kcal-current">${renataKcal}</div>
+            <div class="kcal-target">/ ${renataTarget} kcal</div>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${Math.min(100, (renataKcal/renataTarget)*100)}%"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="user-card">
+          <div class="user-card-left">
+            <div class="avatar male">👨</div>
+            <div>
+              <div class="user-name">Mąż</div>
+            </div>
+          </div>
+          <div class="user-card-right">
+            <div class="kcal-current">${husbandKcal}</div>
+            <div class="kcal-target">/ ${husbandTarget} kcal</div>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${Math.min(100, (husbandKcal/husbandTarget)*100)}%"></div>
+        </div>
+      </div>
+    `;
   },
 
-  renderMeals(container, plan) {
+  renderMeals(container, plan, today) {
     let html = '';
-    const cookTogether = app.data.cookTogether;
     
     plan.meals.forEach(m => {
-      const isShared = m.shared;
-      const forWhom = isShared ? 'Razem' : (m.forUser === 'renata' ? 'Renata' : 'Mąż');
-      const whomClass = isShared ? 'shared' : (m.forUser || 'renata');
-      
       let macrosHtml = '';
-      if (isShared && m.renata) {
+      if (m.shared && m.renata) {
         macrosHtml = `
           <div class="meal-macros">
-            <span class="meal-macro">Renata: 🔥${m.renata.kcal}kcal | <span class="p">B${m.renata.protein}g</span> <span class="f">T${m.renata.fat}g</span> <span class="c">W${m.renata.carbs}g</span> <span class="fiber">Bł${m.renata.fiber}g</span></span>
-            <span class="meal-macro" style="color:var(--blue)">Mąż: 🔥${m.husband.kcal}kcal | <span class="p">B${m.husband.protein}g</span> <span class="f">T${m.husband.fat}g</span> <span class="c">W${m.husband.carbs}g</span></span>
+            <span class="meal-macro">R: 🔥${m.renata.kcal}kcal | <span class="p">B${m.renata.protein}g</span> <span class="f">T${m.renata.fat}g</span> <span class="c">W${m.renata.carbs}g</span> <span class="p">Bł${m.renata.fiber}g</span></span>
+            <span class="meal-macro">M: 🔥${m.husband.kcal}kcal | <span class="p">B${m.husband.protein}g</span> <span class="f">T${m.husband.fat}g</span> <span class="c">W${m.husband.carbs}g</span></span>
           </div>`;
       } else if (m.renata) {
-        const macro = m.renata;
-        macrosHtml = `<div class="meal-macros"><span class="meal-macro">🔥${macro.kcal}kcal | <span class="p">B${macro.protein}g</span> <span class="f">T${macro.fat}g</span> <span class="c">W${macro.carbs}g</span> <span class="fiber">Bł${macro.fiber}g</span></span></div>`;
-      } else if (m.husband) {
-        const macro = m.husband;
-        macrosHtml = `<div class="meal-macros"><span class="meal-macro">🔥${macro.kcal}kcal | <span class="p">B${macro.protein}g</span> <span class="f">T${macro.fat}g</span> <span class="c">W${macro.carbs}g</span></span></div>`;
+        macrosHtml = `<div class="meal-macros"><span class="meal-macro">🔥${m.renata.kcal}kcal | <span class="p">B${m.renata.protein}g</span> <span class="f">T${m.renata.fat}g</span> <span class="c">W${m.renata.carbs}g</span></span></div>`;
       }
 
       let tagsHtml = '';
@@ -440,11 +464,11 @@ app.dashboard = {
       }
 
       html += `
-        <div class="meal-card ${whomClass}">
+        <div class="card meal-card">
           <div class="meal-header">
             <div>
               <div class="meal-name">${m.name}</div>
-              <div class="meal-time">${m.time || ''} • ${forWhom}</div>
+              <div class="meal-time">${m.time || ''}</div>
             </div>
             <div>${tagsHtml}</div>
           </div>

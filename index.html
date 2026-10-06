@@ -3,178 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1a1a2e">
+<meta name="theme-color" content="#EDE8DE">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>KuchennyPlan</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍳</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-<div id="app">
-  <!-- Nav -->
-  <nav id="nav">
-    <button class="nav-btn" data-view="dashboard" aria-label="Plan dnia">📋</button>
-    <button class="nav-btn" data-view="mealplan" aria-label="Plan tygodnia">📅</button>
-    <button class="nav-btn" data-view="pantry" aria-label="Spizarnia">🧊</button>
-    <button class="nav-btn" data-view="water" aria-label="Woda">💧</button>
-    <button class="nav-btn" data-view="settings" aria-label="Ustawienia">⚙️</button>
-  </nav>
+<div class="phone-frame">
+  <div class="organic-bg"></div>
+  <div class="content">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="dynamic-island"></div>
+      <div class="status-icons">
+        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M2 17h20v2H2zm1.15-4.05L4 11.92V7a8 8 0 0 1 16 0v4.92l.85 1.03a1 1 0 0 1-.78 1.63H3.93a1 1 0 0 1-.78-1.63z"/></svg>
+      </div>
+    </div>
 
-  <!-- Views -->
-  <main id="views">
-    <!-- DASHBOARD -->
-    <section id="view-dashboard" class="view active">
-      <div class="view-header">
-        <h1>📋 Plan Dnia</h1>
-        <span id="dash-date" class="date-label"></span>
-      </div>
-      <div id="dash-summary" class="summary-card">
-        <div class="summary-row">
-          <span class="summary-label">Renata</span>
-          <span id="dash-renata-kcal" class="summary-value">0 / 1600 kcal</span>
+    <!-- Scrollable Content -->
+    <div class="scroll-main" id="views">
+      <!-- DASHBOARD -->
+      <section id="view-dashboard">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:24px">📋</span>
+            <h1>Plan Dnia</h1>
+          </div>
+          <span class="date-label" id="dash-date"></span>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">Mąż</span>
-          <span id="dash-husband-kcal" class="summary-value">0 / 2100 kcal</span>
-        </div>
-        <div class="summary-bar">
-          <div id="dash-renata-bar" class="summary-fill" style="width:0%"></div>
-        </div>
-        <div class="summary-bar second">
-          <div id="dash-husband-bar" class="summary-fill second" style="width:0%"></div>
-        </div>
-      </div>
-      <div id="dash-meals"></div>
-      <div id="dash-water" class="water-card">
-        <div class="water-header">
-          <span>💧 Woda dzisiaj</span>
-          <span id="dash-water-count">0 ml</span>
-        </div>
-        <div class="water-bar-track">
-          <div id="dash-water-bar" class="water-bar-fill" style="width:0%"></div>
-        </div>
-        <div class="water-actions">
-          <button class="btn-small" onclick="app.water.add(200)">+💧 200ml</button>
-          <button class="btn-small" onclick="app.water.add(300)">+🥤 300ml</button>
-          <button class="btn-small" onclick="app.water.add(500)">+🧴 500ml</button>
-        </div>
-        <button class="btn-remind" onclick="app.water.remind()">⏰ Wypij pół szklanki wody!</button>
-      </div>
-    </section>
 
-    <!-- MEAL PLAN -->
-    <section id="view-mealplan" class="view">
-      <div class="view-header">
-        <h1>📅 Plan Tygodnia</h1>
-        <div class="header-actions">
-          <button class="btn-sm" onclick="app.mealplan.generateWeek()">Generuj tydzień</button>
-        </div>
-      </div>
-      <div id="week-tabs" class="week-tabs"></div>
-      <div id="day-detail" class="day-detail"></div>
-    </section>
+        <div id="dash-users"></div>
 
-    <!-- PANTRY -->
-    <section id="view-pantry" class="view">
-      <div class="view-header">
-        <h1>🧊 Spiżarnia</h1>
-        <button class="btn-sm" onclick="app.pantry.showAddForm()">+ Dodaj</button>
-      </div>
-      <div id="pantry-filter" class="pantry-filter">
-        <button class="filter-btn active" data-filter="all">Wszystko</button>
-        <button class="filter-btn" data-filter="nabiał">Nabiał</button>
-        <button class="filter-btn" data-filter="warzywa">Warzywa</button>
-        <button class="filter-btn" data-filter="białko">Białko</button>
-        <button class="filter-btn" data-filter="węglowodany">Węglowodany</button>
-        <button class="filter-btn" data-filter="tłuszcze">Tłuszcze</button>
-        <button class="filter-btn" data-filter="przyprawy">Przyprawy</button>
-        <button class="filter-btn" data-filter="inne">Inne</button>
-      </div>
-      <div id="pantry-items" class="pantry-grid"></div>
-    </section>
+        <div id="dash-meals"></div>
 
-    <!-- WATER -->
-    <section id="view-water" class="view">
-      <div class="view-header">
-        <h1>💧 Nawodnienie</h1>
-      </div>
-      <div class="water-main">
-        <div class="water-circle-container">
-          <svg class="water-circle" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="54" fill="none" stroke="#2a2a4a" stroke-width="8"/>
-            <circle id="water-progress" cx="60" cy="60" r="54" fill="none" stroke="#4fc3f7" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round" transform="rotate(-90 60 60)"/>
-            <text x="60" y="56" text-anchor="middle" fill="var(--foreground)" font-size="22" font-weight="bold" id="water-circle-ml">0</text>
-            <text x="60" y="76" text-anchor="middle" fill="var(--muted)" font-size="12">ml</text>
-          </svg>
+        <div class="card" id="dash-water">
+          <div class="water-header">
+            <div class="water-header-left">
+              <span>💧</span>
+              <span>Woda dzisiaj</span>
+            </div>
+            <div class="water-header-right">
+              <span>🍼</span>
+              <span class="ml-count" id="dash-water-count">0 ml</span>
+            </div>
+          </div>
+          <div class="water-glass-wrap">
+            <div class="water-glass">
+              <div class="ice-cube">🧊</div>
+            </div>
+          </div>
+          <div class="water-actions">
+            <button class="btn-water" onclick="app.water.add(200)">+ 💧 200ml</button>
+            <button class="btn-water" onclick="app.water.add(300)">+ 🥤 300ml</button>
+            <button class="btn-water" onclick="app.water.add(500)">+ 🧴 500ml</button>
+          </div>
+          <button class="water-reminder" onclick="app.water.remind()">⏰ Wypij pół szklanki wody!</button>
         </div>
-        <div class="water-stats">
-          <div>Cel: <strong>2000 ml</strong></div>
-          <div id="water-cups-today">0 szklanek dzisiaj</div>
-          <div id="water-last-reminder"></div>
-        </div>
-        <div class="water-actions-lg">
-          <button class="btn-water" onclick="app.water.add(200)">💧 200ml</button>
-          <button class="btn-water" onclick="app.water.add(300)">🥤 300ml</button>
-          <button class="btn-water" onclick="app.water.add(500)">🧴 500ml</button>
-          <button class="btn-water reset" onclick="app.water.reset()">Reset</button>
-        </div>
-        <div class="water-history">
-          <h3>Historia dzisiaj</h3>
-          <div id="water-log"></div>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- SETTINGS -->
-    <section id="view-settings" class="view">
-      <div class="view-header">
-        <h1>⚙️ Ustawienia</h1>
-      </div>
-      <div class="settings-section">
-        <h3>👤 Użytkownicy</h3>
-        <div id="settings-users"></div>
-      </div>
-      <div class="settings-section">
-        <h3>🍳 Sprzęt w kuchni</h3>
-        <div id="settings-appliances" class="appliance-grid"></div>
-      </div>
-      <div class="settings-section">
-        <h3>🍽️ Razem czy osobno?</h3>
-        <div class="cook-together-toggle">
-          <label class="toggle">
+      <!-- MEAL PLAN -->
+      <section id="view-mealplan" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:24px">📅</span>
+            <h1>Plan Tygodnia</h1>
+          </div>
+          <button class="btn-sm" onclick="app.mealplan.generateWeek()">Generuj</button>
+        </div>
+        <div id="week-tabs" class="week-tabs" style="margin-top:8px"></div>
+        <div id="day-detail"></div>
+      </section>
+
+      <!-- PANTRY -->
+      <section id="view-pantry" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:24px">🧊</span>
+            <h1>Spiżarnia</h1>
+          </div>
+          <button class="btn-sm" onclick="app.pantry.showAddForm()">+ Dodaj</button>
+        </div>
+        <div id="pantry-filter" class="pantry-filter"></div>
+        <div id="pantry-items" class="pantry-grid"></div>
+      </section>
+
+      <!-- WATER FULL -->
+      <section id="view-water" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:24px">💧</span>
+            <h1>Nawodnienie</h1>
+          </div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="water-circle-container">
+            <svg class="water-circle" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="54" fill="none" stroke="#E5ECE5" stroke-width="8"/>
+              <circle id="water-progress" cx="60" cy="60" r="54" fill="none" stroke="#3B9EE5" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              <text x="60" y="56" text-anchor="middle" fill="#1F2621" font-size="22" font-weight="bold" id="water-circle-ml">0</text>
+              <text x="60" y="76" text-anchor="middle" fill="#68776D" font-size="12">ml</text>
+            </svg>
+          </div>
+          <div class="water-stats">
+            <div>Cel: <strong style="color:#1F2621">2000 ml</strong></div>
+            <div id="water-cups-today">0 szklanek dzisiaj</div>
+            <div id="water-last-reminder"></div>
+          </div>
+          <div class="water-actions-lg">
+            <button class="btn-water-lg" onclick="app.water.add(200)">💧 200ml</button>
+            <button class="btn-water-lg" onclick="app.water.add(300)">🥤 300ml</button>
+            <button class="btn-water-lg" onclick="app.water.add(500)">🧴 500ml</button>
+            <button class="btn-water-lg reset" onclick="app.water.reset()">Reset</button>
+          </div>
+          <div class="water-history">
+            <h3>📋 Historia dzisiaj</h3>
+            <div id="water-log"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="view-settings" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:24px">⚙️</span>
+            <h1>Ustawienia</h1>
+          </div>
+        </div>
+        <div class="card settings-section">
+          <h3>👤 Użytkownicy</h3>
+          <div id="settings-users"></div>
+        </div>
+        <div class="card settings-section">
+          <h3>🍳 Sprzęt w kuchni</h3>
+          <div id="settings-appliances" class="appliance-grid"></div>
+        </div>
+        <div class="card settings-section">
+          <h3>🍽️ Razem czy osobno?</h3>
+          <div class="toggle">
             <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()">
             <span class="toggle-slider"></span>
             <span id="cook-together-label">Gotujecie razem</span>
-          </label>
+          </div>
         </div>
-      </div>
-      <div class="settings-section">
-        <h3>💾 Dane</h3>
-        <button class="btn-sm" onclick="app.settings.resetAll()" style="background:#c0392b">Resetuj wszystko</button>
-        <button class="btn-sm" onclick="app.settings.exportData()">📤 Eksportuj dane</button>
-        <input type="file" id="import-file" accept=".json" style="display:none" onchange="app.settings.importData(event)">
-        <button class="btn-sm" onclick="document.getElementById('import-file').click()">📥 Importuj dane</button>
-      </div>
-    </section>
-
-    <!-- MODALS -->
-    <div id="modal-overlay" class="modal-overlay" onclick="app.ui.closeModal()">
-      <div class="modal" onclick="event.stopPropagation()">
-        <div class="modal-header">
-          <h2 id="modal-title"></h2>
-          <button class="modal-close" onclick="app.ui.closeModal()">✕</button>
+        <div class="card settings-section">
+          <h3>💾 Dane</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button class="btn-sm" onclick="app.settings.resetAll()">Resetuj wszystko</button>
+            <button class="btn-sm" onclick="app.settings.exportData()">📤 Eksport</button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="app.settings.importData(event)">
+            <button class="btn-sm" onclick="document.getElementById('import-file').click()">📥 Import</button>
+          </div>
         </div>
-        <div id="modal-body" class="modal-body"></div>
-      </div>
+      </section>
     </div>
 
-    <!-- WATER NOTIFICATION -->
-    <div id="water-toast" class="toast">
-      💧 <span>Wypij pół szklanki wody!</span>
-      <button onclick="app.water.dismissToast()">✓</button>
+    <!-- Floating Bottom Nav -->
+    <nav class="floating-nav">
+      <button class="nav-btn active" data-view="dashboard">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Plan</span>
+      </button>
+      <button class="nav-btn" data-view="mealplan">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Kalendarz</span>
+      </button>
+      <button class="nav-btn" data-view="pantry">
+        <span class="nav-icon">👨‍🍳</span>
+        <span class="nav-label">Przepisy</span>
+      </button>
+      <button class="nav-btn" data-view="water">
+        <span class="nav-icon">💧</span>
+        <span class="nav-label">Woda</span>
+      </button>
+      <button class="nav-btn" data-view="settings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Ustawienia</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal-overlay" class="modal-overlay" onclick="app.ui.closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <button class="modal-close" onclick="app.ui.closeModal()">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
     </div>
-  </main>
+  </div>
+
+  <!-- Water Toast -->
+  <div id="water-toast" class="toast">
+    💧 <span>Wypij pół szklanki wody!</span>
+    <button onclick="app.water.dismissToast()">✓</button>
+  </div>
 </div>
 
 <script src="app.js"></script>
