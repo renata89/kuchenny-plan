@@ -860,8 +860,8 @@ app.water = {
     const target = 2000;
     const pct = Math.min(100, (total / target) * 100);
     
-    document.getElementById('dash-water-count').textContent = `${total} ml`;
-    document.getElementById('dash-water-bar').style.width = `${pct}%`;
+    const countEl = document.getElementById('dash-water-count');
+    if (countEl) countEl.textContent = `${total} ml`;
   },
 
   renderFull() {
@@ -1023,4 +1023,4 @@ app.init = function() {
   this.dashboard.render();
 };
 
-document.addEventListener('DOMContentLoaded', () => app.init());
+// document.addEventListener('DOMContentLoaded', () => app.init());

@@ -271,5 +271,27 @@
 </div>
 
 <script src="app.js"></script>
+<script>
+(function() {
+  var checkApp = function() {
+    if (typeof app !== 'undefined' && app.init) {
+      try {
+        app.init();
+        console.log('App initialized successfully');
+      } catch(e) {
+        console.error('App init error:', e);
+        document.getElementById('dash-users').innerHTML = '<div class="card empty-state"><p>Błąd: ' + e.message + '</p></div>';
+      }
+    } else {
+      setTimeout(checkApp, 200);
+    }
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkApp);
+  } else {
+    checkApp();
+  }
+})();
+</script>
 </body>
 </html>
