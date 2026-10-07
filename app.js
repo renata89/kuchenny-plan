@@ -380,6 +380,7 @@ app.nav = {
     if (viewId === 'recipes') app.recipes.render();
     if (viewId === 'pantry') app.pantry.render();
     if (viewId === 'water') app.water.renderFull();
+    if (viewId === 'zakupy') app.zakupy.render();
     if (viewId === 'settings') app.settings.render();
   }
 };
@@ -1349,6 +1350,63 @@ app.pantry = {
 
   remove(id) {
     app.data.pantry = app.data.pantry.filter(i => i.id !== id);
+    Store.save(app.data);
+    this.render();
+  }
+};
+
+// --- ZAKUPY ---
+app.zakupy = {
+  render() {
+    const container = document.getElementById('zakupy-list');
+    const items = (app.data.pantry || []).filter(i => i.inStock);
+
+    if (items.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="big">🛒</div><p>Lista zakupów pusta.<br>Dodaj składniki przez przycisk "Dodaj do listy zakupów" w posiłkach.</p></div>`;
+      return;
+    }
+
+    const categories = [...new Set(items.map(i => i.category))];
+    const catLabels = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
+
+    let html = '';
+    categories.forEach(cat => {
+      const catItems = items.filter(i => i.category === cat);
+      if (catItems.length === 0) return;
+      html += `<div class="zakupy-category" style="margin-bottom:8px">`;
+      html += `<div style="font-size:14px;font-weight:700;color:#1F2621;margin-bottom:6px">${catLabels[cat] || cat}</div>`;
+      catItems.forEach(item => {
+        html += `
+          <div class="zakupy-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:4px;background:#FAF8F2;border-radius:12px;border:1px solid #E8EDE8">
+            <input type="checkbox" id="shop-${item.id}" ${item.inStock ? '' : 'checked'} onchange="app.zakupy.toggle('${item.id}')" style="width:18px;height:18px;accent-color:#728E7C;cursor:pointer">
+            <label for="shop-${item.id}" style="flex:1;font-size:13px;color:#1F2621;cursor:pointer">${item.name}</label>
+            ${item.qty ? `<span style="font-size:11px;color:#68776D">${item.qty}</span>` : ''}
+            <button onclick="app.zakupy.remove('${item.id}')" style="background:none;border:none;color:#C07060;font-size:16px;cursor:pointer;padding:2px">✕</button>
+          </div>`;
+      });
+      html += `</div>`;
+    });
+
+    container.innerHTML = html;
+  },
+
+  toggle(id) {
+    const item = (app.data.pantry || []).find(i => i.id === id);
+    if (item) {
+      item.inStock = !item.inStock;
+      Store.save(app.data);
+      this.render();
+    }
+  },
+
+  remove(id) {
+    app.data.pantry = (app.data.pantry || []).filter(i => i.id !== id);
+    Store.save(app.data);
+    this.render();
+  },
+
+  clearBought() {
+    app.data.pantry = (app.data.pantry || []).filter(i => i.inStock);
     Store.save(app.data);
     this.render();
   }
