@@ -222,7 +222,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin: 8px 0;
+  margin: 8px 0 12px;
 }
 .btn-water {
   display: flex;
@@ -256,7 +256,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: 16px;
 }
 .btn-water-action {
   display: inline-flex;
