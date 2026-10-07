@@ -1409,6 +1409,46 @@ app.zakupy = {
     app.data.pantry = (app.data.pantry || []).filter(i => i.inStock);
     Store.save(app.data);
     this.render();
+  },
+
+  showAddForm() {
+    const categories = ['białko', 'nabiał', 'warzywa', 'węglowodany', 'tłuszcze', 'przyprawy', 'inne'];
+    const catOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+
+    app.ui.openModal('Dodaj produkt do listy', `
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Nazwa produktu</label>
+          <input type="text" id="zakupy-name" placeholder="np. Pierś z kurczaka" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Kategoria</label>
+          <select id="zakupy-category" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;background:#FAF8F2">
+            ${catOptions}
+          </select>
+        </div>
+        <button onclick="app.zakupy.addItem()" style="width:100%;padding:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer">✓ Dodaj do listy</button>
+      </div>
+    `);
+  },
+
+  addItem() {
+    const name = document.getElementById('zakupy-name').value.trim();
+    const category = document.getElementById('zakupy-category').value;
+    if (!name) { app.ui.showToast('Podaj nazwę produktu'); return; }
+
+    if (!app.data.pantry) app.data.pantry = [];
+    app.data.pantry.push({
+      id: 'shop_' + Date.now(),
+      name: name.charAt(0).toUpperCase() + name.slice(1),
+      category: category,
+      qty: '',
+      inStock: true
+    });
+    Store.save(app.data);
+    app.ui.closeModal();
+    this.render();
+    app.ui.showToast('✓ Dodano: ' + name);
   }
 };
 
