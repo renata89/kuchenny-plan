@@ -606,19 +606,6 @@ body {
   cursor: pointer; font-family: inherit;
 }
 
-/* Dashboard section headers */
-.dash-section-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 16px;
-  border-bottom: 1px solid #E8EDE8;
-  background: #F8FBF8;
-  border-radius: 14px 14px 0 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1F2621;
-}
 .dash-section-badge {
   margin-left: auto;
   font-size: 12px;
