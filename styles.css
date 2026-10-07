@@ -255,23 +255,45 @@ body {
 .water-footer-actions {
   display: flex;
   justify-content: center;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 8px;
 }
-.btn-water-undo, .btn-water-lg.undo {
-  background: none;
-  border: none;
-  color: #68776D;
+.btn-water-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 16px;
+  border: 1px solid #D6E0D6;
+  border-radius: 20px;
+  background: #F5F8F5;
+  color: #4F5E53;
   font-size: 12px;
-  cursor: pointer;
-  padding: 4px 12px;
-  border-radius: 8px;
-  transition: background 0.15s;
-}
-.btn-water-undo:hover, .btn-water-lg.undo:hover {
-  background: rgba(0,0,0,0.04);
-}
-.undo-text {
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-water-action:hover {
+  background: #EDF2ED;
+  border-color: #C0D0C0;
+}
+.btn-water-action:active {
+  background: #E0E8E0;
+}
+.btn-water-action.danger {
+  color: #B55A4A;
+  border-color: #E8D0CC;
+  background: #FDF6F4;
+}
+.btn-water-action.danger:hover {
+  background: #F8EDEA;
+  border-color: #DDBFB8;
+}
+.btn-water-action.danger:active {
+  background: #F2E2DD;
+}
+.action-icon {
+  font-size: 14px;
+  line-height: 1;
 }
 
 /* Water reminder banner */

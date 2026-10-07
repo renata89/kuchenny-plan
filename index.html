@@ -87,8 +87,11 @@
           </button>
         </div>
         <div class="water-footer-actions">
-          <button class="btn-water-undo" onclick="app.water.undo()">
-            <span class="undo-text">↩ Cofnij</span>
+          <button class="btn-water-action" onclick="app.water.undo()">
+            <span class="action-icon">↩</span> Cofnij
+          </button>
+          <button class="btn-water-action danger" onclick="app.water.reset()">
+            <span class="action-icon">⟳</span> Wyzeruj
           </button>
         </div>
         <button class="water-reminder" onclick="app.water.remind()">
@@ -181,10 +184,14 @@
               <span class="water-btn-label-lg">+500 ml</span>
               <span class="water-btn-desc">mała butelka</span>
             </button>
-            <button class="btn-water-lg undo" onclick="app.water.undo()">
-              <span class="undo-text">↩ Cofnij</span>
+          </div>
+          <div class="water-footer-actions">
+            <button class="btn-water-action" onclick="app.water.undo()">
+              <span class="action-icon">↩</span> Cofnij
             </button>
-            <button class="btn-water-lg reset" onclick="app.water.reset()">Reset</button>
+            <button class="btn-water-action danger" onclick="app.water.reset()">
+              <span class="action-icon">⟳</span> Wyzeruj
+            </button>
           </div>
           <div class="water-history">
             <h3>
