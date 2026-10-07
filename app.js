@@ -565,6 +565,7 @@ app.mealplan = {
     const plan = app.data.mealPlan[dateStr];
     const isFuture = dateStr > getToday();
     const isToday = dateStr === getToday();
+    const activeUser = app.auth.getActiveUser();
 
     if (!plan || !plan.meals || plan.meals.length === 0) {
       container.innerHTML = `
@@ -578,31 +579,39 @@ app.mealplan = {
       return;
     }
 
-    let totalRenata = 0, totalHusband = 0;
-    let html = `<h3 style="margin-bottom:12px">${formatDatePL(dateStr)}</h3>`;
+    let totalActive = 0;
+    const userKey = activeUser.id === 'renata' ? 'renata' : 'husband';
+    let html = `
+      <div class="day-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0">${formatDatePL(dateStr)}</h3>
+        <span class="day-total" style="font-size:16px;font-weight:700;color:var(--accent,#4A6150)">0 kcal</span>
+      </div>`;
     
     plan.meals.forEach(m => {
-      if (m.renata) totalRenata += m.renata.kcal || 0;
-      if (m.husband) totalHusband += m.husband.kcal || 0;
+      const kcal = m[userKey] ? (m[userKey].kcal || 0) : 0;
+      totalActive += kcal;
 
       const whomClass = m.shared ? 'shared' : (m.forUser || 'renata');
       html += `
         <div class="meal-card ${whomClass}" style="margin-bottom:8px;padding:12px">
-          <div class="meal-header">
+          <div class="meal-header" style="display:flex;justify-content:space-between;align-items:center">
             <div>
               <div class="meal-name" style="font-size:14px">${m.name}</div>
               <div class="meal-time" style="font-size:11px">${m.time || ''}</div>
             </div>
-            <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px">🔄</button>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="meal-kcal-badge" style="font-size:12px;font-weight:600;color:#4F5E53;background:#EFF3EF;padding:2px 10px;border-radius:10px">${kcal} kcal</span>
+              <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px">🔄</button>
+            </div>
           </div>
         </div>`;
     });
 
-    html += `
-      <div class="summary-card" style="margin-top:12px">
-        <div class="summary-row"><span>Renata suma:</span><span style="color:var(--accent);font-weight:600">${totalRenata} kcal</span></div>
-        <div class="summary-row"><span>Mąż suma:</span><span style="color:var(--blue);font-weight:600">${totalHusband} kcal</span></div>
-      </div>`;
+    // Update total in header
+    html = html.replace(
+      '<span class="day-total" style="font-size:16px;font-weight:700;color:var(--accent,#4A6150)">0 kcal</span>',
+      `<span class="day-total" style="font-size:16px;font-weight:700;color:#4A6150">${totalActive} kcal</span>`
+    );
 
     container.innerHTML = html;
 
