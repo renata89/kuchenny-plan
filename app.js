@@ -485,7 +485,7 @@ app.dashboard = {
     const userKey = activeUser.id === 'renata' ? 'renata' : 'husband';
     const dailyGoal = activeUser.kcal || 1600;
     let totalKcal = 0;
-    html = '';
+    let html = '';
     let remaining = dailyGoal;
     let goalHtml = `
       <div class="day-progress" style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#F5F8F5;border-bottom:1px solid #EEF2EE;font-size:12px;color:#4F5E53">
