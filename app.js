@@ -1012,12 +1012,12 @@ app.pantry = {
 // --- WATER ---
 app.water = {
   getWaterGlassImage(pct) {
-    if (pct <= 5) return 'water-glass-0.jpg';
+    if (pct <= 0) return 'water-glass-0.jpg';
     if (pct <= 20) return 'water-glass-1.jpg';
-    if (pct <= 35) return 'water-glass-2.jpg';
-    if (pct <= 45) return 'water-glass-3.jpg';
-    if (pct <= 65) return 'water-glass-4.jpg';
-    if (pct <= 85) return 'water-glass-5.jpg';
+    if (pct <= 40) return 'water-glass-2.jpg';
+    if (pct <= 60) return 'water-glass-3.jpg';
+    if (pct <= 80) return 'water-glass-4.jpg';
+    if (pct <= 99) return 'water-glass-5.jpg';
     return 'water-glass-6.jpg';
   },
 
