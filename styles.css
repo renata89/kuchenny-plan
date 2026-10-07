@@ -34,6 +34,12 @@ body {
   z-index: 0;
 }
 
+/* Hide nav on start screen */
+#view-start:not([style*="display:none"]) ~ .floating-nav,
+#view-start[style*="display:flex"] ~ .floating-nav {
+  display: none;
+}
+
 /* Content layers */
 .content { position: relative; z-index: 10; flex: 1; display: flex; flex-direction: column; height: 100%; }
 

@@ -1359,34 +1359,68 @@ app.pantry = {
 app.zakupy = {
   render() {
     const container = document.getElementById('zakupy-list');
-    const items = (app.data.pantry || []).filter(i => i.inStock);
+    const allItems = app.data.pantry || [];
+    const toBuy = allItems.filter(i => i.inStock);
+    const pantry = allItems.filter(i => !i.inStock);
 
-    if (items.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="big">🛒</div><p>Lista zakupów pusta.<br>Dodaj składniki przez przycisk "Dodaj do listy zakupów" w posiłkach.</p></div>`;
-      return;
+    // Shopping list section
+    let html = `<h3 style="font-size:15px;font-weight:700;color:#1F2621;margin-bottom:8px">🛒 Do kupienia</h3>`;
+
+    if (toBuy.length === 0) {
+      html += `<div class="empty-state" style="padding:20px"><p style="color:#68776D;font-size:13px">Lista zakupów pusta.<br>Dodaj składniki przez przycisk "Dodaj" lub z posiłków.</p></div>`;
+    } else {
+      const categories = [...new Set(toBuy.map(i => i.category))];
+      const catLabels = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
+      categories.forEach(cat => {
+        const catItems = toBuy.filter(i => i.category === cat);
+        if (catItems.length === 0) return;
+        html += `<div class="zakupy-category" style="margin-bottom:8px">`;
+        html += `<div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:4px">${catLabels[cat] || cat}</div>`;
+        catItems.forEach(item => {
+          html += `
+            <div class="zakupy-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:3px;background:#FAF8F2;border-radius:12px;border:1px solid #E8EDE8">
+              <input type="checkbox" id="shop-${item.id}" onchange="app.zakupy.toggle('${item.id}')" style="width:18px;height:18px;accent-color:#728E7C;cursor:pointer">
+              <label for="shop-${item.id}" style="flex:1;font-size:13px;color:#1F2621;cursor:pointer">${item.name}</label>
+              ${item.qty ? `<span style="font-size:11px;color:#68776D">${item.qty}</span>` : ''}
+              <button onclick="app.zakupy.remove('${item.id}')" style="background:none;border:none;color:#C07060;font-size:16px;cursor:pointer;padding:2px">✕</button>
+            </div>`;
+        });
+        html += `</div>`;
+      });
     }
 
-    const categories = [...new Set(items.map(i => i.category))];
-    const catLabels = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
+    // Spiżarnia section - collapsible
+    html += `
+      <details style="margin-top:16px">
+        <summary style="cursor:pointer;font-size:15px;font-weight:700;color:#1F2621;padding:8px 0;user-select:none">
+          🏪 Spiżarnia <span style="font-size:12px;color:#68776D;font-weight:400">(${pantry.length} produktów)</span>
+        </summary>
+        <div style="margin-top:6px">`;
 
-    let html = '';
-    categories.forEach(cat => {
-      const catItems = items.filter(i => i.category === cat);
-      if (catItems.length === 0) return;
-      html += `<div class="zakupy-category" style="margin-bottom:8px">`;
-      html += `<div style="font-size:14px;font-weight:700;color:#1F2621;margin-bottom:6px">${catLabels[cat] || cat}</div>`;
-      catItems.forEach(item => {
-        html += `
-          <div class="zakupy-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:4px;background:#FAF8F2;border-radius:12px;border:1px solid #E8EDE8">
-            <input type="checkbox" id="shop-${item.id}" ${item.inStock ? '' : 'checked'} onchange="app.zakupy.toggle('${item.id}')" style="width:18px;height:18px;accent-color:#728E7C;cursor:pointer">
-            <label for="shop-${item.id}" style="flex:1;font-size:13px;color:#1F2621;cursor:pointer">${item.name}</label>
-            ${item.qty ? `<span style="font-size:11px;color:#68776D">${item.qty}</span>` : ''}
-            <button onclick="app.zakupy.remove('${item.id}')" style="background:none;border:none;color:#C07060;font-size:16px;cursor:pointer;padding:2px">✕</button>
-          </div>`;
+    if (pantry.length === 0) {
+      html += `<p style="color:#68776D;font-size:13px;text-align:center;padding:12px">Spiżarnia pusta — odznacz produkty na liście zakupów, by je tu przenieść.</p>`;
+    } else {
+      const pantryCats = [...new Set(pantry.map(i => i.category))];
+      const catLabels2 = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
+      pantryCats.forEach(cat => {
+        const catItems = pantry.filter(i => i.category === cat);
+        if (catItems.length === 0) return;
+        html += `<div style="margin-bottom:6px">`;
+        html += `<div style="font-size:12px;font-weight:600;color:#68776D;margin-bottom:3px">${catLabels2[cat] || cat}</div>`;
+        catItems.forEach(item => {
+          html += `
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:2px;background:#F5F8F5;border-radius:10px;font-size:12px;color:#68776D">
+              <span style="flex:1">${item.name}</span>
+              ${item.qty ? `<span style="font-size:10px">${item.qty}</span>` : ''}
+              <button onclick="app.zakupy.moveToBuy('${item.id}')" style="background:none;border:none;color:#728E7C;font-size:14px;cursor:pointer;padding:2px" title="Dodaj do listy zakupów">🛒</button>
+              <button onclick="app.zakupy.remove('${item.id}')" style="background:none;border:none;color:#C07060;font-size:14px;cursor:pointer;padding:2px">✕</button>
+            </div>`;
+        });
+        html += `</div>`;
       });
-      html += `</div>`;
-    });
+    }
 
+    html += `</div></details>`;
     container.innerHTML = html;
   },
 
@@ -1394,6 +1428,15 @@ app.zakupy = {
     const item = (app.data.pantry || []).find(i => i.id === id);
     if (item) {
       item.inStock = !item.inStock;
+      Store.save(app.data);
+      this.render();
+    }
+  },
+
+  moveToBuy(id) {
+    const item = (app.data.pantry || []).find(i => i.id === id);
+    if (item) {
+      item.inStock = true;
       Store.save(app.data);
       this.render();
     }
