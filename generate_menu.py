@@ -73,7 +73,7 @@ shop_table = [[
 for cat, color, items in SHOP:
     shop_table.append([
         Paragraph(f"<b>{cat}</b>", ps("SC", fontSize=8, textColor=SAGE_D, fontName="ArialUni", spaceAfter=2)),
-        Paragraph("&nbsp;&nbsp;".join([f"• {i}" for i in items]), ps("SI", fontSize=7, leading=9, textColor=C_TEXT)),
+        Paragraph("<br/>".join([f"• {i}" for i in items]), ps("SI", fontSize=7, leading=9, textColor=C_TEXT)),
     ])
 
 st = TableStyle([
@@ -85,7 +85,9 @@ st = TableStyle([
 ])
 for i in range(1, len(shop_table)):
     st.add('BACKGROUND', (0,i), (-1,i), SHOP[i-1][1])
-E.append(Table(shop_table, colWidths=[68*mm, 124*mm]).setStyle(st))
+shop_t = Table(shop_table, colWidths=[68*mm, 124*mm])
+shop_t.setStyle(st)
+E.append(shop_t)
 sp(6)
 
 E.append(Paragraph("💡 <i>Macie w domu: jajka, ser żółty, chleb żytni, tofu, feta, oliwa</i>",
@@ -214,7 +216,10 @@ meal_card("1", "🌅",
     {"kcal": 440, "protein": 38, "fat": 26, "carbs": 8, "fiber": 0},
     {"kcal": 600, "protein": 50, "fat": 38, "carbs": 10, "fiber": 0},
     "Jajka (6 szt), ser żółty (60g), jogurt grecki (200g), szczypiorek, sól, pieprz",
-    "Roztrzep jajka z jogurtem greckim (dodaje białka!). Dodaj starty ser. Wlej do formy. Airfryer <b>170°C / 12 min</b>. Porcje: R — 1/3 omleta + 100g jogurtu | M — 2/3 + 100g jogurtu.",
+    "Rozbij jajka do miski i roztrzep je widelcem. Dodaj starty ser i szczypiorek, wymieszaj. "
+    "Wlej masę do silikonowej formy. Umieść w airfryerze. Ustaw temperaturę na <b>170°C</b> i czas na <b>12 minut</b>. "
+    "Po upieczeniu omlet wyrośnie i będzie puszysty. Podawaj z jogurtem greckim. "
+    "Porcje: Renata — 1/3 omleta + 100g jogurtu | Rafał — 2/3 omleta + 100g jogurtu.",
     "🔥 Air Fryer", C_TM6)
 
 meal_card("2", "☀️",
@@ -222,7 +227,17 @@ meal_card("2", "☀️",
     {"kcal": 540, "protein": 46, "fat": 16, "carbs": 48, "fiber": 7},
     {"kcal": 740, "protein": 62, "fat": 24, "carbs": 68, "fiber": 9},
     "Pierś z kurczaka (400g), cebula, czosnek (2), pomidory krojone (puszka), mleko kokosowe (200ml), curry, kurkuma, kumin, ryż brązowy (200g), szpinak (100g), oliwa (30ml)",
-    "⚙️ <b>TM6 — BATCH: obiad w misie + kolacja w Varomie!</b><br/><b>1.</b> Cebula+czosnek <b>5s / obr. 5</b>. Oliwa <b>3 min / 120°C / obr. 1</b>.<br/><b>2.</b> Kurczak <b>5 min / 100°C / obr. 1</b>.<br/><b>3.</b> Dodaj pomidory, mleko, przyprawy. Varoma z tofu+górą. <b>20 min / 100°C / obr. 1</b>.<br/><b>4.</b> Po 15 min dodaj szpinak. Ryż ugotuj osobno.<br/>Porcje: R — 1/3 curry + 60g ryżu | M — 2/3 + 100g.",
+    "⚙️ <b>Krok po kroku — TM6 Batch (obiad + kolacja jednocześnie!)</b><br/>"
+    "<b>Krok 1:</b> Włóż cebulę i czosnek do misy. Zamknij pokrywę. Ustaw <b>5 sekund / obroty 5</b>.<br/>"
+    "<b>Krok 2:</b> Dodaj oliwę. Ustaw <b>3 minuty / 120°C / obroty 1</b>.<br/>"
+    "<b>Krok 3:</b> Dodaj pokrojonego w kostkę kurczaka. Ustaw <b>5 minut / 100°C / obroty 1</b>.<br/>"
+    "<b>Krok 4:</b> Dodaj pomidory z puszki, mleko kokosowe i przyprawy (curry, kurkuma, kumin, sól, pieprz). "
+    "Umieść koszyk Varoma na misie. Do Varomy włóż pokrojone w plastry tofu, cukinię i paprykę (to będzie kolacja!). "
+    "Ustaw <b>20 minut / 100°C / obroty 1</b>.<br/>"
+    "<b>Krok 5:</b> Po 15 minutach ostrożnie otwórz pokrywę Varomy. Dodaj szpinak do curry w misie. Zamknij i gotuj przez ostatnie 5 minut.<br/>"
+    "<b>Krok 6:</b> W międzyczasie ugotuj ryż brązowy w garnku (wypłucz, zalej podwójną ilością wody, gotuj 30 minut na małym ogniu).<br/>"
+    "<b>Podział na osoby:</b> Renata — 1/3 curry + 60g ryżu | Rafał — 2/3 curry + 100g ryżu. "
+    "Kurkuma w curry pomaga stabilizować poziom cukru we krwi!",
     "⚙️ TM6 Batch", C_TM6)
 
 batch_note("Obiad (curry w misie) i kolacja (tofu w Varomie) gotują się jednocześnie w 20 min!")
@@ -232,7 +247,12 @@ meal_card("3", "🌙",
     {"kcal": 360, "protein": 32, "fat": 16, "carbs": 14, "fiber": 5},
     {"kcal": 480, "protein": 40, "fat": 22, "carbs": 20, "fiber": 6},
     "Tofu (300g), cukinia, papryka, szpinak (odłożony z curry), oliwa (15ml), sos sojowy, imbir, czosnek",
-    "Tofu pokrój, zamarynuj w sosie sojowym+imbir+czosnek. Ułóż w Varomie. Gotowało się z obiadem! Wyciągnij po 20 min. Podawaj z odłożonym szpinakiem. Porcje: R — 1/3 | M — 2/3.",
+    "🧑‍🍳 <b>Przygotowany razem z obiadem w TM6!</b> "
+    "Tofu z warzywami gotowało się w koszyku Varoma podczas przygotowywania obiadu (patrz przepis na Kurczak Curry — krok 4). "
+    "Nie musisz go przygotowywać osobno — po zakończeniu programu TM6 wyciągnij Varomę i przełóż tofu z warzywami na talerz. "
+    "Podawaj z odłożoną wcześniej porcją szpinaku z curry. "
+    "Dla lepszego smaku możesz skropić gotowe danie sokiem z cytryny i posypać świeżym koperkiem. "
+    "Porcje: Renata — 1/3 dania | Rafał — 2/3 dania.",
     "⚙️ TM6 Varoma", C_TM6)
 
 protein_summary("Białko Renaty: 116g  •  Błonnik: 12g  •  Oszczędność czasu: 30 min dzięki batch!")
@@ -248,7 +268,15 @@ meal_card("1", "🌅",
     {"kcal": 430, "protein": 34, "fat": 24, "carbs": 18, "fiber": 3},
     {"kcal": 590, "protein": 46, "fat": 34, "carbs": 28, "fiber": 4},
     "Tofu naturalne (400g), feta (100g), oliwa (20ml), kurkuma, kumin, chleb żytni (4 kromki), pomidor",
-    "Rozgnieć tofu widelcem. Smaż na oliwie z kurkumą i kuminem 5-6 min. Kurkuma działa przeciwzapalnie i stabilizuje cukier! Dodaj fetę pod koniec. Porcje: R — 1/3 + 1 kromka | M — 2/3 + 3 kromki.",
+    "Wyjmij tofu z opakowania i odsącz je na ręczniku papierowym. "
+    "Rozgnieć tofu widelcem w misce, aż uzyskasz konsystencję przypominającą jajecznicę. "
+    "Dodaj kurkumę, kumin, sól i pieprz — dokładnie wymieszaj. "
+    "Rozgrzej oliwę na patelni na średnim ogniu. "
+    "Przełóż rozgniecione tofu na patelnię i smaż przez 5-6 minut, mieszając od czasu do czasu. "
+    "Kurkuma nie tylko nadaje apetyczny złoty kolor, ale też działa przeciwzapalnie i pomaga stabilizować cukier! "
+    "Pod koniec smażenia dodaj pokruszoną fetę i delikatnie wymieszaj. "
+    "Podawaj z pomidorem pokrojonym w plasterki i chlebem żytnim. "
+    "Porcje: Renata — 1/3 scramble + 1 kromka chleba | Rafał — 2/3 scramble + 3 kromki chleba.",
     "", SAGE)
 
 meal_card("2", "☀️",
@@ -256,7 +284,17 @@ meal_card("2", "☀️",
     {"kcal": 550, "protein": 44, "fat": 18, "carbs": 48, "fiber": 8},
     {"kcal": 790, "protein": 62, "fat": 28, "carbs": 68, "fiber": 10},
     "Pierś z kurczaka (400g), batat (300g), oliwa (25ml), papryka słodka, czosnek granulowany, kapusta pekińska (200g), marchewka, jogurt grecki (100g), koperek",
-    "Kurczaka pokrój, zamarynuj. Batata w słupki. Airfryer <b>180°C / 18 min</b> (razem). Surówka: poszatkuj kapustę, zetrzyj marchewkę, wymieszaj z jogurtem i koperkiem. Porcje: R — 120g+100g batata | M — 200g+150g. Bataty = niższy IG!",
+    "Pokrój pierś z kurczaka wzdłuż na dwa mniejsze filety, a następnie w poprzek na paski. "
+    "Wymieszaj w misce oliwę z papryką słodką, czosnkiem granulowanym, solą i pieprzem. "
+    "Dodaj paski kurczaka i dokładnie wymieszaj, aby każdy kawałek był pokryty przyprawami. "
+    "Obierz batata i pokrój go w słupki grubości około 1 centymetra. Skrop oliwą i posól. "
+    "Umieść kurczaka i bataty w koszu airfryera. Ustaw temperaturę na <b>180°C</b> i czas na <b>18 minut</b>. "
+    "W połowie czasu (po 9 minutach) otwórz airfryer i przemieszaj składniki, aby równomiernie się upiekły. "
+    "W międzyczasie przygotuj surówkę: poszatkuj kapustę pekińską, zetrzyj marchewkę na tarce o grubych oczkach. "
+    "Wymieszaj warzywa z jogurtem greckim i posiekanym koperkiem. Dopraw solą i pieprzem. "
+    "Surówka jest gotowa w 3 minuty — nie wymaga gotowania! "
+    "Porcje: Renata — 120g kurczaka + 100g batata + surówka | Rafał — 200g kurczaka + 150g batata + surówka. "
+    "Bataty mają niższy indeks glikemiczny niż zwykłe ziemniaki — lepsze dla stabilnego cukru!",
     "🔥 Air Fryer", C_TM6)
 
 meal_card("3", "🌙",
@@ -264,7 +302,14 @@ meal_card("3", "🌙",
     {"kcal": 420, "protein": 34, "fat": 22, "carbs": 22, "fiber": 5},
     {"kcal": 560, "protein": 40, "fat": 32, "carbs": 30, "fiber": 6},
     "Jogurt grecki 2% (500g), orzechy włoskie (40g), jabłka (2 szt.), cynamon, miód (opcjonalnie dla Rafała)",
-    "Wymieszaj jogurt z pokrojonym jabłkiem i orzechami. Posyp cynamonem. Cynamon obniża cukier! 5 min, zero sprzątania. Porcje: R — 1/3 | M — 2/3.",
+    "To najprostszy posiłek w całym planie — nie wymaga gotowania! "
+    "Przełóż jogurt grecki do miski. "
+    "Umyj jabłka, pokrój je w kostkę (możesz zostawić skórkę — jest w niej najwięcej błonnika). "
+    "Dodaj pokrojone jabłka i orzechy włoskie do jogurtu. Wymieszaj. "
+    "Posyp całość cynamonem — cynamon naturalnie pomaga obniżać poziom cukru we krwi. "
+    "Dla Rafała opcjonalnie można dodać łyżeczkę miodu. "
+    "Porcje: Renata — 1/3 mieszanki | Rafał — 2/3 mieszanki. "
+    "Całość zajmuje 5 minut i nie wymaga sprzątania — idealna kolacja po ciężkim dniu!",
     "⚡️ 5 minut", C_TM6)
 
 protein_summary("Białko Renaty: 112g  •  Błonnik: 16g  •  Najwięcej błonnika — dobre trawienie!")
@@ -280,7 +325,15 @@ meal_card("1", "🌅",
     {"kcal": 470, "protein": 36, "fat": 28, "carbs": 14, "fiber": 2},
     {"kcal": 650, "protein": 48, "fat": 42, "carbs": 21, "fiber": 3},
     "Jajka (6 szt), ser żółty (60g), masło (15g), chleb żytni (5 kromek), szczypiorek, koperek",
-    "Roztrzep jajka. Roztop masło, wlej jajka, smaż mieszając. Dodaj starty ser i zioła. Porcje: R — 2 jajka+1 kromka | M — 4 jajka+3 kromki. Jajka+chleb żytni = niski IG!",
+    "Rozbij jajka do miski i roztrzep je widelcem. Dopraw solą i pieprzem. "
+    "Zetrzyj ser żółty na tarce o drobnych oczkach. "
+    "Roztop masło na patelni na małym ogniu. Uważaj, żeby masło nie zbrązowiało. "
+    "Wlej roztrzepane jajka na patelnię. Smaż na małym ogniu, delikatnie mieszając drewnianą łyżką. "
+    "Gdy jajka zaczynają się ścinać, dodaj starty ser i posiekany szczypiorek oraz koperek. "
+    "Mieszaj jeszcze przez około 30 sekund, aż ser się rozpuści. "
+    "Zdejmij patelnię z ognia — jajecznica będzie jeszcze ciepłem dochodzić. "
+    "Podawaj na chlebie żytnim. Jajka z chlebem żytnim to posiłek o niskim indeksie glikemicznym — idealny dla Ciebie! "
+    "Porcje: Renata — 2 jajka + 1 kromka chleba | Rafał — 4 jajka + 3 kromki chleba.",
     "", SAGE)
 
 meal_card("2", "☀️",
@@ -288,17 +341,35 @@ meal_card("2", "☀️",
     {"kcal": 550, "protein": 44, "fat": 22, "carbs": 38, "fiber": 6},
     {"kcal": 770, "protein": 58, "fat": 32, "carbs": 54, "fiber": 8},
     "Łosoś świeży (400g), brokuły (200g), marchewka (2 szt.), kasza gryczana (200g), oliwa (20ml), cytryna (2 szt.), koperek",
-    "⚙️ <b>TM6 — BATCH COOKING!</b> Wlej 1L wody. Do misy wsyp kaszę. W Varomie ułóż łososia (cytryna+koperek) i warzywa. <b>25 min / Varoma / obr. 1</b>. Kaszę wyjmij po 20 min. Porcje: R — 120g+80g kaszy | M — 200g+120g.",
+    "⚙️ <b>Krok po kroku — TM6 Batch (obiad + kolacja jednocześnie!)</b><br/>"
+    "<b>Krok 1:</b> Wlej 1 litr wody do misy TM6. Wsyp kaszę gryczaną do koszyka (umieść go w misie).<br/>"
+    "<b>Krok 2:</b> Pokrój łososia na dwie porcje. Skrop sokiem z cytryny i posyp koperkiem oraz solą. "
+    "Pokrój brokuły na różyczki, marchewkę w słupki.<br/>"
+    "<b>Krok 3:</b> Załóż koszyk Varoma na misę. Na dolnym poziomie ułóż łososia, na górnym poziomie ułóż warzywa. "
+    "Przykryj Varomę pokrywą.<br/>"
+    "<b>Krok 4:</b> Ustaw TM6 na <b>25 minut / funkcja Varoma / obroty 1</b>.<br/>"
+    "<b>Krok 5:</b> Po 20 minutach ostrożnie otwórz Varomę i wyjmij kaszę (jest już ugotowana). "
+    "Kontynuuj gotowanie łososia i warzyw przez ostatnie 5 minut.<br/>"
+    "<b>Podział na osoby:</b> Renata — 120g łososia + 100g brokułów + 80g kaszy | "
+    "Rafał — 200g łososia + 100g brokułów + 120g kaszy. "
+    "Łosoś z kaszą gryczaną to źródło kwasów omega-3 i wolnych węglowodanów — doskonałe dla stabilnego cukru!",
     "⚙️ TM6 Varoma + Batch", C_TM6)
 
-batch_note("OBIAD i KOLACJA gotują się jednocześnie w TM6! Oszczędzasz 30 minut.")
+batch_note("Łosoś i kasza gryczana gotują się jednocześnie w TM6 — oszczędzasz 20 minut! Sałatkę przygotuj w tym czasie.")
 
 meal_card("3", "🌙",
     "Sałatka Greeka z Grilowanym Tofu i Awokado",
     {"kcal": 380, "protein": 32, "fat": 20, "carbs": 12, "fiber": 5},
     {"kcal": 520, "protein": 40, "fat": 30, "carbs": 16, "fiber": 6},
     "Tofu (200g), feta (100g), awokado, mix sałat, ogórek, pomidor, oliwa (15ml), oregano",
-    "Tofu pokrój w plastry, skrop oliwą — airfryer <b>180°C / 8 min</b>. Pokrój warzywa, wymieszaj z sałatą. Dodaj tofu i fetę. Porcje: R — 1/3 | M — 2/3 + kromka chleba.",
+    "Pokrój tofu w plastry o grubości około 1 centymetra. Skrop oliwą i posyp oregano. "
+    "Umieść tofu w koszu airfryera. Ustaw temperaturę na <b>180°C</b> i czas na <b>8 minut</b>. "
+    "W międzyczasie umyj i pokrój warzywa: ogórka w półplasterki, pomidora w kostkę, "
+    "awokado przekrój na pół, usuń pestkę i pokrój w plasterki. "
+    "W dużej misce wymieszaj mix sałat z pokrojonymi warzywami. "
+    "Gdy tofu jest gotowe, dodaj je do sałatki razem z pokruszoną fetą. "
+    "Skrop całość pozostałą oliwą. "
+    "Porcje: Renata — 1/3 sałatki | Rafał — 2/3 sałatki + dodatkowa kromka chleba.",
     "🔥 Air Fryer", C_TM6)
 
 protein_summary("Białko Renaty: 112g  •  Błonnik: 13g  •  Wszystkie posiłki z niskim IG")
