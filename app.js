@@ -393,6 +393,19 @@ app.ui = {
   },
   closeModal() {
     document.getElementById('modal-overlay').classList.remove('open');
+  },
+  showToast(msg) {
+    let toast = document.getElementById('app-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'app-toast';
+      toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1F2621;color:#FFF;padding:10px 20px;border-radius:14px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity 0.3s;white-space:nowrap;max-width:90vw';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    clearTimeout(toast._hideTimer);
+    toast._hideTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
   }
 };
 
@@ -756,24 +769,190 @@ app.mealplan = {
       return;
     }
 
-    let html = `<p class="text-muted" style="margin-bottom:12px">Wybierz zamiennik:</p>`;
-    options.forEach(m => {
+    const pageSize = 5;
+    let currentPage = 0;
+    const totalPages = Math.ceil(options.length / pageSize);
+
+    function renderPage(page) {
+      const start = page * pageSize;
+      const end = Math.min(start + pageSize, options.length);
+      const pageOptions = options.slice(start, end);
+
+      let html = `<p class="text-muted" style="margin-bottom:10px">Strona ${page+1} z ${totalPages} (${options.length} zamienników):</p>`;
+      
+      pageOptions.forEach(m => {
+        const macrosR = calcMacros(m, 'renata');
+        const macrosH = calcMacros(m, 'husband');
+        const tags = m.tags.join(', ');
+        html += `
+          <div class="meal-card shared" style="margin-bottom:10px;padding:12px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px">${m.name}</div>
+            <div class="meal-macros" style="margin-bottom:6px">
+              <span class="meal-macro" style="font-size:10px;display:block;color:#4F5E53">Renata: ${macrosR.kcal}kcal · B${macrosR.protein}g · T${macrosR.fat}g · W${macrosR.carbs}g</span>
+              <span class="meal-macro" style="font-size:10px;display:block;color:#4F5E53">Rafał: ${macrosH.kcal}kcal · B${macrosH.protein}g · T${macrosH.fat}g · W${macrosH.carbs}g</span>
+            </div>
+            ${tags ? `<div class="text-muted" style="font-size:10px;margin-bottom:6px">${tags}</div>` : ''}
+            <div style="display:flex;gap:6px">
+              <button onclick="app.mealplan.applySwap('${dateStr}', '${currentRecipeId}', '${m.id}', true)" style="flex:1;padding:8px;border:none;border-radius:12px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:13px;font-weight:600;cursor:pointer">✓ Wybierz</button>
+              <button onclick="app.mealplan.showRecipeDetail('${m.id}', '${dateStr}', '${currentRecipeId}')" style="flex:1;padding:8px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:13px;font-weight:500;cursor:pointer">👁 Zobacz</button>
+            </div>
+          </div>`;
+      });
+
+      // Pagination controls
+      if (totalPages > 1) {
+        html += `<div style="display:flex;gap:8px;justify-content:center;margin-top:8px">`;
+        if (page > 0) {
+          html += `<button onclick="app.mealplan._swapPage('${dateStr}', '${currentRecipeId}', '${category}', ${page-1})" style="flex:1;padding:8px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:13px;cursor:pointer;font-weight:500">← Poprzednie</button>`;
+        }
+        if (page < totalPages - 1) {
+          html += `<button onclick="app.mealplan._swapPage('${dateStr}', '${currentRecipeId}', '${category}', ${page+1})" style="flex:1;padding:8px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:13px;cursor:pointer;font-weight:500">Następne →</button>`;
+        }
+        html += `</div>`;
+      }
+
+      // Store page state and update modal
+      app.mealplan._swapState = { dateStr, currentRecipeId, category, page: page };
+      const modalBody = document.getElementById('modal-body');
+      if (modalBody) modalBody.innerHTML = html;
+    }
+
+    app.ui.openModal('🔄 Zamiana posiłku', '<p style="text-align:center;color:#68776D">Ładowanie...</p>');
+    renderPage(0);
+  },
+
+  _swapPage(dateStr, currentRecipeId, category, page) {
+    const all = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+    const appliances = app.data.appliances || [];
+    const options = all.filter(m => 
+      m.category === category && 
+      m.id !== currentRecipeId &&
+      (m.appliances.length === 0 || m.appliances.every(a => appliances.includes(a)))
+    );
+
+    const pageSize = 5;
+    const pageOptions = options.slice(page * pageSize, Math.min((page + 1) * pageSize, options.length));
+    const totalPages = Math.ceil(options.length / pageSize);
+
+    let html = `<p class="text-muted" style="margin-bottom:10px">Strona ${page+1} z ${totalPages} (${options.length} zamienników):</p>`;
+    
+    pageOptions.forEach(m => {
       const macrosR = calcMacros(m, 'renata');
       const macrosH = calcMacros(m, 'husband');
       const tags = m.tags.join(', ');
       html += `
-        <div class="meal-card shared" style="margin-bottom:12px;padding:14px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
-          <div style="font-weight:600;font-size:14px;margin-bottom:6px">${m.name}</div>
-          <div class="meal-macros" style="margin-bottom:8px">
-            <span class="meal-macro" style="font-size:11px;display:block">Renata: ${macrosR.kcal}kcal · B${macrosR.protein}g · T${macrosR.fat}g · W${macrosR.carbs}g</span>
-            <span class="meal-macro" style="font-size:11px;display:block">Rafał: ${macrosH.kcal}kcal · B${macrosH.protein}g · T${macrosH.fat}g · W${macrosH.carbs}g</span>
+        <div class="meal-card shared" style="margin-bottom:10px;padding:12px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
+          <div style="font-weight:600;font-size:14px;margin-bottom:4px">${m.name}</div>
+          <div class="meal-macros" style="margin-bottom:6px">
+            <span class="meal-macro" style="font-size:10px;display:block;color:#4F5E53">Renata: ${macrosR.kcal}kcal · B${macrosR.protein}g · T${macrosR.fat}g · W${macrosR.carbs}g</span>
+            <span class="meal-macro" style="font-size:10px;display:block;color:#4F5E53">Rafał: ${macrosH.kcal}kcal · B${macrosH.protein}g · T${macrosH.fat}g · W${macrosH.carbs}g</span>
           </div>
-          ${tags ? `<div class="text-muted" style="font-size:10px;margin-bottom:8px">${tags}</div>` : ''}
-          <button onclick="app.mealplan.applySwap('${dateStr}', '${currentRecipeId}', '${m.id}')" style="width:100%;padding:10px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:14px;font-weight:600;cursor:pointer">Wybierz</button>
+          ${tags ? `<div class="text-muted" style="font-size:10px;margin-bottom:6px">${tags}</div>` : ''}
+          <div style="display:flex;gap:6px">
+            <button onclick="app.mealplan.applySwap('${dateStr}', '${currentRecipeId}', '${m.id}', true)" style="flex:1;padding:8px;border:none;border-radius:12px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:13px;font-weight:600;cursor:pointer">✓ Wybierz</button>
+            <button onclick="app.mealplan.showRecipeDetail('${m.id}', '${dateStr}', '${currentRecipeId}')" style="flex:1;padding:8px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:13px;font-weight:500;cursor:pointer">👁 Zobacz</button>
+          </div>
         </div>`;
     });
 
-    app.ui.openModal('🔄 Zamiana posiłku', html);
+    if (totalPages > 1) {
+      html += `<div style="display:flex;gap:8px;justify-content:center;margin-top:8px">`;
+      if (page > 0) {
+        html += `<button onclick="app.mealplan._swapPage('${dateStr}', '${currentRecipeId}', '${category}', ${page-1})" style="flex:1;padding:8px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:13px;cursor:pointer;font-weight:500">← Poprzednie</button>`;
+      }
+      if (page < totalPages - 1) {
+        html += `<button onclick="app.mealplan._swapPage('${dateStr}', '${currentRecipeId}', '${category}', ${page+1})" style="flex:1;padding:8px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:13px;cursor:pointer;font-weight:500">Następne →</button>`;
+      }
+      html += `</div>`;
+    }
+
+    const modalBody = document.getElementById('modal-body');
+    if (modalBody) modalBody.innerHTML = html;
+  },
+
+  showRecipeDetail(recipeId, dateStr, currentRecipeId) {
+    const all = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+    const recipe = all.find(m => m.id === recipeId);
+    if (!recipe) return;
+
+    let appliancesHtml = '';
+    if (recipe.appliances.includes('airfryer')) appliancesHtml += '<span class="meal-tag airfryer">🔥 Air Fryer</span> ';
+    if (recipe.appliances.includes('thermomix')) appliancesHtml += '<span class="meal-tag tm6">⚙️ Thermomix TM6</span>';
+
+    const macrosR = calcMacros(recipe, 'renata');
+    const macrosH = calcMacros(recipe, 'husband');
+
+    app.ui.openModal(recipe.name, `
+      <div style="margin-bottom:10px">${appliancesHtml}</div>
+      
+      <h4 style="margin-bottom:6px;font-size:13px;color:#1F2621">📊 Makro na porcję</h4>
+      <table style="width:100%;font-size:11px;margin-bottom:12px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid #E8EDE8"><td></td><td style="color:#728E7C;font-weight:600;padding:2px 4px">Renata</td><td style="color:#5297C7;font-weight:600;padding:2px 4px">Rafał</td></tr>
+        <tr><td style="padding:2px 4px">Kalorie</td><td style="padding:2px 4px">${macrosR.kcal}</td><td style="padding:2px 4px">${macrosH.kcal}</td></tr>
+        <tr><td style="padding:2px 4px">Białko</td><td style="padding:2px 4px">${macrosR.protein}g</td><td style="padding:2px 4px">${macrosH.protein}g</td></tr>
+        <tr><td style="padding:2px 4px">Tłuszcz</td><td style="padding:2px 4px">${macrosR.fat}g</td><td style="padding:2px 4px">${macrosH.fat}g</td></tr>
+        <tr><td style="padding:2px 4px">Węglowodany</td><td style="padding:2px 4px">${macrosR.carbs}g</td><td style="padding:2px 4px">${macrosH.carbs}g</td></tr>
+        <tr style="border-bottom:1px solid #E8EDE8"><td style="padding:2px 4px">Błonnik</td><td style="padding:2px 4px">${macrosR.fiber}g</td><td style="padding:2px 4px">${macrosH.fiber}g</td></tr>
+      </table>
+
+      <h4 style="margin-bottom:4px;font-size:13px;color:#1F2621">🛒 Składniki</h4>
+      <ul style="margin-bottom:10px;padding-left:18px;font-size:12px;color:#4F5E53">
+        ${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}
+      </ul>
+
+      <h4 style="margin-bottom:4px;font-size:13px;color:#1F2621">👨‍🍳 Przygotowanie</h4>
+      <p style="font-size:12px;color:#4F5E53;line-height:1.6;margin-bottom:12px">${recipe.instructions}</p>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button onclick="app.mealplan.addToShoppingList('${recipeId}'); app.ui.closeModal(); app.mealplan.swapMeal('${dateStr}', '${currentRecipeId}', '${recipe.category}')" style="width:100%;padding:10px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:13px;font-weight:600;cursor:pointer">🛒 Dodaj do listy zakupów</button>
+        <button onclick="app.mealplan.applySwap('${dateStr}', '${currentRecipeId}', '${recipeId}', true)" style="width:100%;padding:10px;border:none;border-radius:12px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:13px;font-weight:600;cursor:pointer">✓ Wybierz ten posiłek</button>
+      </div>
+    `);
+  },
+
+  addToShoppingList(recipeId) {
+    const all = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+    const recipe = all.find(m => m.id === recipeId);
+    if (!recipe) return;
+
+    if (!app.data.pantry) app.data.pantry = [];
+
+    const existingNames = new Set(app.data.pantry.map(i => i.name.toLowerCase().trim()));
+
+    recipe.ingredients.forEach(ingredient => {
+      const name = ingredient.trim();
+      const nameLower = name.toLowerCase();
+      if (!existingNames.has(nameLower)) {
+        // Determine category based on common keywords
+        let category = 'inne';
+        const proteinKeywords = ['kurczak', 'łosoś', 'tuńczyk', 'tofu', 'jajka', 'jajko', 'ser', 'twaróg', 'feta', 'mięso', 'wołowina', 'wieprzowina'];
+        const dairyKeywords = ['mleko', 'jogurt', 'śmietana', 'masło', 'mleko kokosowe'];
+        const vegKeywords = ['brokuł', 'ziemniak', 'batat', 'cebula', 'czosnek', 'pomidor', 'szpinak', 'sałata', 'ogórek', 'rzodkiewka', 'papryka', 'cukinia', 'marchew', 'kapusta', 'awokado'];
+        const carbKeywords = ['chleb', 'kasza', 'ryż', 'makaron', 'mąka'];
+        const fatKeywords = ['oliwa', 'olej', 'orzech'];
+        const spiceKeywords = ['sól', 'pieprz', 'kurkuma', 'kumin', 'curry', 'cynamon', 'imbir', 'oregano', 'koperek', 'szczypiorek'];
+
+        if (proteinKeywords.some(k => nameLower.includes(k))) category = 'białko';
+        else if (dairyKeywords.some(k => nameLower.includes(k))) category = 'nabiał';
+        else if (vegKeywords.some(k => nameLower.includes(k))) category = 'warzywa';
+        else if (carbKeywords.some(k => nameLower.includes(k))) category = 'węglowodany';
+        else if (fatKeywords.some(k => nameLower.includes(k))) category = 'tłuszcze';
+        else if (spiceKeywords.some(k => nameLower.includes(k))) category = 'przyprawy';
+
+        app.data.pantry.push({
+          id: 'shop_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          name: name.charAt(0).toUpperCase() + name.slice(1),
+          category: category,
+          qty: '',
+          emoji: '',
+          inStock: true
+        });
+        existingNames.add(nameLower);
+      }
+    });
+
+    Store.save(app.data);
+    app.ui.showToast('🛒 Dodano składniki do listy zakupów!');
   },
 
   applySwap(dateStr, oldRecipeId, newRecipeId) {
