@@ -1396,8 +1396,8 @@ app.zakupy = {
     }
 
     html += `
-      <button id="pantry-fab" onclick="app.zakupy.openPantry()" style="position:fixed;bottom:90px;right:20px;width:60px;height:60px;border-radius:50%;border:none;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:28px;cursor:pointer;box-shadow:0 4px 16px rgba(79,115,92,0.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform 0.15s">
-        🏪
+      <button id="pantry-fab" onclick="app.zakupy.openPantry()" style="position:absolute;bottom:80px;right:16px;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(79,115,92,0.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform 0.15s">
+        🧊
         ${pantryCount > 0 ? `<span style="position:absolute;top:-4px;right:-4px;background:#C47050;color:#FFF;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(196,112,80,0.4)">${pantryCount > 9 ? '9+' : pantryCount}</span>` : ''}
       </button>`;
 
