@@ -432,6 +432,9 @@ app.dashboard = {
     
     // Update water
     this.updateWater();
+    
+    // Render today's meals
+    this.renderTodayMeals();
   },
 
   renderUserTabs() {
@@ -457,6 +460,66 @@ app.dashboard = {
     const target = activeUser.waterGoal || 2000;
     const countEl = document.getElementById('dash-water-count');
     if (countEl) countEl.textContent = `${total} ml / ${target} ml`;
+  },
+
+  renderTodayMeals() {
+    const container = document.getElementById('dash-today-meals-content');
+    const kcalBadge = document.getElementById('dash-meals-kcal');
+    const today = getToday();
+    const plan = app.data.mealPlan[today];
+
+    if (!plan || !plan.meals || plan.meals.length === 0) {
+      container.innerHTML = '<p class="text-muted" style="font-size:13px;padding:12px;text-align:center">Brak wygenerowanego planu</p>';
+      if (kcalBadge) kcalBadge.textContent = '';
+      return;
+    }
+
+    const activeUser = app.auth.getActiveUser();
+    let totalKcal = 0;
+    let html = '';
+
+    plan.meals.forEach(m => {
+      if (activeUser.id === 'renata' && m.renata) totalKcal += m.renata.kcal || 0;
+      if (activeUser.id === 'rafal' && m.husband) totalKcal += m.husband.kcal || 0;
+
+      const emoji = m.time && m.time.includes('śniadanie') ? '🌅' :
+                    m.time && m.time.includes('obiad') ? '☀️' :
+                    m.time && m.time.includes('kolacja') ? '🌙' : '🍽️';
+      const kcal = activeUser.id === 'renata' ? (m.renata ? m.renata.kcal : '—') : (m.husband ? m.husband.kcal : '—');
+
+      html += `
+        <div class="dash-meal-item">
+          <span class="dash-meal-emoji">${emoji}</span>
+          <span class="dash-meal-name">${m.name}</span>
+          <span class="dash-meal-kcal">${kcal} kcal</span>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+    if (kcalBadge) kcalBadge.textContent = `${totalKcal} kcal`;
+
+    // Add meal item styles dynamically if not present
+    if (!document.getElementById('dash-meal-styles')) {
+      const style = document.createElement('style');
+      style.id = 'dash-meal-styles';
+      style.textContent = `
+        #dash-today-meals-content { padding: 8px 0; }
+        .dash-meal-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 16px;
+          border-bottom: 1px solid #EEF2EE;
+          transition: background 0.1s;
+        }
+        .dash-meal-item:last-child { border-bottom: none; }
+        .dash-meal-item:hover { background: #F8FBF8; }
+        .dash-meal-emoji { font-size: 16px; width: 24px; text-align: center; }
+        .dash-meal-name { flex: 1; font-size: 13px; font-weight: 500; color: #1F2621; }
+        .dash-meal-kcal { font-size: 12px; font-weight: 600; color: #4F5E53; background: #EFF3EF; padding: 2px 10px; border-radius: 10px; }
+      `;
+      document.head.appendChild(style);
+    }
   }
 };
 
