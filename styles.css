@@ -401,6 +401,8 @@ body {
   justify-content: space-around;
   align-items: center;
 }
+/* Hidden by default - shown by JS after login */
+.floating-nav { display: none; }
 .nav-btn {
   display: flex;
   flex-direction: column;

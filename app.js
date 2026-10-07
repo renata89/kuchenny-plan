@@ -334,6 +334,10 @@ app.auth = {
     document.getElementById('view-start').style.display = 'none';
     document.getElementById('view-dashboard').style.display = 'block';
     
+    // Show nav
+    const nav = document.querySelector('.floating-nav');
+    if (nav) nav.style.display = 'flex';
+    
     // Auto-generate weekly plan on first use
     const hasPlan = Object.keys(app.data.mealPlan || {}).length > 0;
     if (!hasPlan && app.mealplan) {
@@ -347,6 +351,10 @@ app.auth = {
     document.getElementById('view-dashboard').style.display = 'none';
     document.getElementById('view-start').style.display = 'flex';
     document.getElementById('view-start').style.height = '100%';
+    
+    // Hide nav
+    const nav = document.querySelector('.floating-nav');
+    if (nav) nav.style.display = 'none';
   },
 
   getActiveUser() {
