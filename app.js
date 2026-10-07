@@ -467,6 +467,8 @@ app.dashboard = {
     const target = activeUser.waterGoal || 2000;
     const countEl = document.getElementById('dash-water-count');
     if (countEl) countEl.textContent = `${total} ml / ${target} ml`;
+    const glassImg = document.getElementById('water-glass-img');
+    if (glassImg) glassImg.src = app.water.getWaterGlassImage(Math.min(100, (total / target) * 100));
   },
 
   renderTodayMeals() {
@@ -1009,6 +1011,16 @@ app.pantry = {
 
 // --- WATER ---
 app.water = {
+  getWaterGlassImage(pct) {
+    if (pct <= 5) return 'water-glass-0.jpg';
+    if (pct <= 20) return 'water-glass-1.jpg';
+    if (pct <= 35) return 'water-glass-2.jpg';
+    if (pct <= 45) return 'water-glass-3.jpg';
+    if (pct <= 65) return 'water-glass-4.jpg';
+    if (pct <= 85) return 'water-glass-5.jpg';
+    return 'water-glass-6.jpg';
+  },
+
   getTodayLog() {
     const today = getToday();
     const activeUser = app.auth.getActiveUser();
@@ -1075,6 +1087,9 @@ app.water = {
     
     const countEl = document.getElementById('dash-water-count');
     if (countEl) countEl.textContent = `${total} ml / ${target} ml`;
+    
+    const glassImg = document.getElementById('water-glass-img');
+    if (glassImg) glassImg.src = this.getWaterGlassImage(pct);
   },
 
   renderFull() {
