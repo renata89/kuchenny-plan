@@ -597,6 +597,7 @@ app.mealplan = {
     }
 
     let totalActive = 0;
+    let totalProtein = 0, totalFat = 0, totalCarbs = 0;
     const userKey = activeUser.id === 'renata' ? 'renata' : 'husband';
     const dailyGoal = activeUser.kcal || 1600;
     let html = `
@@ -615,6 +616,9 @@ app.mealplan = {
       const fat = m[userKey] ? (m[userKey].fat || 0) : 0;
       const carbs = m[userKey] ? (m[userKey].carbs || 0) : 0;
       totalActive += kcal;
+      totalProtein += protein;
+      totalFat += fat;
+      totalCarbs += carbs;
 
       const timeLabel = m.time || (m.category === 'breakfast' ? 'Śniadanie' : m.category === 'lunch' ? 'Obiad' : m.category === 'dinner' ? 'Kolacja' : 'Posiłek');
       const whomClass = m.shared ? 'shared' : (m.forUser || 'renata');
@@ -639,6 +643,31 @@ app.mealplan = {
       <button onclick="app.mealplan.showAddMealForm('${dateStr}')" style="width:100%;padding:12px;border:2px dashed #C8D0C8;border-radius:16px;background:transparent;color:#4F5E53;font-size:14px;font-weight:500;cursor:pointer;margin-top:4px">
         + Dodaj posiłek
       </button>`;
+
+    // Macro summary
+    const protColor = totalProtein >= (activeUser.protein || 100) ? '#4A6150' : '#D0805C';
+    html += `
+      <div style="margin-top:12px;padding:12px;background:#F5F8F5;border-radius:14px;border:1px solid #E0E8E0">
+        <div style="font-size:12px;font-weight:600;color:#1F2621;margin-bottom:6px">📊 Podsumowanie makro</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center">
+          <div style="font-size:11px;color:#4F5E53">
+            <div style="font-weight:700;font-size:13px;color:#C47050">${totalActive}</div>
+            <div>kcal</div>
+          </div>
+          <div style="font-size:11px;color:#4F5E53">
+            <div style="font-weight:700;font-size:13px;color:${protColor}">${totalProtein}g</div>
+            <div>Białko</div>
+          </div>
+          <div style="font-size:11px;color:#4F5E53">
+            <div style="font-weight:700;font-size:13px;color:#4F5E53">${totalFat}g</div>
+            <div>Tłuszcz</div>
+          </div>
+          <div style="font-size:11px;color:#4F5E53">
+            <div style="font-weight:700;font-size:13px;color:#4F5E53">${totalCarbs}g</div>
+            <div>Węglowodany</div>
+          </div>
+        </div>
+      </div>`;
 
     // Update total in header and remaining
     const remaining = dailyGoal - totalActive;
@@ -668,27 +697,47 @@ app.mealplan = {
 
     const meals = [];
     const cookTogether = app.data.cookTogether;
+    const activeUser = app.auth.getActiveUser();
+    const dailyGoal = activeUser.kcal || 1600;
+    const userKey = activeUser.id === 'renata' ? 'renata' : 'husband';
 
-    // Pick breakfast
-    const bfOptions = dbMeals.filter(m => m.category === 'breakfast');
-    if (bfOptions.length > 0) {
-      const picked = bfOptions[Math.floor(Math.random() * bfOptions.length)];
-      meals.push(this.makeMealEntry(picked, 'breakfast', cookTogether));
+    // Target per meal (3 meals: breakfast, lunch, dinner)
+    const targetPerMeal = Math.round(dailyGoal / 3);
+
+    function pickBestMeal(category, targetKcal) {
+      const options = dbMeals.filter(m => m.category === category);
+      if (options.length === 0) return null;
+
+      // Score each option by how close it is to target
+      let best = null;
+      let bestScore = Infinity;
+      const userPortion = userKey === 'renata' ? 'renata_portion' : 'husband_portion';
+
+      options.forEach(m => {
+        const portion = m[userPortion] || 1;
+        const kcal = Math.round(m.macros.kcal * portion);
+        const score = Math.abs(kcal - targetKcal);
+        if (score < bestScore) {
+          bestScore = score;
+          best = m;
+        }
+      });
+
+      return best;
     }
 
-    // Pick lunch
-    const lunOptions = dbMeals.filter(m => m.category === 'lunch');
-    if (lunOptions.length > 0) {
-      const picked = lunOptions[Math.floor(Math.random() * lunOptions.length)];
-      meals.push(this.makeMealEntry(picked, 'lunch', cookTogether));
-    }
+    // Pick breakfast, lunch, dinner with calorie targeting
+    const bfTarget = Math.round(targetPerMeal * 0.8); // breakfast slightly lighter
+    const bfPicked = pickBestMeal('breakfast', bfTarget);
+    if (bfPicked) meals.push(this.makeMealEntry(bfPicked, 'breakfast', cookTogether));
 
-    // Pick dinner
-    const dinOptions = dbMeals.filter(m => m.category === 'dinner');
-    if (dinOptions.length > 0) {
-      const picked = dinOptions[Math.floor(Math.random() * dinOptions.length)];
-      meals.push(this.makeMealEntry(picked, 'dinner', cookTogether));
-    }
+    const lunTarget = Math.round(targetPerMeal * 1.2); // lunch slightly larger
+    const lunPicked = pickBestMeal('lunch', lunTarget);
+    if (lunPicked) meals.push(this.makeMealEntry(lunPicked, 'lunch', cookTogether));
+
+    const dinTarget = Math.round(targetPerMeal * 1.0);
+    const dinPicked = pickBestMeal('dinner', dinTarget);
+    if (dinPicked) meals.push(this.makeMealEntry(dinPicked, 'dinner', cookTogether));
 
     app.data.mealPlan[dateStr] = { date: dateStr, meals };
     Store.save(app.data);
