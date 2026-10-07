@@ -8,7 +8,7 @@
 <title>Ostatnia Wieczerza</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍳</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="styles.css" rel="stylesheet">
 </head>
 <body>
@@ -30,9 +30,41 @@
     <!-- Start Screen -->
     <section id="view-start" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
       <div style="margin-bottom:20px">
-        <img src="logo-last-supper.png" alt="Ostatnia Wieczerza" style="width:180px;height:auto;display:block;margin:0 auto">
+        <img src="logo-last-supper.png" alt="Ostatnia Wieczerza" style="width:270px;height:auto;display:block;margin:0 auto">
       </div>
-      <h1 style="font-size:28px;font-weight:700;color:#1F2621;margin-bottom:2px">Ostatnia Wieczerza</h1>
+      <h1 style="font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:#1F2621;margin-bottom:2px;text-align:center">
+        <span style="display:inline-flex;align-items:center;justify-content:center;position:relative;width:56px;height:56px;margin-right:4px">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <!-- Outer ornate border -->
+            <rect x="1" y="1" width="54" height="54" rx="6" fill="none" stroke="#C47050" stroke-width="2"/>
+            <rect x="4" y="4" width="48" height="48" rx="4" fill="none" stroke="#E8C8A8" stroke-width="1"/>
+            <!-- Corner flourishes -->
+            <path d="M1 1 C8 1, 1 8, 1 1" fill="#C47050" opacity="0.3"/>
+            <path d="M55 1 C48 1, 55 8, 55 1" fill="#C47050" opacity="0.3"/>
+            <path d="M1 55 C8 55, 1 48, 1 55" fill="#C47050" opacity="0.3"/>
+            <path d="M55 55 C48 55, 55 48, 55 55" fill="#C47050" opacity="0.3"/>
+            <!-- Decorative vine top -->
+            <path d="M18 1 C22 -2, 26 5, 28 1 C30 5, 34 -2, 38 1" fill="none" stroke="#C47050" stroke-width="0.8" opacity="0.5"/>
+            <!-- Decorative vine bottom -->
+            <path d="M18 55 C22 58, 26 51, 28 55 C30 51, 34 58, 38 55" fill="none" stroke="#C47050" stroke-width="0.8" opacity="0.5"/>
+            <!-- Background gradient -->
+            <rect x="7" y="7" width="42" height="42" rx="3" fill="url(#o-grad)"/>
+            <defs>
+              <linearGradient id="o-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FFF5F0"/>
+                <stop offset="100%" stop-color="#F8E8DC"/>
+              </linearGradient>
+            </defs>
+            <!-- The letter O -->
+            <text x="28" y="37" text-anchor="middle" font-family="'Cinzel',serif" font-size="30" font-weight="700" fill="#C47050" dominant-baseline="middle">O</text>
+            <!-- Small decorative dots around O -->
+            <circle cx="9" cy="28" r="1.5" fill="#C47050" opacity="0.4"/>
+            <circle cx="47" cy="28" r="1.5" fill="#C47050" opacity="0.4"/>
+            <circle cx="28" cy="9" r="1.5" fill="#C47050" opacity="0.4"/>
+            <circle cx="28" cy="47" r="1.5" fill="#C47050" opacity="0.4"/>
+          </svg>
+        </span>statnia Wieczerza
+      </h1>
       <p style="color:#8AA08E;font-size:12px;margin-bottom:28px">aplikacja dietetyczna dla ateistów</p>
       <p style="color:#68776D;font-size:13px;margin-bottom:16px">Wybierz profil</p>
       <button onclick="app.auth.select('renata')" style="width:100%;max-width:260px;padding:16px;border:none;border-radius:22px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:18px;font-weight:700;cursor:pointer;margin-bottom:12px;box-shadow:0 4px 12px rgba(79,115,92,0.25)" id="btn-start-renata">
