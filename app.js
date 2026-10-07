@@ -488,16 +488,10 @@ app.dashboard = {
     const dailyGoal = activeUser.kcal || 1600;
     let totalKcal = 0;
     let html = '';
-    let remaining = dailyGoal;
-    let goalHtml = `
-      <div class="day-progress" style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#F5F8F5;border-bottom:1px solid #EEF2EE;font-size:12px;color:#4F5E53">
-        <span>Cel: <strong>${dailyGoal} kcal</strong></span>
-      </div>`;
 
     plan.meals.forEach(m => {
       const kcal = m[userKey] ? (m[userKey].kcal || 0) : 0;
       totalKcal += kcal;
-      remaining -= kcal;
 
       const emoji = m.time && m.time.includes('śniadanie') ? '🌅' :
                     m.time && m.time.includes('obiad') ? '☀️' :
@@ -512,9 +506,7 @@ app.dashboard = {
         </div>`;
     });
 
-    container.innerHTML = goalHtml + html;
-    const remainingDisplay = dailyGoal - totalKcal;
-    const remainingColor = remainingDisplay >= 0 ? '#4F5E53' : '#D0805C';
+    container.innerHTML = html;
     if (kcalBadge) kcalBadge.textContent = `${totalKcal} / ${dailyGoal} kcal`;
 
     // Add meal item styles dynamically if not present
