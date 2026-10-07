@@ -1,0 +1,193 @@
+{
+  "title": "KuchennyPlan — Jadłospis dzienny",
+  "author": "KuchennyPlan",
+  "page_size": "A4",
+  "elements": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "🍳 KuchennyPlan — Jadłospis dzienny",
+      "space_after": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "Wtorek, 06.10.2026",
+      "style": {
+        "fontSize": 12,
+        "textColor": "#68776D"
+      },
+      "space_after": 16
+    },
+    {
+      "type": "table",
+      "colWidths": [200, 120, 120],
+      "header": ["", "Renata", "Rafał"],
+      "rows": [
+        ["Cel kaloryczny", "1 600 kcal", "2 100 kcal"],
+        ["Zapotrzebowanie", "~2 500 kcal (PAL 1.35)", "~2 300 kcal (PAL 1.3)"]
+      ],
+      "style": {
+        "fontSize": 10,
+        "header_bg": "#728E7C",
+        "header_text_color": "#FFFFFF",
+        "border": true,
+        "border_color": "#DEEAE2",
+        "alternating_rows": true,
+        "alternating_color": "#F4F8F2"
+      },
+      "space_after": 20
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "🌅 Śniadanie (8:00) — Jajecznica z serem",
+      "space_after": 8
+    },
+    {
+      "type": "table",
+      "colWidths": [100, 80, 80, 80, 80],
+      "header": ["Osoba", "Kalorie", "Białko", "Tłuszcz", "Węglowodany"],
+      "rows": [
+        ["Renata", "420 kcal", "28 g", "28 g", "14 g"],
+        ["Rafał", "630 kcal", "42 g", "42 g", "21 g"]
+      ],
+      "style": {
+        "fontSize": 9,
+        "header_bg": "#98AD98",
+        "header_text_color": "#FFFFFF",
+        "border": true,
+        "border_color": "#DEEAE2"
+      },
+      "space_after": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "Składniki: jajka (4 szt.), ser żółty (80g), masło (20g), chleb żytni (2 kromki Renata / 3 kromki Rafał)",
+      "style": {"fontSize": 9, "textColor": "#4F5E53"},
+      "space_after": 4
+    },
+    {
+      "type": "paragraph",
+      "text": "Przygotowanie dla 2 osób: Roztop masło na patelni na średnim ogniu. Wbij 4 jajka, mieszaj drewnianą łyżką, aż się zetną. Pod koniec dodaj starty ser, wymieszaj do rozpuszczenia. Podawaj: Renata — 1/3 jajecznicy + 1 kromka chleba; Rafał — 2/3 jajecznicy + 2 kromki chleba.",
+      "style": {"fontSize": 9, "textColor": "#1F2621"},
+      "space_after": 16
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "☀️ Obiad (14:00) — Kurczak z airfryera + warzywa",
+      "space_after": 8
+    },
+    {
+      "type": "table",
+      "colWidths": [100, 80, 80, 80, 80],
+      "header": ["Osoba", "Kalorie", "Białko", "Tłuszcz", "Węglowodany"],
+      "rows": [
+        ["Renata", "520 kcal", "48 g", "18 g", "35 g"],
+        ["Rafał", "780 kcal", "72 g", "27 g", "53 g"]
+      ],
+      "style": {
+        "fontSize": 9,
+        "header_bg": "#98AD98",
+        "header_text_color": "#FFFFFF",
+        "border": true,
+        "border_color": "#DEEAE2"
+      },
+      "space_after": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "Składniki: pierś z kurczaka (300g), brokuły (200g), ziemniaki (300g), oliwa z oliwek (30ml), przyprawy (sól, pieprz, papryka słodka, czosnek granulowany).",
+      "style": {"fontSize": 9, "textColor": "#4F5E53"},
+      "space_after": 4
+    },
+    {
+      "type": "paragraph",
+      "text": "Przygotowanie dla 2 osób: Kurczaka pokrój w paski, zamarynuj w oliwie i przyprawach (min. 15 min). Airfryer 180°C przez 15 minut. Ziemniaki pokrój w słupki, skrop oliwą — airfryer 170°C/12 min. Brokuły ugotuj na parze (TM6 Varoma 15 min/Varoma/obr.1). Podział: Renata — 120g kurczaka + 100g brokułów + 100g ziemniaków; Rafał — 180g kurczaka + 100g brokułów + 200g ziemniaków.",
+      "style": {"fontSize": 9, "textColor": "#1F2621"},
+      "space_after": 16
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "🌙 Kolacja (20:00) — Twaróg z warzywami",
+      "space_after": 8
+    },
+    {
+      "type": "table",
+      "colWidths": [100, 80, 80, 80, 80],
+      "header": ["Osoba", "Kalorie", "Białko", "Tłuszcz", "Węglowodany"],
+      "rows": [
+        ["Renata", "320 kcal", "26 g", "10 g", "30 g"],
+        ["Rafał", "416 kcal", "34 g", "13 g", "39 g"]
+      ],
+      "style": {
+        "fontSize": 9,
+        "header_bg": "#98AD98",
+        "header_text_color": "#FFFFFF",
+        "border": true,
+        "border_color": "#DEEAE2"
+      },
+      "space_after": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "Składniki: twaróg półtłusty (300g), ogórek świeży (1 szt.), rzodkiewka (6 szt.), chleb żytni (2 kromki Renata / 3 kromki Rafał), szczypiorek, sól, pieprz.",
+      "style": {"fontSize": 9, "textColor": "#4F5E53"},
+      "space_after": 4
+    },
+    {
+      "type": "paragraph",
+      "text": "Przygotowanie dla 2 osób: Rozgnieć twaróg widelcem. Dodaj pokrojonego w kostkę ogórka i rzodkiewkę oraz posiekany szczypiorek. Dopraw solą i pieprzem. Podział: Renata — 1/3 twarogu + 1 kromka chleba; Rafał — 2/3 twarogu + 2 kromki chleba.",
+      "style": {"fontSize": 9, "textColor": "#1F2621"},
+      "space_after": 20
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "📊 Podsumowanie dnia",
+      "space_after": 8
+    },
+    {
+      "type": "table",
+      "colWidths": [120, 100, 100, 100],
+      "header": ["Osoba", "Zjedzone", "Cel", "Pozostało"],
+      "rows": [
+        ["Renata", "1 260 kcal", "1 600 kcal", "340 kcal"],
+        ["Rafał", "1 826 kcal", "2 100 kcal", "274 kcal"]
+      ],
+      "style": {
+        "fontSize": 10,
+        "header_bg": "#4A6150",
+        "header_text_color": "#FFFFFF",
+        "border": true,
+        "border_color": "#DEEAE2",
+        "alternating_rows": true,
+        "alternating_color": "#F4F8F2"
+      },
+      "space_after": 16
+    },
+    {
+      "type": "paragraph",
+      "text": "Pamiętaj o wypiciu min. 2 litrów wody dziennie! 💧",
+      "style": {
+        "fontSize": 11,
+        "textColor": "#5297C7",
+        "fontName": "Helvetica-Bold"
+      },
+      "space_after": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "Wskazówka: Pozostałe kalorie możesz wykorzystać na owocową przekąskę (jabłko ~80 kcal, garść orzechów ~150 kcal) lub jogurt naturalny.",
+      "style": {"fontSize": 9, "textColor": "#68776D"},
+      "space_after": 4
+    },
+    {
+      "type": "paragraph",
+      "text": "Wygenerowano przez KuchennyPlan — aplikację dietetyczną Renaty i Rafała.",
+      "style": {"fontSize": 8, "textColor": "#A0A0A0"},
+      "space_before": 20
+    }
+  ]
+}
