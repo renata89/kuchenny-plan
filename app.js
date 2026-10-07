@@ -762,13 +762,14 @@ app.mealplan = {
       const macrosH = calcMacros(m, 'husband');
       const tags = m.tags.join(', ');
       html += `
-        <div class="meal-card shared" style="margin-bottom:8px;padding:12px;cursor:pointer" onclick="app.mealplan.applySwap('${dateStr}', '${currentRecipeId}', '${m.id}')">
-          <div style="font-weight:600;font-size:14px">${m.name}</div>
-          <div class="meal-macros">
-            <span class="meal-macro" style="font-size:12px">Renata: 🔥${macrosR.kcal}kcal | B${macrosR.protein}g T${macrosR.fat}g W${macrosR.carbs}g</span>
-            <span class="meal-macro" style="font-size:12px">Rafał: 🔥${macrosH.kcal}kcal | B${macrosH.protein}g T${macrosH.fat}g W${macrosH.carbs}g</span>
+        <div class="meal-card shared" style="margin-bottom:12px;padding:14px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
+          <div style="font-weight:600;font-size:14px;margin-bottom:6px">${m.name}</div>
+          <div class="meal-macros" style="margin-bottom:8px">
+            <span class="meal-macro" style="font-size:11px;display:block">Renata: ${macrosR.kcal}kcal · B${macrosR.protein}g · T${macrosR.fat}g · W${macrosR.carbs}g</span>
+            <span class="meal-macro" style="font-size:11px;display:block">Rafał: ${macrosH.kcal}kcal · B${macrosH.protein}g · T${macrosH.fat}g · W${macrosH.carbs}g</span>
           </div>
-          ${tags ? `<div class="text-muted" style="font-size:11px">${tags}</div>` : ''}
+          ${tags ? `<div class="text-muted" style="font-size:10px;margin-bottom:8px">${tags}</div>` : ''}
+          <button onclick="app.mealplan.applySwap('${dateStr}', '${currentRecipeId}', '${m.id}')" style="width:100%;padding:10px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:14px;font-weight:600;cursor:pointer">Wybierz</button>
         </div>`;
     });
 
