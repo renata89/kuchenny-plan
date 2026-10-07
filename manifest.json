@@ -1,6 +1,6 @@
 {
-  "name": "KuchennyPlan",
-  "short_name": "KuchennyPlan",
+  "name": "Ostatnia Wieczerza",
+  "short_name": "Ostatnia Wieczerza",
   "description": "Planer posiłków dla Renaty i jej męża",
   "start_url": "index.html",
   "display": "standalone",

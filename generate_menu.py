@@ -50,7 +50,7 @@ def sp(h=3): E.append(Spacer(1, h))
 def hr(): E.append(HRFlowable(width="100%", thickness=0.6, color=SAGE_L, spaceAfter=6, spaceBefore=2))
 
 # ═══════════════ 1. HEADER ═══════════════════════════════════
-E.append(Paragraph("<b>🍳 KuchennyPlan</b>", ps("T", fontSize=22, leading=26, textColor=SAGE_D, spaceAfter=0)))
+E.append(Paragraph("<b>🍳 Ostatnia Wieczerza</b>", ps("T", fontSize=22, leading=26, textColor=SAGE_D, spaceAfter=0)))
 E.append(Paragraph("Tygodniowy jadłospis • Renata &amp; Rafał • Zdrowo, z głową, bez marnowania",
                    ps("SU", fontSize=9, textColor=C_MUTED, spaceAfter=10)))
 hr()
@@ -424,7 +424,7 @@ for icon, text in tips:
 
 sp(8)
 hr()
-E.append(Paragraph("🍳 <b>KuchennyPlan</b> — Renata &amp; Rafał  •  "
+E.append(Paragraph("🍳 <b>Ostatnia Wieczerza</b> — Renata &amp; Rafał  •  "
                    "github.com/renata89/kuchenny-plan  •  🌿 Gotujcie razem, jedzcie zdrowiej!",
                    ps("FT", fontSize=7, textColor=C_MUTED, alignment=TA_CENTER, spaceAfter=2)))
 E.append(Paragraph("Renata: 1 600 kcal (cel białka: 120g+)  •  Rafał: 2 100 kcal",
