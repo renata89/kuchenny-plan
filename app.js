@@ -474,6 +474,7 @@ app.dashboard = {
     const kcalBadge = document.getElementById('dash-meals-kcal');
     const today = getToday();
     const plan = app.data.mealPlan[today];
+    const activeUser = app.auth.getActiveUser();
 
     if (!plan || !plan.meals || plan.meals.length === 0) {
       container.innerHTML = '<p class="text-muted" style="font-size:13px;padding:12px;text-align:center">Brak wygenerowanego planu</p>';
@@ -481,29 +482,38 @@ app.dashboard = {
       return;
     }
 
-    const activeUser = app.auth.getActiveUser();
+    const userKey = activeUser.id === 'renata' ? 'renata' : 'husband';
+    const dailyGoal = activeUser.kcal || 1600;
     let totalKcal = 0;
-    let html = '';
+    html = '';
+    let remaining = dailyGoal;
+    let goalHtml = `
+      <div class="day-progress" style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#F5F8F5;border-bottom:1px solid #EEF2EE;font-size:12px;color:#4F5E53">
+        <span>Cel: <strong>${dailyGoal} kcal</strong></span>
+      </div>`;
 
     plan.meals.forEach(m => {
-      if (activeUser.id === 'renata' && m.renata) totalKcal += m.renata.kcal || 0;
-      if (activeUser.id === 'rafal' && m.husband) totalKcal += m.husband.kcal || 0;
+      const kcal = m[userKey] ? (m[userKey].kcal || 0) : 0;
+      totalKcal += kcal;
+      remaining -= kcal;
 
       const emoji = m.time && m.time.includes('śniadanie') ? '🌅' :
                     m.time && m.time.includes('obiad') ? '☀️' :
                     m.time && m.time.includes('kolacja') ? '🌙' : '🍽️';
-      const kcal = activeUser.id === 'renata' ? (m.renata ? m.renata.kcal : '—') : (m.husband ? m.husband.kcal : '—');
+      const displayKcal = kcal !== 0 ? kcal : '—';
 
       html += `
         <div class="dash-meal-item">
           <span class="dash-meal-emoji">${emoji}</span>
           <span class="dash-meal-name">${m.name}</span>
-          <span class="dash-meal-kcal">${kcal} kcal</span>
+          <span class="dash-meal-kcal">${displayKcal} kcal</span>
         </div>`;
     });
 
-    container.innerHTML = html;
-    if (kcalBadge) kcalBadge.textContent = `${totalKcal} kcal`;
+    container.innerHTML = goalHtml + html;
+    const remainingDisplay = dailyGoal - totalKcal;
+    const remainingColor = remainingDisplay >= 0 ? '#4F5E53' : '#D0805C';
+    if (kcalBadge) kcalBadge.textContent = `${totalKcal} / ${dailyGoal} kcal`;
 
     // Add meal item styles dynamically if not present
     if (!document.getElementById('dash-meal-styles')) {
@@ -581,10 +591,15 @@ app.mealplan = {
 
     let totalActive = 0;
     const userKey = activeUser.id === 'renata' ? 'renata' : 'husband';
+    const dailyGoal = activeUser.kcal || 1600;
     let html = `
-      <div class="day-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="day-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <h3 style="margin:0">${formatDatePL(dateStr)}</h3>
         <span class="day-total" style="font-size:16px;font-weight:700;color:var(--accent,#4A6150)">0 kcal</span>
+      </div>
+      <div class="day-progress" style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#F5F8F5;border-radius:12px;margin-bottom:12px;font-size:12px;color:#4F5E53">
+        <span>Cel: <strong>${dailyGoal} kcal</strong></span>
+        <span id="day-remaining">pozostało: — kcal</span>
       </div>`;
     
     plan.meals.forEach(m => {
@@ -607,10 +622,16 @@ app.mealplan = {
         </div>`;
     });
 
-    // Update total in header
+    // Update total in header and remaining
+    const remaining = dailyGoal - totalActive;
+    const remainingColor = remaining >= 0 ? '#4F5E53' : '#D0805C';
     html = html.replace(
       '<span class="day-total" style="font-size:16px;font-weight:700;color:var(--accent,#4A6150)">0 kcal</span>',
       `<span class="day-total" style="font-size:16px;font-weight:700;color:#4A6150">${totalActive} kcal</span>`
+    );
+    html = html.replace(
+      '<span id="day-remaining">pozostało: — kcal</span>',
+      `<span id="day-remaining" style="color:${remainingColor}">pozostało: <strong>${remaining}</strong> kcal</span>`
     );
 
     container.innerHTML = html;
