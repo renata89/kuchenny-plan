@@ -333,6 +333,13 @@ app.auth = {
     Store.save(app.data);
     document.getElementById('view-start').style.display = 'none';
     document.getElementById('view-dashboard').style.display = 'block';
+    
+    // Auto-generate weekly plan on first use
+    const hasPlan = Object.keys(app.data.mealPlan || {}).length > 0;
+    if (!hasPlan && app.mealplan) {
+      app.mealplan.generateWeek();
+    }
+    
     app.dashboard.render();
   },
 
