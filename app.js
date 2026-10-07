@@ -1363,7 +1363,7 @@ app.zakupy = {
     const toBuy = allItems.filter(i => i.inStock);
     const pantry = allItems.filter(i => !i.inStock);
 
-    // Shopping list - show all to-buy items
+    // Shopping list
     let html = `<h3 style="font-size:15px;font-weight:700;color:#1F2621;margin-bottom:8px">🛒 Lista zakupów</h3>`;
 
     if (toBuy.length === 0) {
@@ -1389,49 +1389,51 @@ app.zakupy = {
       });
     }
 
-    // Spiżarnia toggle button + section
+    // FAB and pantry badge (if items in pantry)
     const pantryCount = pantry.length;
-    html += `
-      <button onclick="app.zakupy.togglePantry()" style="width:100%;padding:12px;margin-top:16px;border:1px solid #D6E0D6;border-radius:16px;background:#F5F8F5;color:#1F2621;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
-        🏪 Spiżarnia ${pantryCount > 0 ? `<span style="font-size:11px;color:#68776D;font-weight:400">(${pantryCount})</span>` : ''}
-        <span id="pantry-arrow" style="font-size:12px;transition:transform 0.2s">▸</span>
-      </button>
-      <div id="pantry-section" style="display:none;margin-top:8px">`;
-
-    if (pantry.length === 0) {
-      html += `<p style="color:#68776D;font-size:13px;text-align:center;padding:16px">Spiżarnia pusta — odznacz produkty na liście, by trafiły do spiżarni.</p>`;
-    } else {
-      const pantryCats = [...new Set(pantry.map(i => i.category))];
-      const catLabels2 = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
-      pantryCats.forEach(cat => {
-        const catItems = pantry.filter(i => i.category === cat);
-        if (catItems.length === 0) return;
-        html += `<div style="margin-bottom:6px">`;
-        html += `<div style="font-size:12px;font-weight:600;color:#68776D;margin-bottom:3px">${catLabels2[cat] || cat}</div>`;
-        catItems.forEach(item => {
-          html += `
-            <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:2px;background:#F5F8F5;border-radius:10px;font-size:12px;color:#68776D">
-              <span style="flex:1">${item.name}</span>
-              ${item.qty ? `<span style="font-size:10px">${item.qty}</span>` : ''}
-              <button onclick="app.zakupy.moveToBuy('${item.id}')" style="background:none;border:none;color:#728E7C;font-size:14px;cursor:pointer;padding:2px" title="Dodaj do listy zakupów">🛒</button>
-              <button onclick="app.zakupy.remove('${item.id}')" style="background:none;border:none;color:#C07060;font-size:14px;cursor:pointer;padding:2px">✕</button>
-            </div>`;
-        });
-        html += `</div>`;
-      });
+    if (pantryCount > 0) {
+      html += `<div style="text-align:center;margin-top:8px;font-size:11px;color:#8AA08E">🏪 ${pantryCount} produktów w spiżarni</div>`;
     }
 
-    html += `</div>`;
+    html += `
+      <button id="pantry-fab" onclick="app.zakupy.openPantry()" style="position:fixed;bottom:90px;right:20px;width:60px;height:60px;border-radius:50%;border:none;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:28px;cursor:pointer;box-shadow:0 4px 16px rgba(79,115,92,0.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform 0.15s">
+        🏪
+        ${pantryCount > 0 ? `<span style="position:absolute;top:-4px;right:-4px;background:#C47050;color:#FFF;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(196,112,80,0.4)">${pantryCount > 9 ? '9+' : pantryCount}</span>` : ''}
+      </button>`;
+
     container.innerHTML = html;
   },
 
-  _pantryOpen: false,
-  togglePantry() {
-    this._pantryOpen = !this._pantryOpen;
-    const section = document.getElementById('pantry-section');
-    const arrow = document.getElementById('pantry-arrow');
-    if (section) section.style.display = this._pantryOpen ? 'block' : 'none';
-    if (arrow) arrow.style.transform = this._pantryOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+  openPantry() {
+    const pantry = (app.data.pantry || []).filter(i => !i.inStock);
+
+    if (pantry.length === 0) {
+      app.ui.openModal('🏪 Spiżarnia', '<p style="color:#68776D;text-align:center;padding:20px">Spiżarnia pusta — odznacz produkty na liście zakupów, by je tu przenieść.</p>');
+      return;
+    }
+
+    const categories = [...new Set(pantry.map(i => i.category))];
+    const catLabels = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
+
+    let html = `<p style="font-size:13px;color:#68776D;margin-bottom:10px">Produkty, które masz w domu:</p>`;
+    categories.forEach(cat => {
+      const catItems = pantry.filter(i => i.category === cat);
+      if (catItems.length === 0) return;
+      html += `<div style="margin-bottom:8px">`;
+      html += `<div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:4px">${catLabels[cat] || cat}</div>`;
+      catItems.forEach(item => {
+        html += `
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:2px;background:#F5F8F5;border-radius:10px;font-size:12px;color:#68776D">
+            <span style="flex:1">${item.name}</span>
+            ${item.qty ? `<span style="font-size:10px">${item.qty}</span>` : ''}
+            <button onclick="app.zakupy.moveToBuy('${item.id}'); app.ui.closeModal(); app.zakupy.render()" style="background:none;border:none;color:#728E7C;font-size:16px;cursor:pointer;padding:2px" title="Dodaj do listy zakupów">🛒</button>
+            <button onclick="app.zakupy.remove('${item.id}'); app.zakupy.openPantry()" style="background:none;border:none;color:#C07060;font-size:16px;cursor:pointer;padding:2px">✕</button>
+          </div>`;
+      });
+      html += `</div>`;
+    });
+
+    app.ui.openModal('🏪 Spiżarnia', html);
   },
 
   toggle(id) {
@@ -1449,15 +1451,15 @@ app.zakupy = {
       Store.save(app.data);
       this.render();
       
-      // Flash the pantry button to signal connection
-      const btn = document.querySelector('button[onclick*="togglePantry"]');
-      if (btn) {
-        btn.style.transition = 'background 0.15s';
-        btn.style.background = '#D6E8D6';
-        btn.style.borderColor = '#7DA08A';
+      // Flash the FAB to signal connection
+      const fab = document.getElementById('pantry-fab');
+      if (fab) {
+        fab.style.transition = 'transform 0.15s, box-shadow 0.15s';
+        fab.style.transform = 'scale(1.15)';
+        fab.style.boxShadow = '0 6px 24px rgba(79,115,92,0.5)';
         setTimeout(() => {
-          btn.style.background = '#F5F8F5';
-          btn.style.borderColor = '#D6E0D6';
+          fab.style.transform = 'scale(1)';
+          fab.style.boxShadow = '0 4px 16px rgba(79,115,92,0.35)';
         }, 400);
       }
     }, 800);
