@@ -1436,11 +1436,31 @@ app.zakupy = {
 
   toggle(id) {
     const item = (app.data.pantry || []).find(i => i.id === id);
-    if (item) {
-      item.inStock = !item.inStock;
+    if (!item) return;
+    
+    // Visual: check the checkbox immediately
+    const checkbox = document.getElementById('shop-' + id);
+    if (checkbox) checkbox.checked = true;
+    
+    // Brief delay before moving to pantry
+    clearTimeout(item._toggleTimer);
+    item._toggleTimer = setTimeout(() => {
+      item.inStock = false;
       Store.save(app.data);
       this.render();
-    }
+      
+      // Flash the pantry button to signal connection
+      const btn = document.querySelector('button[onclick*="togglePantry"]');
+      if (btn) {
+        btn.style.transition = 'background 0.15s';
+        btn.style.background = '#D6E8D6';
+        btn.style.borderColor = '#7DA08A';
+        setTimeout(() => {
+          btn.style.background = '#F5F8F5';
+          btn.style.borderColor = '#D6E0D6';
+        }, 400);
+      }
+    }, 800);
   },
 
   moveToBuy(id) {
