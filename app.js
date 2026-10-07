@@ -1363,22 +1363,22 @@ app.zakupy = {
     const toBuy = allItems.filter(i => i.inStock);
     const pantry = allItems.filter(i => !i.inStock);
 
-    // Shopping list section
-    let html = `<h3 style="font-size:15px;font-weight:700;color:#1F2621;margin-bottom:8px">🛒 Do kupienia</h3>`;
+    // Shopping list - show all to-buy items
+    let html = `<h3 style="font-size:15px;font-weight:700;color:#1F2621;margin-bottom:8px">🛒 Lista zakupów</h3>`;
 
     if (toBuy.length === 0) {
-      html += `<div class="empty-state" style="padding:20px"><p style="color:#68776D;font-size:13px">Lista zakupów pusta.<br>Dodaj składniki przez przycisk "Dodaj" lub z posiłków.</p></div>`;
+      html += `<div class="empty-state" style="padding:20px"><p style="color:#68776D;font-size:13px">Brak produktów do kupienia.<br>Dodaj przez przycisk "Dodaj" lub z posiłków.</p></div>`;
     } else {
       const categories = [...new Set(toBuy.map(i => i.category))];
       const catLabels = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
       categories.forEach(cat => {
         const catItems = toBuy.filter(i => i.category === cat);
         if (catItems.length === 0) return;
-        html += `<div class="zakupy-category" style="margin-bottom:8px">`;
+        html += `<div style="margin-bottom:8px">`;
         html += `<div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:4px">${catLabels[cat] || cat}</div>`;
         catItems.forEach(item => {
           html += `
-            <div class="zakupy-item" style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:3px;background:#FAF8F2;border-radius:12px;border:1px solid #E8EDE8">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:3px;background:#FAF8F2;border-radius:12px;border:1px solid #E8EDE8">
               <input type="checkbox" id="shop-${item.id}" onchange="app.zakupy.toggle('${item.id}')" style="width:18px;height:18px;accent-color:#728E7C;cursor:pointer">
               <label for="shop-${item.id}" style="flex:1;font-size:13px;color:#1F2621;cursor:pointer">${item.name}</label>
               ${item.qty ? `<span style="font-size:11px;color:#68776D">${item.qty}</span>` : ''}
@@ -1389,16 +1389,17 @@ app.zakupy = {
       });
     }
 
-    // Spiżarnia section - collapsible
+    // Spiżarnia toggle button + section
+    const pantryCount = pantry.length;
     html += `
-      <details style="margin-top:16px">
-        <summary style="cursor:pointer;font-size:15px;font-weight:700;color:#1F2621;padding:8px 0;user-select:none">
-          🏪 Spiżarnia <span style="font-size:12px;color:#68776D;font-weight:400">(${pantry.length} produktów)</span>
-        </summary>
-        <div style="margin-top:6px">`;
+      <button onclick="app.zakupy.togglePantry()" style="width:100%;padding:12px;margin-top:16px;border:1px solid #D6E0D6;border-radius:16px;background:#F5F8F5;color:#1F2621;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+        🏪 Spiżarnia ${pantryCount > 0 ? `<span style="font-size:11px;color:#68776D;font-weight:400">(${pantryCount})</span>` : ''}
+        <span id="pantry-arrow" style="font-size:12px;transition:transform 0.2s">▸</span>
+      </button>
+      <div id="pantry-section" style="display:none;margin-top:8px">`;
 
     if (pantry.length === 0) {
-      html += `<p style="color:#68776D;font-size:13px;text-align:center;padding:12px">Spiżarnia pusta — odznacz produkty na liście zakupów, by je tu przenieść.</p>`;
+      html += `<p style="color:#68776D;font-size:13px;text-align:center;padding:16px">Spiżarnia pusta — odznacz produkty na liście, by trafiły do spiżarni.</p>`;
     } else {
       const pantryCats = [...new Set(pantry.map(i => i.category))];
       const catLabels2 = { 'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze', 'przyprawy': '🧂 Przyprawy', 'inne': '📦 Inne' };
@@ -1420,8 +1421,17 @@ app.zakupy = {
       });
     }
 
-    html += `</div></details>`;
+    html += `</div>`;
     container.innerHTML = html;
+  },
+
+  _pantryOpen: false,
+  togglePantry() {
+    this._pantryOpen = !this._pantryOpen;
+    const section = document.getElementById('pantry-section');
+    const arrow = document.getElementById('pantry-arrow');
+    if (section) section.style.display = this._pantryOpen ? 'block' : 'none';
+    if (arrow) arrow.style.transform = this._pantryOpen ? 'rotate(90deg)' : 'rotate(0deg)';
   },
 
   toggle(id) {
