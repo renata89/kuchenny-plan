@@ -230,7 +230,7 @@ meal_card("2", "☀️",
     "⚙️ <b>Krok po kroku — TM6 Batch (obiad + kolacja jednocześnie!)</b><br/>"
     "<b>Krok 1:</b> Włóż cebulę i czosnek do misy. Zamknij pokrywę. Ustaw <b>5 sekund / obroty 5</b>.<br/>"
     "<b>Krok 2:</b> Dodaj oliwę. Ustaw <b>3 minuty / 120°C / obroty 1</b>.<br/>"
-    "<b>Krok 3:</b> Dodaj pokrojonego w kostkę kurczaka. Ustaw <b>5 minut / 100°C / obroty 1</b>.<br/>"
+    "<b>Krok 3:</b> Dodaj pokrojonego w kostkę kurczaka. Ustaw <b>5 minut / 100°C / lewe obroty (Reverse) / obroty 1</b> — dzięki temu kurczak pozostanie w kawałkach, a nie zostanie rozdrobniony!<br/>"
     "<b>Krok 4:</b> Dodaj pomidory z puszki, mleko kokosowe i przyprawy (curry, kurkuma, kumin, sól, pieprz). "
     "Umieść koszyk Varoma na misie. Do Varomy włóż pokrojone w plastry tofu, cukinię i paprykę (to będzie kolacja!). "
     "Ustaw <b>20 minut / 100°C / obroty 1</b>.<br/>"

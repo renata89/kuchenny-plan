@@ -242,8 +242,8 @@ const Store = {
     return {
       activeUser: null,
       users: [
-        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, avatar: '👩' },
-        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, avatar: '👨' }
+        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, waterGoal: 2000, avatar: '👩' },
+        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨' }
       ],
       pantry: [
         { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', emoji: '🥚', inStock: true },
@@ -453,8 +453,10 @@ app.dashboard = {
 
   updateWater() {
     const total = app.water.getTotal();
+    const activeUser = app.auth.getActiveUser();
+    const target = activeUser.waterGoal || 2000;
     const countEl = document.getElementById('dash-water-count');
-    if (countEl) countEl.textContent = `${total} ml`;
+    if (countEl) countEl.textContent = `${total} ml / ${target} ml`;
   }
 };
 
@@ -942,6 +944,19 @@ app.water = {
     this.updateFull();
   },
 
+  undo() {
+    const today = getToday();
+    const activeUser = app.auth.getActiveUser();
+    const log = this.getTodayLog();
+    if (log.length === 0) return;
+    const last = log[log.length - 1];
+    const idx = app.data.water.lastIndexOf(last);
+    if (idx !== -1) app.data.water.splice(idx, 1);
+    Store.save(app.data);
+    this.updateUI();
+    this.updateFull();
+  },
+
   remind() {
     const toast = document.getElementById('water-toast');
     toast.classList.add('show');
@@ -954,11 +969,12 @@ app.water = {
 
   updateUI() {
     const total = this.getTotal();
-    const target = 2000;
+    const activeUser = app.auth.getActiveUser();
+    const target = activeUser.waterGoal || 2000;
     const pct = Math.min(100, (total / target) * 100);
     
     const countEl = document.getElementById('dash-water-count');
-    if (countEl) countEl.textContent = `${total} ml`;
+    if (countEl) countEl.textContent = `${total} ml / ${target} ml`;
   },
 
   renderFull() {
@@ -967,13 +983,17 @@ app.water = {
 
   updateFull() {
     const total = this.getTotal();
-    const target = 2000;
+    const activeUser = app.auth.getActiveUser();
+    const target = activeUser.waterGoal || 2000;
     const pct = Math.min(100, (total / target) * 100);
     const circumference = 339.292;
     const offset = circumference - (pct / 100) * circumference;
 
     document.getElementById('water-circle-ml').textContent = total;
     document.getElementById('water-progress').setAttribute('stroke-dashoffset', offset);
+
+    const targetEl = document.getElementById('water-target');
+    if (targetEl) targetEl.textContent = `${target} ml`;
 
     const cups = total / 250;
     document.getElementById('water-cups-today').textContent = `${Math.round(cups * 10) / 10} szklanek dzisiaj`;
