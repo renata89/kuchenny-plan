@@ -611,23 +611,34 @@ app.mealplan = {
     
     plan.meals.forEach(m => {
       const kcal = m[userKey] ? (m[userKey].kcal || 0) : 0;
+      const protein = m[userKey] ? (m[userKey].protein || 0) : 0;
+      const fat = m[userKey] ? (m[userKey].fat || 0) : 0;
+      const carbs = m[userKey] ? (m[userKey].carbs || 0) : 0;
       totalActive += kcal;
 
+      const timeLabel = m.time || (m.category === 'breakfast' ? 'Śniadanie' : m.category === 'lunch' ? 'Obiad' : m.category === 'dinner' ? 'Kolacja' : 'Posiłek');
       const whomClass = m.shared ? 'shared' : (m.forUser || 'renata');
       html += `
-        <div class="meal-card ${whomClass}" style="margin-bottom:8px;padding:12px">
-          <div class="meal-header" style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div class="meal-name" style="font-size:14px">${m.name}</div>
-              <div class="meal-time" style="font-size:11px">${m.time || ''}</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="meal-kcal-badge" style="font-size:12px;font-weight:600;color:#4F5E53;background:#EFF3EF;padding:2px 10px;border-radius:10px">${kcal} kcal</span>
-              <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px">🔄</button>
-            </div>
+        <div class="meal-card ${whomClass}" style="margin-bottom:8px;padding:12px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+            <div style="font-size:13px;font-weight:700;color:#4A6150;text-transform:uppercase;letter-spacing:0.5px">${timeLabel}</div>
+            <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px;background:transparent;border:none;cursor:pointer">🔄</button>
+          </div>
+          <div style="font-size:14px;font-weight:600;color:#1F2621;margin-bottom:4px">${m.name}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-size:12px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 10px;border-radius:10px">${kcal} kcal</span>
+            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${protein}g</span>
+            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${fat}g</span>
+            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${carbs}g</span>
           </div>
         </div>`;
     });
+
+    // Add new meal button
+    html += `
+      <button onclick="app.mealplan.showAddMealForm('${dateStr}')" style="width:100%;padding:12px;border:2px dashed #C8D0C8;border-radius:16px;background:transparent;color:#4F5E53;font-size:14px;font-weight:500;cursor:pointer;margin-top:4px">
+        + Dodaj posiłek
+      </button>`;
 
     // Update total in header and remaining
     const remaining = dailyGoal - totalActive;
@@ -973,6 +984,119 @@ app.mealplan = {
     app.ui.closeModal();
     this.renderDay(dateStr);
     if (dateStr === getToday()) app.dashboard.render();
+  },
+
+  showAddMealForm(dateStr) {
+    const mealTypes = [
+      { value: 'breakfast', label: 'Śniadanie' },
+      { value: 'lunch', label: 'Obiad' },
+      { value: 'dinner', label: 'Kolacja' },
+      { value: 'snack', label: 'Przekąska' },
+      { value: 'other', label: 'Inne' }
+    ];
+    const categoryOptions = [
+      { value: 'inne', label: 'Inne' },
+      { value: 'wegetariańskie', label: 'Wegetariańskie' },
+      { value: 'białkowe', label: 'Białkowe' },
+      { value: 'przekąski', label: 'Przekąski' },
+      { value: 'wegańskie', label: 'Wegańskie' },
+      { value: 'bezglutenowe', label: 'Bezglutenowe' },
+      { value: 'niskowęglowodanowe', label: 'Niskowęglowodanowe' }
+    ];
+
+    app.ui.openModal('+ Dodaj posiłek', `
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Rodzaj posiłku</label>
+          <select id="addmeal-type" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;background:#FAF8F2">
+            ${mealTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Kategoria</label>
+          <select id="addmeal-category" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;background:#FAF8F2">
+            ${categoryOptions.map(c => `<option value="${c.value}">${c.label}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Nazwa potrawy</label>
+          <input type="text" id="addmeal-name" placeholder="np. Koktajl białkowy" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Kalorie (kcal)</label>
+            <input type="number" id="addmeal-kcal" placeholder="np. 350" min="0" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+          </div>
+          <div style="flex:1">
+            <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Białko (g)</label>
+            <input type="number" id="addmeal-protein" placeholder="np. 20" min="0" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Tłuszcz (g)</label>
+            <input type="number" id="addmeal-fat" placeholder="np. 12" min="0" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+          </div>
+          <div style="flex:1">
+            <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Węglowodany (g)</label>
+            <input type="number" id="addmeal-carbs" placeholder="np. 30" min="0" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+          </div>
+        </div>
+        <button onclick="app.mealplan.addCustomMeal('${dateStr}')" style="width:100%;padding:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px">✓ Dodaj posiłek</button>
+      </div>
+    `);
+  },
+
+  addCustomMeal(dateStr) {
+    const mealType = document.getElementById('addmeal-type').value;
+    const category = document.getElementById('addmeal-category').value;
+    const name = document.getElementById('addmeal-name').value.trim();
+    const kcal = parseInt(document.getElementById('addmeal-kcal').value) || 0;
+    const protein = parseInt(document.getElementById('addmeal-protein').value) || 0;
+    const fat = parseInt(document.getElementById('addmeal-fat').value) || 0;
+    const carbs = parseInt(document.getElementById('addmeal-carbs').value) || 0;
+
+    if (!name || kcal === 0) {
+      app.ui.showToast('Podaj nazwę i kaloryczność posiłku');
+      return;
+    }
+
+    const timeLabels = {
+      breakfast: 'Śniadanie',
+      lunch: 'Obiad',
+      dinner: 'Kolacja',
+      snack: 'Przekąska',
+      other: 'Posiłek'
+    };
+    const timeHours = {
+      breakfast: '(8:00)',
+      lunch: '(14:00)',
+      dinner: '(20:00)',
+      snack: '',
+      other: ''
+    };
+
+    const customMeal = {
+      recipeId: 'custom_' + Date.now(),
+      name: name + (category !== 'inne' ? ` (${category})` : ''),
+      time: `${timeLabels[mealType] || 'Posiłek'} ${timeHours[mealType] || ''}`,
+      category: mealType,
+      tags: category !== 'inne' ? [category] : [],
+      shared: true,
+      renata: { kcal, protein, fat, carbs, fiber: 0 },
+      husband: { kcal: Math.round(kcal * 1.4), protein: Math.round(protein * 1.4), fat: Math.round(fat * 1.4), carbs: Math.round(carbs * 1.4), fiber: 0 },
+      isCustom: true
+    };
+
+    if (!app.data.mealPlan[dateStr]) {
+      app.data.mealPlan[dateStr] = { date: dateStr, meals: [] };
+    }
+    app.data.mealPlan[dateStr].meals.push(customMeal);
+    Store.save(app.data);
+    app.ui.closeModal();
+    this.renderDay(dateStr);
+    if (dateStr === getToday()) app.dashboard.render();
+    app.ui.showToast('✓ Dodano: ' + name);
   }
 };
 
