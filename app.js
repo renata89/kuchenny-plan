@@ -765,8 +765,8 @@ app.mealplan = {
         <div class="meal-card shared" style="margin-bottom:8px;padding:12px;cursor:pointer" onclick="app.mealplan.applySwap('${dateStr}', '${currentRecipeId}', '${m.id}')">
           <div style="font-weight:600;font-size:14px">${m.name}</div>
           <div class="meal-macros">
-            <span class="meal-macro" style="font-size:12px">R: 🔥${macrosR.kcal}kcal | B${macrosR.protein}g T${macrosR.fat}g W${macrosR.carbs}g</span>
-            <span class="meal-macro" style="font-size:12px">M: 🔥${macrosH.kcal}kcal | B${macrosH.protein}g T${macrosH.fat}g W${macrosH.carbs}g</span>
+            <span class="meal-macro" style="font-size:12px">Renata: 🔥${macrosR.kcal}kcal | B${macrosR.protein}g T${macrosR.fat}g W${macrosR.carbs}g</span>
+            <span class="meal-macro" style="font-size:12px">Rafał: 🔥${macrosH.kcal}kcal | B${macrosH.protein}g T${macrosH.fat}g W${macrosH.carbs}g</span>
           </div>
           ${tags ? `<div class="text-muted" style="font-size:11px">${tags}</div>` : ''}
         </div>`;
@@ -872,8 +872,8 @@ app.recipes = {
             <div>${tags}</div>
           </div>
           <div class="meal-macros">
-            <span class="meal-macro">R: 🔥${macrosR.kcal}kcal | <span class="p">B${macrosR.protein}g</span> <span class="f">T${macrosR.fat}g</span> <span class="c">W${macrosR.carbs}g</span></span>
-            <span class="meal-macro">M: 🔥${macrosH.kcal}kcal | <span class="p">B${macrosH.protein}g</span> <span class="f">T${macrosH.fat}g</span> <span class="c">W${macrosH.carbs}g</span></span>
+            <span class="meal-macro">Renata: 🔥${macrosR.kcal}kcal | <span class="p">B${macrosR.protein}g</span> <span class="f">T${macrosR.fat}g</span> <span class="c">W${macrosR.carbs}g</span></span>
+            <span class="meal-macro">Rafał: 🔥${macrosH.kcal}kcal | <span class="p">B${macrosH.protein}g</span> <span class="f">T${macrosH.fat}g</span> <span class="c">W${macrosH.carbs}g</span></span>
           </div>
         </div>`;
     });
