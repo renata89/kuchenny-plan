@@ -700,22 +700,31 @@ app.mealplan = {
           </div>` : ''}
           <button class="details-toggle-btn" onclick="app.mealplan.toggleDetails('${dateStr}', ${idx})" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
           <div id="details-${dateStr}-${idx}" style="display:none;margin-top:8px;padding:10px;background:#FAFCFA;border-radius:12px;border:1px solid #E8EFE8">
-            <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:6px">🛒 Składniki ${isShared ? '(2 osoby)' : ''}:</div>
+            <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:6px">🛒 Składniki ${isShared ? '(razem na 2 osoby)' : ''}:</div>
             <ul style="margin:0 0 10px 0;padding-left:18px;font-size:12px;color:#4F5E53;line-height:1.7">
               ${(m.ingredients||[]).map(i => {
                 if (!isShared || !recipePortions) return `<li>${i.name}${i.amount ? ' — ' + i.amount : ''}</li>`;
-                const totalPortions = recipePortions.renata + recipePortions.husband;
+                const renataPortion = recipePortions.renata || 1;
+                const husbandPortion = recipePortions.husband || 1;
+                const totalPortions = renataPortion + husbandPortion;
                 const amt = i.amount || '';
                 const numMatch = amt.match(/^([\d.]+)\s*(.*)/);
                 if (numMatch) {
                   const baseNum = parseFloat(numMatch[1]);
                   const unit = numMatch[2];
                   const totalNum = Math.round(baseNum * totalPortions * 10) / 10;
-                  return `<li>${i.name} — ${totalNum}${unit}</li>`;
+                  const rNum = Math.round(baseNum * renataPortion * 10) / 10;
+                  const hNum = Math.round(baseNum * husbandPortion * 10) / 10;
+                  return `<li>${i.name} — ${totalNum}${unit} <span style="color:#9AABA0;font-size:10px">(Renata: ${rNum}${unit}, Rafał: ${hNum}${unit})</span></li>`;
                 }
                 return `<li>${i.name} — ${amt}</li>`;
               }).join('')}
             </ul>
+            ${isShared && recipePortions ? `
+            <div style="font-size:11px;color:#4F5E53;background:#EFF5F0;padding:8px 10px;border-radius:8px;margin-bottom:8px">
+              <strong>Podział:</strong> Renata ×${recipePortions.renata} · Rafał ×${recipePortions.husband}<br>
+              <span style="font-size:10px">Przygotuj całość, następnie podziel według proporcji przed podaniem.</span>
+            </div>` : ''}
             <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:4px">👨‍🍳 Przygotowanie:</div>
             <p style="margin:0;font-size:12px;color:#68776D;line-height:1.6">${m.instructions}</p>
           </div>
