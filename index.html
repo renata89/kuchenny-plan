@@ -226,30 +226,34 @@
             <h1>Ustawienia</h1>
           </div>
         </div>
-        <div class="card settings-section" style="margin-bottom:20px">
+        <div class="card settings-section" style="margin-bottom:28px;margin-top:12px">
           <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Użytkownicy</div>
           <div id="settings-users"></div>
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #EEF2EE">
+            <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:10px">Razem czy osobno?</div>
+            <div class="toggle">
+              <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()" ${app.auth.getActiveUser()?.pairedWith || app.data.cookTogether ? '' : 'disabled'}>
+              <span class="toggle-slider"></span>
+              <span id="cook-together-label" style="font-size:13px;color:#4F5E53">${app.data.cookTogether ? 'Gotujecie razem' : (app.auth.getActiveUser()?.pairedWith ? 'Gotujecie osobno' : 'Połącz profile, by gotować razem')}</span>
+            </div>
+          </div>
         </div>
-        <div class="card settings-section" style="margin-bottom:20px">
-          <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Sprzęt w kuchni</div>
-          <div id="settings-appliances" class="appliance-grid"></div>
-        </div>
-        <div class="card settings-section" style="margin-bottom:20px">
+        <div class="card settings-section" style="margin-bottom:28px">
           <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Połączone profile</div>
           <div id="settings-pairing"><div style="font-size:12px;color:#9AABA0">Ładowanie...</div></div>
         </div>
-        <div class="card settings-section" style="margin-bottom:20px">
-          <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Razem czy osobno?</div>
-          <div class="toggle">
-            <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()" ${app.auth.getActiveUser()?.pairedWith ? '' : 'disabled'}>
-            <span class="toggle-slider"></span>
-            <span id="cook-together-label" style="font-size:13px;color:#4F5E53">${app.data.cookTogether ? 'Gotujecie razem' : (app.auth.getActiveUser()?.pairedWith ? 'Gotujecie osobno' : 'Połącz profile, by gotować razem')}</span>
-          </div>
+        <div class="card settings-section" style="margin-bottom:28px">
+          <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:10px">Sprzęt w kuchni</div>
+          <div style="font-size:11px;color:#9AABA0;margin-bottom:8px">Wybrany sprzęt: <span id="selected-appliances-display">—</span></div>
+          <details id="appliance-details" style="font-size:12px">
+            <summary style="cursor:pointer;color:#7DA08A;font-weight:600;padding:4px 0">Rozwiń listę sprzętów</summary>
+            <div id="settings-appliances" class="appliance-list" style="margin-top:8px"></div>
+          </details>
         </div>
-        <div class="card settings-section" style="margin-bottom:20px">
-          <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Dane</div>
+        <div class="card settings-section" style="margin-bottom:28px">
+          <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:10px">Dane</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
-            <button class="btn-sm" onclick="app.settings.resetAll()">Resetuj wszystko</button>
+            <button class="btn-sm" onclick="app.settings.confirmReset()">🗑️ Resetuj wszystko</button>
             <button class="btn-sm" onclick="app.settings.exportData()">📥 Eksport</button>
             <input type="file" id="import-file" accept=".json" style="display:none" onchange="app.settings.importData(event)">
             <button class="btn-sm" onclick="document.getElementById('import-file').click()">📤 Import</button>

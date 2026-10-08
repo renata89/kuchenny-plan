@@ -1838,20 +1838,41 @@ app.settings = {
       pairContainer.innerHTML = pairHtml;
     }
 
-    // Appliances
+    // Appliances - expanded checklist
     const appContainer = document.getElementById('settings-appliances');
+    const displayEl = document.getElementById('selected-appliances-display');
     const allAppliances = [
       { id: 'airfryer', label: '🔥 Air Fryer' },
       { id: 'thermomix', label: '⚙️ Thermomix TM6' },
+      { id: 'lidlomix', label: '⚙️ Lidlomix' },
       { id: 'piekarnik', label: '🔥 Piekarnik' },
-      { id: 'parowar', label: '♨️ Parowar' }
+      { id: 'kuchenka', label: '🔥 Kuchenka gazowa/indukcyjna' },
+      { id: 'mikrofalowka', label: '📡 Mikrofalówka' },
+      { id: 'blender', label: '🔄 Blender' },
+      { id: 'robot', label: '⚙️ Robot kuchenny' },
+      { id: 'parowar', label: '♨️ Parowar' },
+      { id: 'grill', label: '🍖 Grill elektryczny' },
+      { id: 'gofrownica', label: '🧇 Gofrownica' },
+      { id: 'slowcooker', label: '🍲 Slow cooker' },
     ];
     let appHtml = '';
+    const selected = app.data.appliances || [];
     allAppliances.forEach(a => {
-      const active = (app.data.appliances || []).includes(a.id);
-      appHtml += `<div class="appliance-chip ${active?'active':''}" onclick="app.settings.toggleAppliance('${a.id}')">${a.label}</div>`;
+      const checked = selected.includes(a.id);
+      appHtml += `
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer">
+          <input type="checkbox" ${checked ? 'checked' : ''} onchange="app.settings.toggleAppliance('${a.id}')" style="accent-color:#7DA08A;width:16px;height:16px">
+          <span style="font-size:13px;color:#4F5E53">${a.label}</span>
+        </label>`;
     });
     appContainer.innerHTML = appHtml;
+    if (displayEl) {
+      const names = selected.map(id => {
+        const a = allAppliances.find(x => x.id === id);
+        return a ? a.label.replace(/[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ 0-9]/g, '').trim() : id;
+      });
+      displayEl.textContent = names.length ? names.join(', ') : '—';
+    }
 
     // Cook together toggle
     const cookToggle = document.getElementById('cook-together');
@@ -1951,20 +1972,23 @@ app.settings = {
     this.render();
   },
 
+  confirmReset() {
+    if (confirm('Czy na pewno chcesz zresetować wszystkie dane?')) {
+      if (confirm('Wszystkie dane zostaną nieodwracalnie usunięte. Jesteś pewna, że chcesz kontynuować?')) {
+        localStorage.removeItem(Store.key);
+        app.data = Store.defaults();
+        Store.save(app.data);
+        app.nav.switch('dashboard');
+        app.dashboard.render();
+        app.ui.showToast('✓ Dane zresetowane');
+      }
+    }
+  },
+
   toggleCookTogether() {
     app.data.cookTogether = document.getElementById('cook-together').checked;
     document.getElementById('cook-together-label').textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
     Store.save(app.data);
-  },
-
-  resetAll() {
-    if (confirm('Usunąć wszystkie dane?')) {
-      localStorage.removeItem(Store.key);
-      app.data = Store.defaults();
-      Store.save(app.data);
-      app.nav.switch('dashboard');
-      app.dashboard.render();
-    }
   },
 
   exportData() {
