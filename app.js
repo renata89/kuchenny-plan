@@ -1841,7 +1841,7 @@ app.recipes = {
     }
     html += '</div>';
     // Store all ingredients for search
-    html += `<div id="ingredient-all-list" style="display:none">${allIngredients.join('|')}</div>
+    html += `<div id="ingredient-all-list" style="display:none">${allIngredients.join('|')}</div>`;
     
     // Main category pills
     html += '<div style="font-size:11px;font-weight:700;color:#4F5E53;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Posiłek</div>';
