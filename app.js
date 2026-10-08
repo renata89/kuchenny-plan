@@ -1275,64 +1275,113 @@ app.mealplan = {
 // --- RECIPES ---
 app.recipes = {
   currentFilter: 'all',
+  subFilter: null,
 
   render() {
-    this.renderCategories();
+    this.renderFilters();
     this.renderList();
   },
 
-  renderCategories() {
+  renderFilters() {
     const container = document.getElementById('recipe-categories');
-    const categories = [
-      { id: 'all', label: 'Wszystkie' },
-      { id: 'breakfast', label: 'Śniadania' },
-      { id: 'lunch', label: 'Obiady' },
-      { id: 'dinner', label: 'Kolacje' }
-    ];
-    // Add appliance filters only if set
-    const appliances = app.data.appliances || [];
-    if (appliances.includes('airfryer')) categories.push({ id: 'airfryer', label: '🔥 Air Fryer' });
-    if (appliances.includes('thermomix')) categories.push({ id: 'thermomix', label: '⚙️ TM6' });
+    const all = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
 
-    let html = '<div class="filter-bar">';
-    categories.forEach(c => {
-      html += `<button class="filter-btn ${this.currentFilter === c.id ? 'active' : ''}" onclick="app.recipes.setFilter('${c.id}')">${c.label}</button>`;
+    // Collect all unique tags
+    const allTags = new Set();
+    all.forEach(r => (r.tags || []).forEach(t => allTags.add(t)));
+    const appliances = app.data.appliances || [];
+    const activeAppliances = appliances.filter(a => all.some(r => (r.appliances||[]).includes(a)));
+
+    let html = '<div style="margin-bottom:10px">';
+    
+    // Main category pills
+    html += '<div style="font-size:10px;font-weight:600;color:#9AABA0;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Posiłek</div>';
+    html += '<div class="filter-bar">';
+    html += `<button class="filter-btn ${this.currentFilter === 'all' ? 'active' : ''}" onclick="app.recipes.setFilter('all')">Wszystkie</button>`;
+    const catLabels = { breakfast: 'Śniadania', lunch: 'Obiady', dinner: 'Kolacje' };
+    const allCats = [...new Set(all.map(r => r.category))];
+    allCats.forEach(c => {
+      html += `<button class="filter-btn ${this.currentFilter === c ? 'active' : ''}" onclick="app.recipes.setFilter('${c}')">${catLabels[c] || c}</button>`;
     });
+    html += '</div>';
+
+    // Appliance filters
+    if (activeAppliances.length > 0) {
+      html += '<div style="font-size:10px;font-weight:600;color:#9AABA0;margin:8px 0 6px;text-transform:uppercase;letter-spacing:1px">Sprzęt</div>';
+      html += '<div class="filter-bar">';
+      const applianceLabels = { airfryer: '🔥 Air Fryer', thermomix: '⚙️ TM6', lidlomix: '⚙️ Lidlomix', piekarnik: '🔥 Piekarnik', blender: '🔄 Blender', parowar: '♨️ Parowar', grill: '🍖 Grill', slowcooker: '🍲 Slow Cooker', gofrownica: '🧇 Gofrownica', mikrofalowka: '📡 Mikrofalówka', kuchenka: '🔥 Kuchenka', robot: '⚙️ Robot' };
+      activeAppliances.forEach(a => {
+        html += `<button class="filter-btn ${this.currentFilter === a ? 'active' : ''}" onclick="app.recipes.setFilter('${a}')">${applianceLabels[a] || a}</button>`;
+      });
+      html += '</div>';
+    }
+
+    // Dietary tags (only when a main filter is active)
+    if (this.currentFilter !== 'all') {
+      html += '<div style="font-size:10px;font-weight:600;color:#9AABA0;margin:8px 0 6px;text-transform:uppercase;letter-spacing:1px">Kategoria</div>';
+      html += '<div class="filter-bar" style="flex-wrap:wrap">';
+      [...allTags].forEach(t => {
+        const active = this.subFilter === t;
+        html += `<button class="filter-btn ${active ? 'active' : ''}" onclick="app.recipes.setSubFilter('${t}')">${t}</button>`;
+      });
+      if (this.subFilter) {
+        html += `<button class="filter-btn" onclick="app.recipes.setSubFilter(null)" style="color:#C07060">✕ Wyczyść</button>`;
+      }
+      html += '</div>';
+    }
+
     html += '</div>';
     container.innerHTML = html;
   },
 
   setFilter(filterId) {
     this.currentFilter = filterId;
+    this.subFilter = null;
+    this.render();
+  },
+
+  setSubFilter(tag) {
+    this.subFilter = this.subFilter === tag ? null : tag;
     this.render();
   },
 
   renderList() {
     const container = document.getElementById('recipe-list');
     const all = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
-    const appliances = app.data.appliances || [];
-    
+
     let filtered = all;
     if (this.currentFilter !== 'all') {
-      if (this.currentFilter === 'airfryer' || this.currentFilter === 'thermomix') {
-        filtered = all.filter(r => r.appliances.includes(this.currentFilter));
-      } else {
-        filtered = all.filter(r => r.category === this.currentFilter);
-      }
+      filtered = all.filter(r => {
+        if (r.category === this.currentFilter) return true;
+        if ((r.appliances || []).includes(this.currentFilter)) return true;
+        return false;
+      });
+    }
+    if (this.subFilter) {
+      filtered = filtered.filter(r => (r.tags || []).includes(this.subFilter));
     }
 
     if (filtered.length === 0) {
-      container.innerHTML = '<div class="card empty-state"><p style="color:#68776D">Brak przepisów w tej kategorii.</p></div>';
+      container.innerHTML = '<div class="card empty-state"><p style="color:#68776D">Brak przepisów.</p></div>';
       return;
     }
 
     let html = '';
     filtered.forEach(r => {
-      let tags = '';
-      r.tags.forEach(t => {
-        if (t === 'airfryer') tags += `<span class="meal-tag airfryer">🔥 Air Fryer</span>`;
-        else if (t === 'thermomix') tags += `<span class="meal-tag tm6">⚙️ TM6</span>`;
-        else tags += `<span class="meal-tag">${t}</span>`;
+      // Build pill filters as chips on the card
+      let pills = '';
+      const typeLabel = { breakfast: 'Śniadania', lunch: 'Obiady', dinner: 'Kolacje' }[r.category] || r.category;
+      pills += `<span class="meal-tag" onclick="app.recipes.setFilter('${r.category}')" style="cursor:pointer">${typeLabel}</span>`;
+      const appLabels = { airfryer: 'Air Fryer', thermomix: 'TM6', lidlomix: 'Lidlomix', piekarnik: 'Piekarnik', blender: 'Blender', parowar: 'Parowar', grill: 'Grill', slowcooker: 'Slow Cooker', mikrofalowka: 'Mikrofalówka', kuchenka: 'Kuchenka', robot: 'Robot' };
+      (r.appliances || []).forEach(a => {
+        if (app.data.appliances?.includes(a)) {
+          pills += `<span class="meal-tag ${a}" onclick="app.recipes.setFilter('${a}')" style="cursor:pointer">${appLabels[a] || a}</span>`;
+        }
+      });
+      (r.tags || []).forEach(t => {
+        if (!Object.keys(appLabels).includes(t)) {
+          pills += `<span class="meal-tag" onclick="app.recipes.setSubFilter('${t}')" style="cursor:pointer">${t}</span>`;
+        }
       });
 
       const macrosR = calcMacros(r, 'renata');
@@ -1340,16 +1389,12 @@ app.recipes = {
 
       html += `
         <div class="card meal-card" style="margin-bottom:10px;cursor:pointer" onclick="app.recipes.showDetail('${r.id}')">
-          <div class="meal-header">
-            <div>
-              <div class="meal-name">${r.name}</div>
-              <div class="meal-time">${r.time} • ${r.ingredients.length} składników</div>
-            </div>
-            <div>${tags}</div>
-          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${pills}</div>
+          <div class="meal-name">${r.name}</div>
+          <div class="meal-time" style="font-size:11px;color:#9AABA0;margin-bottom:6px">${r.time} • ${r.ingredients.length} składników</div>
           <div class="meal-macros">
-            <span class="meal-macro">Renata: 🔥${macrosR.kcal}kcal | <span class="p">B${macrosR.protein}g</span> <span class="f">T${macrosR.fat}g</span> <span class="c">W${macrosR.carbs}g</span></span>
-            <span class="meal-macro">Rafał: 🔥${macrosH.kcal}kcal | <span class="p">B${macrosH.protein}g</span> <span class="f">T${macrosH.fat}g</span> <span class="c">W${macrosH.carbs}g</span></span>
+            <span class="meal-macro">Renata: 🔥${macrosR.kcal}kcal | B${macrosR.protein}g T${macrosR.fat}g W${macrosR.carbs}g</span>
+            <span class="meal-macro">Rafał: 🔥${macrosH.kcal}kcal | B${macrosH.protein}g T${macrosH.fat}g W${macrosH.carbs}g</span>
           </div>
         </div>`;
     });
@@ -1376,9 +1421,7 @@ app.recipes = {
       <h4 style="margin-bottom:6px;color:#1F2621">🥘 Sposób przygotowania:</h4>
       <p style="color:#4F5E53;line-height:1.6;margin-bottom:12px;font-size:13px">${r.instructions}</p>
       <h4 style="margin-bottom:6px;color:#1F2621">🛒 Składniki:</h4>
-      <ul style="padding-left:18px;margin-bottom:12px;color:#4F5E53;font-size:13px">
-        ${r.ingredients.map(i => `<li>${i}</li>`).join('')}
-      </ul>
+      <ul style="padding-left:18px;margin-bottom:12px;color:#4F5E53;font-size:13px">${r.ingredients.map(i => `<li>${i.name}${i.amount ? ' — ' + i.amount : ''}</li>`).join('')}</ul>
       <h4 style="margin-bottom:6px;color:#1F2621">📊 Makro na porcję:</h4>
       <table style="width:100%;color:#4F5E53;font-size:12px">
         <tr><td></td><td style="color:#728E7C;font-weight:600">Renata</td><td style="color:#5297C7;font-weight:600">Mąż</td></tr>
