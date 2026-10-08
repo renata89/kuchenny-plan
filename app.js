@@ -684,6 +684,7 @@ app.mealplan = {
           </div>
           <div style="font-size:14px;font-weight:600;color:#1F2621;margin-bottom:4px">${m.name}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-size:11px;font-weight:600;color:#4F5E53;margin-right:2px">${activeUser.name}:</span>
             <span style="font-size:12px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 10px;border-radius:10px">${kcal} kcal</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${protein}g</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${fat}g</span>
@@ -691,7 +692,7 @@ app.mealplan = {
           </div>
           ${isShared ? `
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;padding-top:6px;border-top:1px dashed #D6E0D6">
-            <span style="font-size:11px;font-weight:600;color:#4F5E53;width:100%">👤 Dla Rafała:</span>
+            <span style="font-size:11px;font-weight:600;color:#4F5E53;margin-right:2px">Rafał:</span>
             <span style="font-size:12px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 10px;border-radius:10px">${otherKcal} kcal</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${otherProtein}g</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${otherFat}g</span>
