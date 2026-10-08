@@ -757,7 +757,9 @@ const Store = {
       settings: {
         theme: 'dark',
         geminiKey: ''
-      }
+      },
+      selectedStores: ['biedronka', 'lidl', 'dino'],
+      promos: {}
     };
   }
 };
@@ -2277,6 +2279,73 @@ app.zakupy = {
 
 // --- PANTRY MANAGER (stock tracking, ingredient matching, deduction) ---
 const PANTRY_UNITS = ['szt', 'g', 'ml', 'kg', 'opakowanie', 'kromki', 'garść', 'łyżka', 'szklanka', 'butelka', 'puszka', 'strąk', 'główka', 'liść'];
+
+// --- STORE PRICE DATABASE ---
+const STORES = [
+  { id: 'biedronka', name: 'Biedronka', icon: '🐝' },
+  { id: 'lidl', name: 'Lidl', icon: '🟡' },
+  { id: 'auchan', name: 'Auchan', icon: '🔵' },
+  { id: 'dino', name: 'Dino', icon: '🦕' },
+  { id: 'carrefour', name: 'Carrefour', icon: '🔴' },
+  { id: 'aldi', name: 'Aldi', icon: '🟠' },
+  { id: 'zabka', name: 'Żabka', icon: '🟢' },
+  { id: 'intermarche', name: 'InterMarche', icon: '🔶' }
+];
+
+const PRICE_DB = {
+  'jajka': { biedronka: 1.2, lidl: 1.3, auchan: 1.4, dino: 1.25, carrefour: 1.5, aldi: 1.35 }, unit: 'szt',
+  'mleko': { biedronka: 3.2, lidl: 3.5, auchan: 3.6, dino: 3.4, carrefour: 3.8 }, unit: 'l',
+  'masło': { biedronka: 4.5, lidl: 4.8, auchan: 5.0, dino: 4.7, carrefour: 5.2 }, unit: 'g/100',
+  'ser żółty': { biedronka: 3.0, lidl: 3.2, auchan: 3.4, dino: 3.1, carrefour: 3.5 }, unit: 'g/100',
+  'pierś z kurczaka': { biedronka: 2.5, lidl: 2.6, auchan: 2.8, dino: 2.5, carrefour: 2.9 }, unit: 'g/100',
+  'chleb żytni': { biedronka: 3.5, lidl: 3.8, auchan: 4.0, dino: 3.6, carrefour: 4.2 }, unit: 'szt',
+  'tofu': { biedronka: 4.0, lidl: 4.5, auchan: 4.8, dino: 4.2, carrefour: 5.0 }, unit: 'g/100',
+  'pomidory': { biedronka: 1.5, lidl: 1.6, auchan: 1.8, dino: 1.5, carrefour: 1.9 }, unit: 'szt',
+  'ziemniaki': { biedronka: 0.3, lidl: 0.35, auchan: 0.4, dino: 0.3, carrefour: 0.4 }, unit: 'g/100',
+  'ryż': { biedronka: 0.8, lidl: 0.9, auchan: 1.0, dino: 0.85, carrefour: 1.1 }, unit: 'g/100',
+  'makaron': { biedronka: 0.7, lidl: 0.8, auchan: 0.9, dino: 0.75, carrefour: 1.0 }, unit: 'g/100',
+  'jogurt naturalny': { biedronka: 1.8, lidl: 2.0, auchan: 2.2, dino: 1.9, carrefour: 2.3 }, unit: 'szt',
+};
+
+app.priceChecker = {
+  getPrice(ingredientName, storeId) {
+    const name = ingredientName.toLowerCase().trim();
+    for (const [key, data] of Object.entries(PRICE_DB)) {
+      if (name.includes(key) || key.includes(name)) return data[storeId] || null;
+    }
+    return null;
+  },
+  comparePrices(items) {
+    const selectedStores = app.data.selectedStores || STORES.map(s => s.id);
+    const results = [];
+    items.forEach(item => {
+      const itemName = (item.name || '').toLowerCase().trim();
+      const storePrices = {};
+      let bestStore = null, bestPrice = Infinity;
+      selectedStores.forEach(sid => {
+        const price = this.getPrice(itemName, sid);
+        if (price !== null) { storePrices[sid] = price; if (price < bestPrice) { bestPrice = price; bestStore = sid; } }
+      });
+      if (Object.keys(storePrices).length > 0) results.push({ name: item.name || itemName, prices: storePrices, bestStore, bestPrice });
+    });
+    return results;
+  },
+  getBestStore(items) {
+    const comparisons = this.comparePrices(items);
+    if (comparisons.length === 0) return null;
+    const storeTotals = {};
+    comparisons.forEach(c => Object.entries(c.prices).forEach(([sid, price]) => { storeTotals[sid] = (storeTotals[sid] || 0) + price; }));
+    let bestStore = null, bestTotal = Infinity;
+    Object.entries(storeTotals).forEach(([sid, total]) => { if (total < bestTotal) { bestTotal = total; bestStore = sid; } });
+    return { store: STORES.find(s => s.id === bestStore) || { name: bestStore }, total: Math.round(bestTotal * 100) / 100, comparisons };
+  },
+  setPromo(storeId, itemName, price) {
+    if (!app.data.promos) app.data.promos = {};
+    if (!app.data.promos[storeId]) app.data.promos[storeId] = {};
+    app.data.promos[storeId][itemName.toLowerCase()] = { price, date: getToday() };
+    Store.save(app.data);
+  }
+};
 
 const STD_INGREDIENT_AMOUNT = {
   'jajka': { qtyNum: 2, unit: 'szt' }, 'jajko': { qtyNum: 2, unit: 'szt' },

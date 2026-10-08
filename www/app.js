@@ -260,7 +260,9 @@ const Store = {
       settings: {
         theme: 'dark',
         geminiKey: ''
-      }
+      },
+      selectedStores: ['biedronka', 'lidl', 'dino'],
+      promos: {}
     };
   }
 };
@@ -1482,9 +1484,12 @@ app.zakupy = {
     }
 
     html += `
-      <button id="pantry-fab" onclick="app.zakupy.openPantry()" style="position:absolute;bottom:80px;right:16px;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(79,115,92,0.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform 0.15s">
+      <button id="pantry-fab" onclick="app.zakupy.openPantry()" style="position:absolute;bottom:80px;right:16px;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(79,115,92,0.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform 0.15s" title="Spiżarnia">
         🧊
         ${pantryCount > 0 ? `<span style="position:absolute;top:-4px;right:-4px;background:#C47050;color:#FFF;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(196,112,80,0.4)">${pantryCount > 9 ? '9+' : pantryCount}</span>` : ''}
+      </button>
+      <button id="price-fab" onclick="app.zakupy.showPriceCompare()" style="position:absolute;bottom:142px;right:16px;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(135deg,#4A7A8A,#2A5A6A);color:#FFFFFF;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(42,90,106,0.35);z-index:50;display:flex;align-items:center;justify-content:center" title="Porównaj ceny">
+        💰
       </button>`;
 
     container.innerHTML = html;
@@ -1610,11 +1615,206 @@ app.zakupy = {
     app.ui.closeModal();
     this.render();
     app.ui.showToast('✓ Dodano: ' + name);
+  },
+
+  showPriceCompare() {
+    const items = (app.data.pantry || []).filter(i => i.inStock);
+    if (items.length === 0) {
+      app.ui.openModal('💰 Porównanie cen', '<p style="color:#68776D;text-align:center;padding:20px">Dodaj produkty do listy zakupów najpierw.</p>');
+      return;
+    }
+    
+    const result = app.priceChecker.getBestStore(items);
+    if (!result || result.comparisons.length === 0) {
+      app.ui.openModal('💰 Porównanie cen', '<p style="color:#68776D;text-align:center;padding:20px">Brak danych cenowych dla produktów na liście.</p>');
+      return;
+    }
+    
+    const selectedStores = app.data.selectedStores || STORES.map(s => s.id);
+    const storeIcons = {}; STORES.forEach(s => { storeIcons[s.id] = s.icon; });
+    const storeNames = {}; STORES.forEach(s => { storeNames[s.id] = s.name; });
+    
+    let html = `
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(135deg,#2A5A6A,#1A3A4A);color:#FFF;border-radius:12px;margin-bottom:8px">
+          <span style="font-size:24px">💰</span>
+          <div>
+            <div style="font-weight:700;font-size:15px">${result.store.icon} ${result.store.name}</div>
+            <div style="font-size:12px;opacity:0.8">Najtaniej łącznie: ${result.total.toFixed(2)} zł</div>
+          </div>
+        </div>
+      </div>
+      <div style="max-height:40vh;overflow-y:auto;margin-bottom:8px">`;
+    
+    result.comparisons.forEach(c => {
+      const bestStoreName = storeNames[c.bestStore] || c.bestStore;
+      const bestStoreIcon = storeIcons[c.bestStore] || '🏪';
+      html += `<div style="padding:6px 8px;margin-bottom:4px;background:#F5F8F5;border-radius:8px;border:1px solid #E8EDE8">
+        <div style="font-size:12px;font-weight:600;color:#1F2621;margin-bottom:3px">${c.name}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">`;
+      selectedStores.forEach(sid => {
+        if (c.prices[sid] !== undefined) {
+          const isBest = sid === c.bestStore;
+          html += `<span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${isBest ? '#D0E8D0' : '#F0F0F0'};color:${isBest ? '#2A6A3A' : '#68776D'};font-weight:${isBest ? '700' : '400'}">
+            ${storeIcons[sid] || ''} ${c.prices[sid].toFixed(2)}zł${isBest ? ' ✓' : ''}</span>`;
+        }
+      });
+      html += `</div>${c.savings ? `<div style="font-size:9px;color:#4A7A8A;margin-top:2px">Oszczędność: ${c.savings.toFixed(2)} zł wybierając ${bestStoreIcon} ${bestStoreName}</div>` : ''}</div>`;
+    });
+    
+    html += `</div>
+      <div style="margin-bottom:8px;padding:8px 12px;background:#E8F0E8;border-radius:10px">
+        <div style="font-size:11px;color:#4A5A4A">💡 Sklepy: ${selectedStores.map(s => (storeIcons[s]||'') + (storeNames[s]||s)).join(', ')}</div>
+        <div style="font-size:10px;color:#68776D;margin-top:4px">Ceny orientacyjne. Zmień sklepy w Ustawieniach.</div>
+      </div>
+      <button onclick="app.ui.closeModal()" style="width:100%;padding:10px;border:none;border-radius:12px;background:#F0F0F0;color:#4F5E53;font-size:13px;font-weight:500;cursor:pointer">Zamknij</button>`;
+    
+    app.ui.openModal('💰 Porównanie cen', html);
   }
 };
 
 // --- PANTRY MANAGER (stock tracking, ingredient matching, deduction) ---
 const PANTRY_UNITS = ['szt', 'g', 'ml', 'kg', 'opakowanie', 'kromki', 'garść', 'łyżka', 'szklanka', 'butelka', 'puszka', 'strąk', 'główka', 'liść'];
+
+// --- STORE PRICE DATABASE ---
+const STORES = [
+  { id: 'biedronka', name: 'Biedronka', icon: '🐝' },
+  { id: 'lidl', name: 'Lidl', icon: '🟡' },
+  { id: 'auchan', name: 'Auchan', icon: '🔵' },
+  { id: 'dino', name: 'Dino', icon: '🦕' },
+  { id: 'carrefour', name: 'Carrefour', icon: '🔴' },
+  { id: 'aldi', name: 'Aldi', icon: '🟠' },
+  { id: 'zabka', name: 'Żabka', icon: '🟢' },
+  { id: 'intermarche', name: 'InterMarche', icon: '🔶' }
+];
+
+// Price database: typical prices (PLN) per unit for common items at each store
+// { ingredientName: { storeId: pricePerUnit, ... }, unit: '...' }
+const PRICE_DB = {
+  'jajka': { biedronka: 1.2, lidl: 1.3, auchan: 1.4, dino: 1.25, carrefour: 1.5, aldi: 1.35 }, unit: 'szt',
+  'jajko': { biedronka: 1.2, lidl: 1.3, auchan: 1.4, dino: 1.25, carrefour: 1.5, aldi: 1.35 }, unit: 'szt',
+  'mleko': { biedronka: 3.2, lidl: 3.5, auchan: 3.6, dino: 3.4, carrefour: 3.8, aldi: 3.3 }, unit: 'l',
+  'masło': { biedronka: 4.5, lidl: 4.8, auchan: 5.0, dino: 4.7, carrefour: 5.2, aldi: 4.6 }, unit: 'g/100',
+  'ser żółty': { biedronka: 3.0, lidl: 3.2, auchan: 3.4, dino: 3.1, carrefour: 3.5 }, unit: 'g/100',
+  'chleb żytni': { biedronka: 3.5, lidl: 3.8, auchan: 4.0, dino: 3.6, carrefour: 4.2 }, unit: 'szt',
+  'tofu': { biedronka: 4.0, lidl: 4.5, auchan: 4.8, dino: 4.2, carrefour: 5.0 }, unit: 'g/100',
+  'feta': { biedronka: 4.5, lidl: 5.0, auchan: 5.2, dino: 4.8, carrefour: 5.5 }, unit: 'g/100',
+  'pierś z kurczaka': { biedronka: 2.5, lidl: 2.6, auchan: 2.8, dino: 2.5, carrefour: 2.9 }, unit: 'g/100',
+  'kurczak': { biedronka: 2.5, lidl: 2.6, auchan: 2.8, dino: 2.5, carrefour: 2.9 }, unit: 'g/100',
+  'łosoś': { biedronka: 4.0, lidl: 4.2, auchan: 4.5, dino: 4.1, carrefour: 4.6 }, unit: 'g/100',
+  'tuńczyk w puszce': { biedronka: 5.5, lidl: 5.8, auchan: 6.0, dino: 5.6, carrefour: 6.5 }, unit: 'puszka',
+  'oliwa z oliwek': { biedronka: 3.5, lidl: 3.8, auchan: 4.0, dino: 3.6, carrefour: 4.2 }, unit: 'ml/100',
+  'ryż': { biedronka: 0.8, lidl: 0.9, auchan: 1.0, dino: 0.85, carrefour: 1.1 }, unit: 'g/100',
+  'makaron': { biedronka: 0.7, lidl: 0.8, auchan: 0.9, dino: 0.75, carrefour: 1.0 }, unit: 'g/100',
+  'pomidory': { biedronka: 1.5, lidl: 1.6, auchan: 1.8, dino: 1.5, carrefour: 1.9 }, unit: 'szt',
+  'pomidor': { biedronka: 1.5, lidl: 1.6, auchan: 1.8, dino: 1.5, carrefour: 1.9 }, unit: 'szt',
+  'ziemniaki': { biedronka: 0.3, lidl: 0.35, auchan: 0.4, dino: 0.3, carrefour: 0.4 }, unit: 'g/100',
+  'cebula': { biedronka: 0.4, lidl: 0.5, auchan: 0.5, dino: 0.4, carrefour: 0.6 }, unit: 'szt',
+  'papryka': { biedronka: 2.5, lidl: 2.8, auchan: 3.0, dino: 2.6, carrefour: 3.2 }, unit: 'szt',
+  'marchew': { biedronka: 0.3, lidl: 0.35, auchan: 0.4, dino: 0.3, carrefour: 0.4 }, unit: 'szt',
+  'banan': { biedronka: 0.7, lidl: 0.8, auchan: 0.9, dino: 0.75, carrefour: 0.9 }, unit: 'szt',
+  'jabłko': { biedronka: 0.5, lidl: 0.6, auchan: 0.7, dino: 0.55, carrefour: 0.7 }, unit: 'szt',
+  'jogurt naturalny': { biedronka: 1.8, lidl: 2.0, auchan: 2.2, dino: 1.9, carrefour: 2.3 }, unit: 'szt',
+  'twaróg': { biedronka: 2.0, lidl: 2.2, auchan: 2.4, dino: 2.1, carrefour: 2.5 }, unit: 'g/100',
+  'brokuł': { biedronka: 3.5, lidl: 3.8, auchan: 4.0, dino: 3.6, carrefour: 4.2 }, unit: 'szt',
+  'cukinia': { biedronka: 3.0, lidl: 3.2, auchan: 3.5, dino: 3.1, carrefour: 3.6 }, unit: 'szt',
+  'awokado': { biedronka: 4.0, lidl: 4.5, auchan: 5.0, dino: 4.2, carrefour: 5.0 }, unit: 'szt',
+};
+
+app.priceChecker = {
+  // Get estimated price for an ingredient at a specific store
+  getPrice(ingredientName, storeId) {
+    const name = ingredientName.toLowerCase().trim();
+    for (const [key, data] of Object.entries(PRICE_DB)) {
+      if (name.includes(key) || key.includes(name)) {
+        return data[storeId] || null;
+      }
+    }
+    return null;
+  },
+
+  // Compare prices across user's selected stores for a list of items
+  comparePrices(items) {
+    const selectedStores = app.data.selectedStores || STORES.map(s => s.id);
+    const results = [];
+    
+    items.forEach(item => {
+      const itemName = (item.name || '').toLowerCase().trim();
+      const storePrices = {};
+      let bestStore = null, bestPrice = Infinity;
+      
+      selectedStores.forEach(sid => {
+        const price = this.getPrice(itemName, sid);
+        if (price !== null) {
+          storePrices[sid] = price;
+          if (price < bestPrice) { bestPrice = price; bestStore = sid; }
+        }
+      });
+      
+      if (Object.keys(storePrices).length > 0) {
+        results.push({
+          name: item.name || itemName,
+          prices: storePrices,
+          bestStore,
+          bestPrice,
+          savings: null // calculated below
+        });
+      }
+    });
+    
+    // Calculate savings vs most expensive
+    results.forEach(r => {
+      const prices = Object.values(r.prices);
+      if (prices.length > 1) {
+        r.savings = Math.round((Math.max(...prices) - r.bestPrice) * 100) / 100;
+      }
+    });
+    
+    return results;
+  },
+
+  // Get best store overall for a shopping list
+  getBestStore(items) {
+    const comparisons = this.comparePrices(items);
+    if (comparisons.length === 0) return null;
+    
+    const storeTotals = {};
+    comparisons.forEach(c => {
+      Object.entries(c.prices).forEach(([sid, price]) => {
+        storeTotals[sid] = (storeTotals[sid] || 0) + price;
+      });
+    });
+    
+    let bestStore = null, bestTotal = Infinity;
+    Object.entries(storeTotals).forEach(([sid, total]) => {
+      if (total < bestTotal) { bestTotal = total; bestStore = sid; }
+    });
+    
+    const store = STORES.find(s => s.id === bestStore);
+    return {
+      store: store || { name: bestStore, icon: '🏪' },
+      total: Math.round(bestTotal * 100) / 100,
+      comparisons
+    };
+  },
+
+  // Manual promo override
+  setPromo(storeId, itemName, price) {
+    if (!app.data.promos) app.data.promos = {};
+    if (!app.data.promos[storeId]) app.data.promos[storeId] = {};
+    app.data.promos[storeId][itemName.toLowerCase()] = { price, date: getToday() };
+    Store.save(app.data);
+  },
+
+  // Get promo price (checks manual promos first, then DB)
+  getPromoPrice(storeId, itemName) {
+    const name = itemName.toLowerCase().trim();
+    if (app.data.promos?.[storeId]?.[name]) {
+      return app.data.promos[storeId][name].price;
+    }
+    return this.getPrice(itemName, storeId);
+  }
+};
 
 // Standard amounts per ingredient for deduction (per meal serving)
 const STD_INGREDIENT_AMOUNT = {
@@ -2362,6 +2562,16 @@ app.settings = {
     if (keyInput) {
       keyInput.value = app.data.settings.geminiKey || '';
     }
+    
+    // Store selection
+    const storesContainer = document.getElementById('settings-stores');
+    if (storesContainer) {
+      const selected = app.data.selectedStores || ['biedronka', 'lidl', 'dino'];
+      storesContainer.innerHTML = STORES.map(s => {
+        const isActive = selected.includes(s.id);
+        return `<div class="appliance-chip ${isActive ? 'active' : ''}" onclick="app.settings.toggleStore('${s.id}')">${s.icon} ${s.name}</div>`;
+      }).join('');
+    }
   },
 
   updateKcal(userId, val) {
@@ -2400,6 +2610,18 @@ app.settings = {
       Store.save(app.data);
       app.ui.showToast('✅ Klucz API zapisany');
     }
+  },
+
+  toggleStore(storeId) {
+    if (!app.data.selectedStores) app.data.selectedStores = ['biedronka', 'lidl', 'dino'];
+    const idx = app.data.selectedStores.indexOf(storeId);
+    if (idx > -1) {
+      app.data.selectedStores.splice(idx, 1);
+    } else {
+      app.data.selectedStores.push(storeId);
+    }
+    Store.save(app.data);
+    this.render();
   },
 
   resetAll() {
