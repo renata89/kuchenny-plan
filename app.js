@@ -242,8 +242,8 @@ const Store = {
     return {
       activeUser: null,
       users: [
-        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, waterGoal: 2000, avatar: '👩', pairedWith: null, pairRequestFrom: null, mealTimes: { breakfast: '8:00', lunch: '14:00', dinner: '20:00' } },
-        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨', pairedWith: null, pairRequestFrom: null, mealTimes: { breakfast: '8:00', lunch: '14:00', dinner: '20:00' } }
+        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, waterGoal: 2000, avatar: '👩', pairedWith: null, pairRequestFrom: null, mealTimes: { breakfast: '8:00', lunch: '13:00', dinner: '20:00' }, activeMealTypes: ['breakfast', 'lunch', 'dinner'] },
+        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨', pairedWith: null, pairRequestFrom: null, mealTimes: { breakfast: '8:00', lunch: '13:00', dinner: '20:00' }, activeMealTypes: ['breakfast', 'lunch', 'dinner'] }
       ],
       pantry: [
         { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', emoji: '🥚', inStock: true },
@@ -1142,16 +1142,16 @@ app.mealplan = {
   showAddMealForm(dateStr) {
     const mealTypes = [
       { value: 'breakfast', label: 'Śniadanie' },
-      { value: 'lunch', label: 'Obiad' },
-      { value: 'dinner', label: 'Kolacja' },
-      { value: 'snack', label: 'Przekąska' },
-      { value: 'other', label: 'Inne' }
+      { value: 'lunch', label: 'Lunch' },
+      { value: 'dinner', label: 'Obiad' },
+      { value: 'snack', label: 'Podwieczorek' },
+      { value: 'supper', label: 'Kolacja' }
     ];
     const categoryOptions = [
       { value: 'inne', label: 'Inne' },
       { value: 'wegetariańskie', label: 'Wegetariańskie' },
       { value: 'białkowe', label: 'Białkowe' },
-      { value: 'przekąski', label: 'Przekąski' },
+      { value: 'niskieig', label: 'Niskie IG' },
       { value: 'wegańskie', label: 'Wegańskie' },
       { value: 'bezglutenowe', label: 'Bezglutenowe' },
       { value: 'niskowęglowodanowe', label: 'Niskowęglowodanowe' }
@@ -1160,19 +1160,19 @@ app.mealplan = {
     app.ui.openModal('+ Dodaj posiłek', `
       <div style="display:flex;flex-direction:column;gap:10px">
         <div>
-          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Rodzaj posiłku</label>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Rodzaj posiłku <span style="color:#C07060">*</span></label>
           <select id="addmeal-type" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;background:#FAF8F2">
             ${mealTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
           </select>
         </div>
         <div>
-          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Kategoria</label>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Kategoria <span style="color:#C07060">*</span></label>
           <select id="addmeal-category" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;background:#FAF8F2">
             ${categoryOptions.map(c => `<option value="${c.value}">${c.label}</option>`).join('')}
           </select>
         </div>
         <div>
-          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Nazwa potrawy</label>
+          <label style="font-size:12px;font-weight:600;color:#1F2621;display:block;margin-bottom:3px">Nazwa potrawy <span style="color:#C07060">*</span></label>
           <input type="text" id="addmeal-name" placeholder="np. Koktajl białkowy" style="width:100%;padding:10px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
         </div>
         <div style="display:flex;gap:8px">
@@ -1209,24 +1209,28 @@ app.mealplan = {
     const fat = parseInt(document.getElementById('addmeal-fat').value) || 0;
     const carbs = parseInt(document.getElementById('addmeal-carbs').value) || 0;
 
-    if (!name || kcal === 0) {
-      app.ui.showToast('Podaj nazwę i kaloryczność posiłku');
+    if (!name) {
+      app.ui.showToast('Podaj nazwę potrawy');
+      return;
+    }
+    if (kcal === 0) {
+      app.ui.showToast('Podaj kaloryczność posiłku');
       return;
     }
 
     const timeLabels = {
       breakfast: 'Śniadanie',
-      lunch: 'Obiad',
-      dinner: 'Kolacja',
-      snack: 'Przekąska',
-      other: 'Posiłek'
+      lunch: 'Lunch',
+      dinner: 'Obiad',
+      snack: 'Podwieczorek',
+      supper: 'Kolacja'
     };
     const timeHours = {
       breakfast: '(8:00)',
-      lunch: '(14:00)',
-      dinner: '(20:00)',
-      snack: '',
-      other: ''
+      lunch: '(11:00)',
+      dinner: '(14:00)',
+      snack: '(16:00)',
+      supper: '(20:00)'
     };
 
     const customMeal = {
@@ -1854,14 +1858,37 @@ app.settings = {
     const mtContainer = document.getElementById('settings-mealtimes');
     if (mtContainer) {
       const myUser = app.data.users.find(u => u.id === activeUser.id);
-      const times = myUser?.mealTimes || { breakfast: '8:00', lunch: '14:00', dinner: '20:00' };
-      const mtLabels = { breakfast: 'Śniadanie', lunch: 'Obiad', dinner: 'Kolacja' };
-      mtContainer.innerHTML = Object.keys(mtLabels).map(key => `
+      const activeTypes = myUser?.activeMealTypes || ['breakfast', 'lunch', 'dinner'];
+      const times = myUser?.mealTimes || { breakfast: '8:00', lunch: '13:00', dinner: '20:00' };
+      const allTypes = [
+        { id: 'breakfast', label: 'Śniadanie' },
+        { id: 'lunch', label: 'Lunch' },
+        { id: 'dinner', label: 'Obiad' },
+        { id: 'snack', label: 'Podwieczorek' },
+        { id: 'supper', label: 'Kolacja' }
+      ];
+      // Type checkboxes
+      let mtHtml = '<div style="font-size:12px;color:#4F5E53;margin-bottom:8px;font-weight:500">Wybierz posiłki (max 5):</div>';
+      mtHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
+      allTypes.forEach(t => {
+        const checked = activeTypes.includes(t.id);
+        mtHtml += `<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#4F5E53;cursor:pointer">
+          <input type="checkbox" ${checked ? 'checked' : ''} onchange="app.settings.toggleMealType('${t.id}')" style="accent-color:#7DA08A;width:16px;height:16px">
+          ${t.label}
+        </label>`;
+      });
+      mtHtml += '</div>';
+      // Time inputs (only for active types)
+      mtHtml += '<div style="font-size:12px;color:#4F5E53;margin-bottom:6px;font-weight:500">Godziny posiłków:</div>';
+      allTypes.forEach(t => {
+        if (!activeTypes.includes(t.id)) return;
+        mtHtml += `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EEF2EE">
-          <span style="font-size:13px;color:#4F5E53">${mtLabels[key]}</span>
-          <input type="time" value="${times[key] || '08:00'}" onchange="app.settings.setMealTime('${key}', this.value)" style="padding:4px 8px;border:1px solid #DEEAE2;border-radius:8px;background:#F5F8F5;color:#1F2621;font-size:13px;font-family:inherit">
-        </div>
-      `).join('');
+          <span style="font-size:13px;color:#4F5E53">${t.label}</span>
+          <input type="time" value="${times[t.id] || '08:00'}" onchange="app.settings.setMealTime('${t.id}', this.value)" style="padding:4px 8px;border:1px solid #DEEAE2;border-radius:8px;background:#F5F8F5;color:#1F2621;font-size:13px;font-family:inherit">
+        </div>`;
+      });
+      mtContainer.innerHTML = mtHtml;
     }
 
     // Pairing section
@@ -1988,6 +2015,25 @@ app.settings = {
       this.render();
       app.ui.showToast('✓ Zapisano kaloryczność');
     }
+  },
+
+  toggleMealType(typeId) {
+    const activeUser = app.auth.getActiveUser();
+    const user = app.data.users.find(u => u.id === activeUser.id);
+    if (!user) return;
+    if (!user.activeMealTypes) user.activeMealTypes = ['breakfast', 'lunch', 'dinner'];
+    const idx = user.activeMealTypes.indexOf(typeId);
+    if (idx > -1) {
+      user.activeMealTypes.splice(idx, 1);
+    } else {
+      if (user.activeMealTypes.length >= 5) {
+        app.ui.showToast('Maksymalnie 5 posiłków');
+        return;
+      }
+      user.activeMealTypes.push(typeId);
+    }
+    Store.save(app.data);
+    this.render();
   },
 
   requestPair(targetUserId) {
