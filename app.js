@@ -516,8 +516,10 @@ app.dashboard = {
     const labels = { 'śniadanie': 'ŚNIADANIE', 'obiad': 'OBIAD', 'kolacja': 'KOLACJA' };
 
     plan.meals.forEach(m => {
-      const found = Object.keys(mealTypes).find(t => m.time && m.time.includes(t));
-      const key = found || 'kolacja';
+      const timeStr = (m.time || m.category || '').toLowerCase();
+      let key = 'kolacja';
+      if (timeStr.includes('śniadanie') || timeStr.includes('breakfast')) key = 'śniadanie';
+      else if (timeStr.includes('obiad') || timeStr.includes('lunch')) key = 'obiad';
       mealTypes[key].push(m);
     });
 
