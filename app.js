@@ -74,7 +74,38 @@ const MEAL_DB = {
       shared: true,
       renata_portion: 1,
       husband_portion: 1.3
-    }
+    },
+    {
+      id: 'bf-jajecznica-fitatu',
+      name: 'Jajecznica z camembertem',
+      category: 'breakfast',
+      time: 'Śniadanie (8:00)',
+      ingredients: [{name: 'jajka', amount: '4 szt. (240g)'}, {name: 'ser camembert', amount: '60g'}, {name: 'szynka', amount: '120g'}, {name: 'pieczarki', amount: '50g'}, {name: 'masło', amount: '30g'}, {name: 'ser żółty', amount: '20g'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 457, protein: 36, fat: 34, carbs: 2, fiber: 0 },
+      tags: ['wysokobiałkowe', 'niskowęglowodanowe'],
+      instructions: 'Na patelni rozgrzej masło. Umyj i pokrój pieczarki, wrzuć na patelnię. Wbij jajka, dodaj sól i pieprz. Smaż mieszając. Na drugiej patelni obsmaż szynkę. Podawaj jajecznicę z camembertem, szynką i startym serem żółtym.',
+      appliances: [],
+      image: '🍳',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'bf-granola-fitatu',
+      name: 'Granola z bakaliami',
+      category: 'breakfast',
+      time: 'Śniadanie (8:00)',
+      ingredients: [{name: 'płatki owsiane', amount: '80g'}, {name: 'orzechy włoskie', amount: '30g'}, {name: 'migdały', amount: '20g'}, {name: 'miód', amount: '20g'}, {name: 'olej kokosowy', amount: '15ml'}, {name: 'żurawina', amount: '20g'}, {name: 'wiórki kokosowe', amount: '10g'}],
+      macros: { kcal: 380, protein: 12, fat: 22, carbs: 38, fiber: 6 },
+      tags: ['wegetariańskie', 'wysokobłonnikowe'],
+      instructions: 'Wymieszaj płatki z orzechami, migdałami i wiórkami. Dodaj miód i olej kokosowy. Piecz w piekarniku 160°C 15 minut, mieszając co 5 minut. Po wystudzeniu dodaj żurawinę.',
+      appliances: ['piekarnik'],
+      image: '🥣',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+
   ],
   lunch: [
     {
@@ -157,7 +188,7 @@ const MEAL_DB = {
       tags: ['thermomix', 'wysokobiałkowe'],
       instructions: 'Cebulę i czosnek wsyp do misy, rozdrobnić 5s/obr.5. Dodać mięso mielone, jajko, bułkę tartą, sól i pieprz — wymieszać 20s/obr.4. Formować pulpety z kawałkiem mozzarelli w środku. Pomidory wlać do misy, dodać bazylię — 5min/100°C/obr.1. Ułożyć pulpety w koszyku Varoma — 25min/Varoma/obr.1. Podawać z kaszą lub ryżem.',
       appliances: ['thermomix'],
-      image: 'https://source.unsplash.com/400x300/?meatballs-tomato',
+      image: '🍝',
       shared: true,
       renata_portion: 1,
       husband_portion: 1.5
@@ -172,7 +203,7 @@ const MEAL_DB = {
       tags: ['thermomix', 'wysokobiałkowe'],
       instructions: 'Cebulę, czosnek i paprykę do misy — rozdrobnić 5s/obr.5. Dodać oliwę — 3min/120°C/obr.1. Dodać kurczaka pokrojonego w kawałki, koncentrat pomidorowy, śmietankę i przyprawy — 15min/100°C/obr.1. Ryż ugotować osobno. Podawać kurczaka z ryżem.',
       appliances: ['thermomix'],
-      image: 'https://source.unsplash.com/400x300/?chicken-paprika',
+      image: '🍗',
       shared: true,
       renata_portion: 1,
       husband_portion: 1.5
@@ -187,10 +218,130 @@ const MEAL_DB = {
       tags: ['thermomix', 'wysokobiałkowe', 'wysokobłonnikowe'],
       instructions: 'Cebulę i imbir do misy — rozdrobnić 5s/obr.5. Dodać oliwę i przyprawy — 3min/120°C/obr.1. Dodać kurczaka pokrojonego w kostkę, soczewicę, pomidory, mleko kokosowe i sól — 20min/100°C/obr.1. Podawać z ryżem lub samodzielnie. Posypać kolendrą.',
       appliances: ['thermomix'],
-      image: 'https://source.unsplash.com/400x300/?curry-lentil',
+      image: '🍝',
       shared: true,
       renata_portion: 1,
       husband_portion: 1.5
+    },
+    {
+      id: 'lu-salatka-kurczak-awokado',
+      name: 'Sałatka z kurczakiem, awokado i oliwkami',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'pierś z kurczaka', amount: '150g'}, {name: 'awokado', amount: '100g (1/2 szt.)'}, {name: 'mix sałat', amount: '80g'}, {name: 'pomidor koktajlowy', amount: '80g'}, {name: 'ogórek', amount: '80g'}, {name: 'oliwki czarne', amount: '30g'}, {name: 'oliwa', amount: '10ml'}, {name: 'sok z cytryny', amount: '10ml'}, {name: 'sól', amount: '1g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 410, protein: 35, fat: 26, carbs: 10, fiber: 5 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Kurczaka pokrój w paski, dopraw solą i pieprzem. Grilluj na patelni grillowej lub w airfryer 180°C/10min. Warzywa i sałatę wymieszaj w misce. Dodaj pokrojone awokado, oliwki i pomidorki. Polej oliwą z sokiem z cytryny. Na wierzchu ułóż kurczaka.',
+      appliances: [],
+      image: '🥗',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.5
+    },
+    {
+      id: 'lu-delikatny-indyk-curry',
+      name: 'Delikatny indyk w sosie curry',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'filet z indyka', amount: '180g'}, {name: 'papryka', amount: '100g'}, {name: 'cebula', amount: '50g'}, {name: 'mleko kokosowe', amount: '80ml'}, {name: 'pasta curry', amount: '15g'}, {name: 'imbir', amount: '10g'}, {name: 'ryż basmati', amount: '50g (suchy)'}, {name: 'sól', amount: '1g'}, {name: 'kolendra', amount: '3g'}],
+      macros: { kcal: 430, protein: 40, fat: 14, carbs: 35, fiber: 3 },
+      tags: ['wysokobiałkowe'],
+      instructions: 'Indyka pokrój w kostkę. Cebulę i imbir zeszklij na patelni. Dodaj pastę curry, smaż 1 minutę. Dodaj indyka i paprykę, duś 10 minut. Wlej mleko kokosowe, duś kolejne 5 minut. Ryż ugotuj osobno. Podawaj posypane kolendrą.',
+      appliances: [],
+      image: '🍛',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.5
+    },
+    {
+      id: 'lu-grecka-zupa-soczewicy',
+      name: 'Grecka zupa z soczewicy',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'soczewica zielona', amount: '80g (sucha)'}, {name: 'marchew', amount: '80g'}, {name: 'seler naciowy', amount: '50g'}, {name: 'cebula', amount: '50g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'pomidory krojone', amount: '150g'}, {name: 'oliwa', amount: '10ml'}, {name: 'bulion warzywny', amount: '400ml'}, {name: 'liść laurowy', amount: '1 szt.'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}, {name: 'sok z cytryny', amount: '15ml'}],
+      macros: { kcal: 340, protein: 18, fat: 8, carbs: 45, fiber: 12 },
+      tags: ['wegetariańskie', 'wysokobłonnikowe'],
+      instructions: 'Na oliwie zeszkij pokrojoną cebulę, czosnek, marchew i seler. Dodaj soczewicę, pomidory, bulion i liść laurowy. Gotuj 25 minut do miękkości soczewicy. Dopraw solą, pieprzem i sokiem z cytryny. Podawaj z pieczywem pełnoziarnistym.',
+      appliances: [],
+      image: '🍲',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
+    },
+    {
+      id: 'lu-cukinia-zapiekana-halloumi',
+      name: 'Cukinia zapiekana z jajkami i serem halloumi',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'cukinia', amount: '200g'}, {name: 'jajka', amount: '3 szt.'}, {name: 'ser halloumi', amount: '60g'}, {name: 'pomidor', amount: '100g'}, {name: 'czosnek', amount: '1 ząbek'}, {name: 'oliwa', amount: '10ml'}, {name: 'szczypiorek', amount: '5g'}, {name: 'sól', amount: '1g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 360, protein: 27, fat: 24, carbs: 10, fiber: 3 },
+      tags: ['wegetariańskie', 'bezglutenowe'],
+      instructions: 'Cukinię pokrój w plastry, ułóż w naczyniu żaroodpornym. Dodaj pokrojonego pomidora i starty czosnek. Wbij jajka na wierzch. Posyp pokrojonym serem halloumi. Piecz w 180°C przez 20 minut. Posyp szczypiorkiem.',
+      appliances: ['piekarnik'],
+      image: '🥘',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'lu-salatka-kurczak-fitatu',
+      name: 'Sałatka z kurczakiem, awokado i oliwkami',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'pierś z kurczaka', amount: '150g'}, {name: 'awokado', amount: '100g (1/2 szt.)'}, {name: 'mix sałat', amount: '80g'}, {name: 'oliwki', amount: '30g'}, {name: 'pomidorki koktajlowe', amount: '80g'}, {name: 'ogórek', amount: '80g'}, {name: 'oliwa', amount: '15ml'}, {name: 'sok z cytryny', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}],
+      macros: { kcal: 410, protein: 35, fat: 28, carbs: 8, fiber: 7 },
+      tags: ['wysokobiałkowe', 'niskowęglowodanowe', 'bezglutenowe'],
+      instructions: 'Kurczaka ugotuj na parze lub grilluj, pokrój w plastry. Warzywa umyj i pokrój. Wymieszaj sałatę z kurczakiem, awokado, oliwkami i pomidorkami. Skrop oliwą i sokiem z cytryny.',
+      appliances: [],
+      image: '🥗',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
+    },
+    {
+      id: 'lu-indyk-curry-fitatu',
+      name: 'Delikatny indyk w sosie curry',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'filet z indyka', amount: '180g'}, {name: 'cebula', amount: '50g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'mleko kokosowe', amount: '100ml'}, {name: 'pasta curry', amount: '20g'}, {name: 'szpinak', amount: '60g'}, {name: 'ryż basmati', amount: '50g (suchy)'}, {name: 'oliwa', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}],
+      macros: { kcal: 422, protein: 40, fat: 16, carbs: 30, fiber: 4 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Cebulę i czosnek posiekaj, podsmaż na oliwie. Dodaj indyka pokrojonego w kostkę, obsmaż. Dodaj pastę curry i mleko kokosowe, duś 15 minut. Pod koniec dodaj szpinak. Podawaj z ryżem.',
+      appliances: [],
+      image: '🍛',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.5
+    },
+    {
+      id: 'lu-zupa-soczewica-fitatu',
+      name: 'Grecka zupa z soczewicy',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'soczewica zielona', amount: '100g (sucha)'}, {name: 'marchewka', amount: '80g'}, {name: 'seler naciowy', amount: '50g'}, {name: 'cebula', amount: '50g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'pomidory krojone', amount: '200g'}, {name: 'bulion warzywny', amount: '400ml'}, {name: 'oliwa', amount: '15ml'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 335, protein: 22, fat: 8, carbs: 45, fiber: 12 },
+      tags: ['wegetariańskie', 'wysokobłonnikowe'],
+      instructions: 'Na oliwie podsmaż cebulę, czosnek, marchewkę i seler. Dodaj pomidory, soczewicę i bulion. Gotuj 30 minut na małym ogniu. Dopraw solą i pieprzem. Podawaj z kromką chleba razowego.',
+      appliances: [],
+      image: '🍲',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'lu-cukinia-zapiekana-fitatu',
+      name: 'Cukinia zapiekana z jajkami i halloumi',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'cukinia', amount: '200g'}, {name: 'jajka', amount: '3 szt.'}, {name: 'ser halloumi', amount: '80g'}, {name: 'pomidory', amount: '100g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'oliwa', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 360, protein: 30, fat: 24, carbs: 6, fiber: 3 },
+      tags: ['wegetariańskie', 'niskowęglowodanowe'],
+      instructions: 'Cukinię pokrój w plastry, podsmaż na oliwie z czosnkiem. Przełóż do naczynia żaroodpornego. Wbij jajka, dodaj pokrojony halloumi i pomidory. Zapiekaj 20 minut w 180°C.',
+      appliances: ['piekarnik'],
+      image: '🥘',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
     }
   ],
   dinner: [
@@ -274,7 +425,7 @@ const MEAL_DB = {
       tags: ['thermomix', 'wysokobiałkowe', 'bezglutenowe'],
       instructions: 'Do misy wlać 500ml wody. Łososia skropić cytryną, posolić i popieprzyć. Ułożyć w górnej części Varoma. Warzywa pokroić w słupki, ułożyć w dolnej części Varoma. Gotować 20min/Varoma/obr.1. Posypać koperkiem przed podaniem.',
       appliances: ['thermomix'],
-      image: 'https://source.unsplash.com/400x300/?salmon-steamed-vegetables',
+      image: '🐟',
       shared: true,
       renata_portion: 1,
       husband_portion: 1.4
@@ -289,11 +440,282 @@ const MEAL_DB = {
       tags: ['thermomix', 'wegetariańskie', 'niskokaloryczne'],
       instructions: 'Cebulę i czosnek do misy — rozdrobnić 5s/obr.5. Dodać oliwę — 3min/120°C/obr.1. Dodać brokuły, ziemniaka i bulion — 20min/100°C/obr.1. Zmiksować 30s/obr.10. Dodać śmietankę, sól i pieprz — wymieszać 10s/obr.3. Podawać z grzankami.',
       appliances: ['thermomix'],
-      image: 'https://source.unsplash.com/400x300/?broccoli-soup',
+      image: '🥦',
       shared: true,
       renata_portion: 1,
       husband_portion: 1.3
+    },
+    {
+      id: 'dn-jajecznica-camembert',
+      name: 'Jajecznica z camembertem',
+      category: 'breakfast',
+      time: 'Śniadanie (8:00)',
+      ingredients: [{name: 'jajka', amount: '4 szt. (240g)'}, {name: 'ser camembert', amount: '60g'}, {name: 'szynka', amount: '120g'}, {name: 'pieczarki', amount: '50g'}, {name: 'masło', amount: '30g'}, {name: 'ser żółty', amount: '20g'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 457, protein: 36, fat: 34, carbs: 2, fiber: 0 },
+      tags: ['wysokobiałkowe', 'niskowęglowodanowe'],
+      instructions: 'Na rozgrzaną patelnię wrzuć masło. Umyj i pokrój pieczarki, wrzuć na patelnię. Wbij jajka, dodaj sól i pieprz. Smaż do ścięcia. Na drugiej patelni podsmaż szynkę. Podawaj z pokrojonym camembertem i serem żółtym.',
+      appliances: [],
+      image: '🍳',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-kurczak-awokado',
+      name: 'Sałatka z kurczakiem, awokado i oliwkami',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'pierś z kurczaka', amount: '120g'}, {name: 'awokado', amount: '100g (1/2 szt.)'}, {name: 'mix sałat', amount: '80g'}, {name: 'oliwki czarne', amount: '30g'}, {name: 'pomidor', amount: '100g'}, {name: 'ogórek', amount: '80g'}, {name: 'oliwa', amount: '15ml'}, {name: 'sok z cytryny', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 309, protein: 24, fat: 22, carbs: 8, fiber: 6 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Kurczaka ugotuj lub usmaż na grillu, pokrój w paski. Warzywa umyj i pokrój. Wszystko wymieszaj z sałatą. Dodaj oliwki, skrop oliwą i sokiem z cytryny. Dopraw solą i pieprzem.',
+      appliances: [],
+      image: '🥗',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
+    },
+    {
+      id: 'dn-grecka-zupa-soczewicy',
+      name: 'Grecka zupa z soczewicy',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'soczewica czerwona', amount: '100g (sucha)'}, {name: 'marchew', amount: '80g'}, {name: 'seler', amount: '50g'}, {name: 'cebula', amount: '50g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'pomidory krojone', amount: '200g'}, {name: 'bulion warzywny', amount: '500ml'}, {name: 'oliwa', amount: '10ml'}, {name: 'sól', amount: '3g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 335, protein: 20, fat: 8, carbs: 45, fiber: 12 },
+      tags: ['wegetariańskie', 'wysokobłonnikowe'],
+      instructions: 'Cebulę i czosnek pokrój, podsmaż na oliwie. Dodaj pokrojone warzywa, pomidory, soczewicę i bulion. Gotuj 25 minut do miękkości. Dopraw solą i pieprzem. Podawać z grzankami lub samodzielnie.',
+      appliances: [],
+      image: '🍲',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.5
+    },
+    {
+      id: 'dn-cukinia-halloumi',
+      name: 'Cukinia zapiekana z jajkami i serem halloumi',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'cukinia', amount: '200g'}, {name: 'jajka', amount: '2 szt.'}, {name: 'ser halloumi', amount: '80g'}, {name: 'pomidor', amount: '100g'}, {name: 'czosnek', amount: '1 ząbek'}, {name: 'oliwa', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 295, protein: 22, fat: 20, carbs: 6, fiber: 3 },
+      tags: ['wegetariańskie', 'niskowęglowodanowe', 'bezglutenowe'],
+      instructions: 'Cukinię pokrój w plasterki, podsmaż na oliwie z czosnkiem. Przełóż do naczynia żaroodpornego. Wbij jajka, dodaj pokrojony halloumi i pomidora. Zapiekaj w 180°C przez 20 minut. Dopraw solą i pieprzem.',
+      appliances: ['piekarnik'],
+      image: '🥘',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-indyk-curry',
+      name: 'Delikatny indyk w sosie curry',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'filet z indyka', amount: '150g'}, {name: 'papryka czerwona', amount: '80g'}, {name: 'cebula', amount: '50g'}, {name: 'mleko kokosowe', amount: '80ml'}, {name: 'pomidory krojone', amount: '100g'}, {name: 'curry', amount: '5g'}, {name: 'imbir', amount: '5g'}, {name: 'czosnek', amount: '1 ząbek'}, {name: 'sól', amount: '2g'}],
+      macros: { kcal: 422, protein: 38, fat: 18, carbs: 22, fiber: 4 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Indyka pokrój w kostkę. Cebulę i czosnek posiekaj, podsmaż. Dodaj imbir, curry i paprykę — duś 5 minut. Dodaj pomidory i mleko kokosowe, duś 15 minut. Dopraw solą. Podawaj z ryżem lub samodzielnie.',
+      appliances: [],
+      image: '🍛',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.5
+    },
+    {
+      id: 'dn-salatka-tunczyk-fit',
+      name: 'Sałatka z tuńczykiem',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'tuńczyk w sosie własnym', amount: '100g'}, {name: 'mix sałat', amount: '80g'}, {name: 'ogórek', amount: '100g'}, {name: 'pomidor', amount: '100g'}, {name: 'papryka czerwona', amount: '60g'}, {name: 'oliwa', amount: '10ml'}, {name: 'sok z cytryny', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 416, protein: 35, fat: 18, carbs: 22, fiber: 5 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Tuńczyka odsącz z zalewy. Warzywa umyj i pokrój. Wszystko wymieszaj z sałatą. Dodaj oliwę i sok z cytryny. Dopraw solą i pieprzem. Podawaj od razu.',
+      appliances: [],
+      image: '🥗',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
+    },
+    {
+      id: 'dn-zupa-kalafiorowa',
+      name: 'Zupa krem z kalafiora',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'kalafior', amount: '300g'}, {name: 'ziemniak', amount: '100g'}, {name: 'cebula', amount: '50g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'bulion warzywny', amount: '400ml'}, {name: 'śmietanka 18%', amount: '30ml'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 160, protein: 8, fat: 6, carbs: 20, fiber: 5 },
+      tags: ['wegetariańskie', 'niskokaloryczne', 'bezglutenowe'],
+      instructions: 'Cebulę i czosnek posiekaj, podsmaż. Dodaj kalafior podzielony na różyczki, ziemniaka i bulion. Gotuj 20 minut. Zmiksuj blenderem na krem. Dodaj śmietankę, dopraw solą i pieprzem.',
+      appliances: ['blender'],
+      image: '🥣',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-brokul-dynia',
+      name: 'Sałatka z brokułu i pestek dyni',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'brokuł', amount: '200g'}, {name: 'pestki dyni', amount: '20g'}, {name: 'jajko', amount: '2 szt.'}, {name: 'ogórek kiszony', amount: '80g'}, {name: 'jogurt grecki', amount: '50g'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 229, protein: 18, fat: 14, carbs: 8, fiber: 4 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Brokuła ugotuj na parze, ostudź. Jajka ugotuj na twardo, pokrój. Wymieszaj brokuła z pokrojonym ogórkiem, jajkami i pestkami dyni. Dodaj jogurt grecki, dopraw solą i pieprzem.',
+      appliances: [],
+      image: '🥦',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-wołowina-sezam',
+      name: 'Sałatka z wołowiną, warzywami i sezamem',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'polędwica wołowa', amount: '120g'}, {name: 'mix sałat', amount: '80g'}, {name: 'papryka czerwona', amount: '60g'}, {name: 'ogórek', amount: '80g'}, {name: 'marchew', amount: '50g'}, {name: 'sezam', amount: '10g'}, {name: 'sos sojowy', amount: '10ml'}, {name: 'oliwa', amount: '10ml'}],
+      macros: { kcal: 362, protein: 32, fat: 20, carbs: 14, fiber: 4 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Wołowinę pokrój w cienkie paski, usmaż na oliwie z sosem sojowym. Warzywa pokrój w słupki. Wymieszaj wszystko z sałatą. Posyp sezamem. Podawaj od razu.',
+      appliances: [],
+      image: '🥩',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
+    },
+    {
+      id: 'dn-jaja-awokado',
+      name: 'Jaja faszerowane awokado',
+      category: 'breakfast',
+      time: 'Śniadanie (8:00)',
+      ingredients: [{name: 'jajka', amount: '4 szt.'}, {name: 'awokado', amount: '100g (1/2 szt.)'}, {name: 'sok z cytryny', amount: '5ml'}, {name: 'szczypiorek', amount: '5g'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 277, protein: 20, fat: 22, carbs: 4, fiber: 3 },
+      tags: ['wysokobiałkowe', 'niskowęglowodanowe', 'bezglutenowe'],
+      instructions: 'Jajka ugotuj na twardo, przekrój na pół, wyjmij żółtka. Awokado rozgnieć widelcem z sokiem z cytryny. Wymieszaj z żółtkami, dopraw. Napełnij połówki białek masą. Posyp szczypiorkiem.',
+      appliances: [],
+      image: '🥑',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-muffinki-szynka',
+      name: 'Niskowęglowodanowe muffinki z szynką i serem',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'jajka', amount: '3 szt.'}, {name: 'szynka', amount: '80g'}, {name: 'ser żółty', amount: '50g'}, {name: 'papryka', amount: '60g'}, {name: 'cebula', amount: '40g'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 377, protein: 32, fat: 26, carbs: 4, fiber: 1 },
+      tags: ['wysokobiałkowe', 'niskowęglowodanowe'],
+      instructions: 'Jajka roztrzep. Szynkę, ser i warzywa pokrój w drobną kostkę. Wymieszaj wszystko, dopraw. Przelej do foremek na muffinki. Piecz 25 minut w 180°C. Podawaj na ciepło lub zimno.',
+      appliances: ['piekarnik'],
+      image: '🧁',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-tunczyk-fitatu',
+      name: 'Sałatka z tuńczykiem i jajkiem',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'tuńczyk w sosie własnym', amount: '100g (1 puszka)'}, {name: 'jajko', amount: '2 szt.'}, {name: 'mix sałat', amount: '80g'}, {name: 'ogórek kiszony', amount: '80g'}, {name: 'pomidor', amount: '100g'}, {name: 'cebula czerwona', amount: '30g'}, {name: 'oliwa', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 320, protein: 32, fat: 18, carbs: 8, fiber: 3 },
+      tags: ['wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Jajka ugotuj na twardo (8 minut), ostudź i pokrój w ćwiartki. Tuńczyka odsącz z zalewy. Warzywa i sałatę wymieszaj w misce. Dodaj tuńczyka, jajko i pokrojoną cebulę. Polej oliwą, dopraw solą i pieprzem.',
+      appliances: [],
+      image: '🥗',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-brokul-pestki',
+      name: 'Sałatka z brokułu i pestek dyni',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'brokuły', amount: '200g'}, {name: 'pestki dyni', amount: '20g'}, {name: 'jogurt grecki', amount: '60g'}, {name: 'sok z cytryny', amount: '10ml'}, {name: 'czosnek', amount: '1 ząbek'}, {name: 'sól', amount: '1g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 190, protein: 14, fat: 10, carbs: 10, fiber: 5 },
+      tags: ['wegetariańskie', 'niskokaloryczne', 'bezglutenowe'],
+      instructions: 'Brokuły podziel na różyczki, ugotuj na parze lub w osolonej wodzie 5 minut (ma być chrupiący). Wymieszaj jogurt grecki z sokiem z cytryny i startym czosnkiem. Brokuły polej sosem, posyp pestkami dyni.',
+      appliances: [],
+      image: '🥦',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-jajko-ogorek',
+      name: 'Sałatka z jajkiem i ogórkiem kiszonym',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'jajko', amount: '2 szt.'}, {name: 'ogórek kiszony', amount: '100g'}, {name: 'mix sałat', amount: '60g'}, {name: 'szczypiorek', amount: '10g'}, {name: 'oliwa', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 180, protein: 14, fat: 12, carbs: 4, fiber: 2 },
+      tags: ['wegetariańskie', 'niskokaloryczne', 'bezglutenowe'],
+      instructions: 'Jajka ugotuj na twardo, ostudź i pokrój. Ogórka kiszonego pokrój w kostkę. Wymieszaj składniki z sałatą. Dodaj posiekany szczypiorek. Polej oliwą, dopraw.',
+      appliances: [],
+      image: '🥬',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-kalafior-pomidorowy-kasza',
+      name: 'Kalafior w sosie pomidorowym z kaszą jaglaną',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'kalafior', amount: '200g'}, {name: 'pomidory krojone', amount: '150g'}, {name: 'cebula', amount: '50g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'oliwa', amount: '10ml'}, {name: 'kasza jaglana', amount: '40g (sucha)'}, {name: 'bazylia', amount: '3g'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 280, protein: 12, fat: 8, carbs: 38, fiber: 7 },
+      tags: ['wegetariańskie', 'wysokobłonnikowe'],
+      instructions: 'Cebulę i czosnek zeszklij na oliwie. Dodaj pomidory, przyprawy. Duś 10 minut. Kalafior podziel na różyczki, dodaj do sosu, duś kolejne 15 minut. Kaszę jaglaną ugotuj osobno. Podawaj kalafior w sosie z kaszą.',
+      appliances: [],
+      image: '🍅',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
     }
+    {
+      id: 'dn-salatka-brokul-fitatu',
+      name: 'Sałatka z brokułu i pestek dyni',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'brokuł', amount: '200g'}, {name: 'pestki dyni', amount: '20g'}, {name: 'jajka', amount: '2 szt.'}, {name: 'jogurt grecki', amount: '50g'}, {name: 'sok z cytryny', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 260, protein: 22, fat: 16, carbs: 8, fiber: 6 },
+      tags: ['wegetariańskie', 'wysokobiałkowe', 'niskowęglowodanowe'],
+      instructions: 'Brokuła ugotuj na parze 5 minut. Jajka ugotuj na twardo. Wymieszaj brokuła z pokrojonymi jajkami. Dodaj pestki dyni. Przygotuj sos z jogurtu greckiego, soku z cytryny i przypraw.',
+      appliances: [],
+      image: '🥦',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-jajko-fitatu',
+      name: 'Sałatka z jajkiem i ogórkiem kiszonym',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'jajka', amount: '3 szt.'}, {name: 'ogórek kiszony', amount: '100g'}, {name: 'pomidor', amount: '100g'}, {name: 'cebula czerwona', amount: '30g'}, {name: 'jogurt naturalny', amount: '30g'}, {name: 'musztarda', amount: '5g'}, {name: 'sól', amount: 'szczypta'}, {name: 'pieprz', amount: 'szczypta'}],
+      macros: { kcal: 200, protein: 20, fat: 12, carbs: 6, fiber: 3 },
+      tags: ['wegetariańskie', 'wysokobiałkowe', 'niskokaloryczne'],
+      instructions: 'Jajka ugotuj na twardo, pokrój w kostkę. Ogórki i pomidora pokrój. Wymieszaj wszystkie składniki. Przygotuj sos z jogurtu i musztardy. Dopraw solą i pieprzem.',
+      appliances: [],
+      image: '🥚',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+    {
+      id: 'dn-salatka-tunczyk-fitatu',
+      name: 'Sałatka z tuńczykiem i awokado',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'tuńczyk w sosie własnym', amount: '100g'}, {name: 'awokado', amount: '100g (1/2 szt.)'}, {name: 'mix sałat', amount: '80g'}, {name: 'pomidorki koktajlowe', amount: '60g'}, {name: 'ogórek', amount: '60g'}, {name: 'oliwa', amount: '10ml'}, {name: 'sok z cytryny', amount: '10ml'}, {name: 'sól', amount: 'szczypta'}],
+      macros: { kcal: 295, protein: 28, fat: 18, carbs: 5, fiber: 5 },
+      tags: ['wysokobiałkowe', 'niskowęglowodanowe'],
+      instructions: 'Tuńczyka odsącz z zalewy. Awokado i warzywa pokrój. Wymieszaj z mixem sałat. Skrop oliwą i sokiem z cytryny. Dopraw solą.',
+      appliances: [],
+      image: '🐟',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
+    },
+
   ]
 };
 
@@ -333,7 +755,8 @@ const Store = {
       water: [],
       mealPlan: {},
       settings: {
-        theme: 'dark'
+        theme: 'dark',
+        geminiKey: ''
       }
     };
   }
@@ -1479,7 +1902,7 @@ app.recipes = {
       html += `
         <div class="card meal-card" style="margin-bottom:10px;cursor:pointer" onclick="app.recipes.showDetail('${r.id}')">
           <div style="display:flex;gap:12px">
-            <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#E8EFE8,#D6E0D6);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden">${r.image ? `<img src="${r.image}" alt="${r.name}" style="width:100%;height:100%;object-fit:cover">` : '🍽️'}</div>
+            <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#E8EFE8,#D6E0D6);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden">${r.image ? (r.image.startsWith('http') ? `<img src="${r.image}" alt="${r.name}" style="width:100%;height:100%;object-fit:cover">` : `<span style="font-size:30px">${r.image}</span>`) : '🍽️'}</div>
             <div style="flex:1;min-width:0">
               <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${pills}</div>
               <div class="meal-name">${r.name}</div>
@@ -1785,6 +2208,259 @@ app.zakupy = {
   }
 };
 
+// --- SCANNER (AI-powered photo recognition) ---
+const SCAN_CATEGORIES = ['białko', 'nabiał', 'warzywa', 'owoce', 'węglowodany', 'tłuszcze', 'przyprawy', 'napoje', 'gotowe dania', 'inne'];
+const SCAN_CAT_LABELS = {
+  'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa',
+  'owoce': '🍎 Owoce', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze',
+  'przyprawy': '🧂 Przyprawy', 'napoje': '🥤 Napoje', 'gotowe dania': '🍲 Gotowe',
+  'inne': '📦 Inne'
+};
+
+app.scanner = {
+  API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+  _items: [],
+  _selected: [],
+  _qtys: [],
+
+  getApiKey() {
+    return (app.data.settings && app.data.settings.geminiKey) || '';
+  },
+
+  scanPantry() {
+    const key = this.getApiKey();
+    if (!key) {
+      app.ui.openModal('🔑 Klucz API Gemini', `
+        <div style="text-align:center;padding:8px 0">
+          <div style="font-size:48px;margin-bottom:8px">🤖</div>
+          <p style="font-size:13px;color:#4F5E53;margin-bottom:10px">Do skanowania potrzebuję darmowego klucza API Gemini:</p>
+          <ol style="text-align:left;font-size:12px;color:#68776D;line-height:1.8;margin-bottom:12px;padding-left:20px">
+            <li>Wejdź na <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#728E7C">aistudio.google.com/apikey</a></li>
+            <li>Kliknij "Create API key"</li>
+            <li>Skopiuj klucz i wklej poniżej</li>
+          </ol>
+          <input type="text" id="gemini-key-input" placeholder="Wklej klucz AIza..." 
+            style="width:100%;padding:10px 14px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+          <button onclick="app.scanner._saveAndScan()" 
+            style="width:100%;padding:12px;margin-top:8px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer">
+            ✓ Zapisz i skanuj
+          </button>
+        </div>
+      `);
+      return;
+    }
+    this._openCamera();
+  },
+
+  _saveAndScan() {
+    const key = document.getElementById('gemini-key-input').value.trim();
+    if (key) {
+      app.data.settings.geminiKey = key;
+      Store.save(app.data);
+      app.ui.closeModal();
+      this._openCamera();
+    }
+  },
+
+  _openCamera() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0';
+    document.body.appendChild(input);
+
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      document.body.removeChild(input);
+      if (!file) return;
+
+      app.ui.openModal('🔄 Skanowanie...', `
+        <div style="text-align:center;padding:24px">
+          <div style="font-size:56px;margin-bottom:12px">📸</div>
+          <p style="color:#68776D;font-size:13px">Analizuję zdjęcie przez AI...</p>
+          <div style="width:100%;height:4px;background:#E8EDE8;border-radius:4px;margin-top:16px;overflow:hidden">
+            <div style="width:40%;height:100%;background:linear-gradient(90deg,#7DA08A,#4F735C);border-radius:4px;animation:scan-progress 1.2s ease-in-out infinite"></div>
+          </div>
+          <style>@keyframes scan-progress{0%{width:20%}50%{width:80%}100%{width:20%}}</style>
+        </div>
+      `);
+
+      this._analyze(file);
+    });
+
+    input.click();
+  },
+
+  async _analyze(file) {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result.split(',')[1];
+      const key = this.getApiKey();
+
+      try {
+        const resp = await fetch(`${this.API_URL}?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: `Jesteś asystentem rozpoznawania produktów spożywczych.
+Przeanalizuj zdjęcie i wypisz WSZYSTKIE widoczne produkty spożywcze.
+Dla każdego produktu podaj:
+- nazwa: po polsku (np. "Jogurt naturalny", "Pierś z kurczaka")
+- kategoria: białko|nabiał|warzywa|owoce|węglowodany|tłuszcze|napoje|przyprawy|gotowe dania|inne
+- ilosc: szacunkowa ilość (np. "500g", "2 sztuki", "1 opakowanie")
+- emoji: odpowiedni emoji
+
+Zwróć TYLKO tablicę JSON, bez formatowania:
+[{"nazwa":"...","kategoria":"...","ilosc":"...","emoji":"..."}]
+Jeśli nic nie widzisz: []` },
+                { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } }
+              ]
+            }]
+          })
+        });
+
+        const result = await resp.json();
+        if (!resp.ok) throw new Error(result.error?.message || `Błąd ${resp.status}`);
+
+        const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+        let items = [];
+        try {
+          const match = text.match(/\[[\s\S]*?\]/);
+          items = match ? JSON.parse(match[0]) : JSON.parse(text);
+        } catch(e) {
+          items = [];
+        }
+        if (!Array.isArray(items)) items = [];
+
+        if (items.length === 0) {
+          app.ui.openModal('📸 Skanowanie', `
+            <div style="text-align:center;padding:20px">
+              <div style="font-size:48px;margin-bottom:8px">🔍</div>
+              <p style="color:#68776D;font-size:13px">Nie znaleziono produktów. Zrób lepsze zdjęcie.</p>
+              <button onclick="app.scanner.scanPantry()" 
+                style="width:100%;padding:12px;margin-top:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFF;font-size:15px;font-weight:600;cursor:pointer">
+                📸 Skanuj ponownie
+              </button>
+            </div>
+          `);
+          return;
+        }
+
+        this._showResults(items);
+
+      } catch (err) {
+        const isQuota = err.message.includes('quota') || err.message.includes('429') || err.message.includes('RESOURCE_EXHAUSTED');
+        app.ui.openModal('❌ Błąd', `
+          <div style="text-align:center;padding:16px">
+            <div style="font-size:40px;margin-bottom:8px">${isQuota ? '💸' : '⚠️'}</div>
+            <p style="color:#68776D;font-size:13px">${err.message}</p>
+            ${isQuota ? '<p style="font-size:12px;color:#8AA08E;margin-top:6px">Darmowy limit wyczerpany — spróbuj za chwilę.</p>' : ''}
+            <button onclick="app.scanner.scanPantry()" 
+              style="width:100%;padding:12px;margin-top:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFF;font-size:15px;font-weight:600;cursor:pointer">
+              🔄 Spróbuj ponownie
+            </button>
+          </div>
+        `);
+      }
+    };
+    reader.readAsDataURL(file);
+  },
+
+  _showResults(items) {
+    this._items = items;
+    this._selected = items.map(() => true);
+    this._qtys = items.map(i => i.ilosc || '');
+
+    const grouped = {};
+    items.forEach((item, idx) => {
+      const cat = SCAN_CATEGORIES.includes(item.kategoria) ? item.kategoria : 'inne';
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(idx);
+    });
+
+    let html = `
+      <p style="font-size:13px;color:#4F5E53;margin-bottom:8px">
+        ✅ Znaleziono <strong>${items.length}</strong> produktów:
+      </p>
+      <div style="max-height:45vh;overflow-y:auto;margin-bottom:8px">`;
+
+    SCAN_CATEGORIES.forEach(cat => {
+      const indices = grouped[cat];
+      if (!indices) return;
+      html += `<div style="margin-bottom:4px">
+        <div style="font-size:11px;font-weight:600;color:#4F5E53;margin-bottom:2px;padding:0 4px">${SCAN_CAT_LABELS[cat] || cat}</div>`;
+      indices.forEach(gi => {
+        const item = items[gi];
+        const fid = `sc-${gi}`;
+        html += `
+        <div style="display:flex;align-items:center;gap:4px;padding:5px 8px;margin-bottom:2px;background:#F5F8F5;border-radius:8px;border:1px solid #E8EDE8">
+          <input type="checkbox" id="${fid}" checked onchange="app.scanner._toggle(${gi})" style="accent-color:#728E7C;width:15px;height:15px">
+          <label for="${fid}" style="flex:1;font-size:12px;color:#1F2621;cursor:pointer">${item.emoji || '📦'} ${item.nazwa}</label>
+          <input type="text" value="${this._qtys[gi]}" onchange="app.scanner._setQty(${gi},this.value)"
+            placeholder="ilość" style="width:60px;padding:3px 6px;border:1px solid #D0D8D0;border-radius:6px;font-size:10px;background:#FAF8F2;text-align:center">
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    html += `</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="app.scanner._confirmAdd()" 
+          style="flex:1;padding:11px;border:none;border-radius:12px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFF;font-size:14px;font-weight:600;cursor:pointer">
+          ✓ Dodaj zaznaczone
+        </button>
+        <button onclick="app.ui.closeModal()" 
+          style="padding:11px 14px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:14px;font-weight:500;cursor:pointer">
+          ✕ Anuluj
+        </button>
+      </div>`;
+
+    app.ui.openModal('📸 Wyniki skanowania', html);
+  },
+
+  _toggle(idx) {
+    if (idx >= 0 && idx < this._selected.length) {
+      this._selected[idx] = !this._selected[idx];
+    }
+  },
+
+  _setQty(idx, val) {
+    if (idx >= 0 && idx < this._qtys.length) {
+      this._qtys[idx] = val;
+    }
+  },
+
+  _confirmAdd() {
+    if (!app.data.pantry) app.data.pantry = [];
+    const existing = new Set(app.data.pantry.map(i => i.name.toLowerCase().trim()));
+    let added = 0, skipped = 0;
+
+    this._items.forEach((item, idx) => {
+      if (!this._selected[idx]) return;
+      const name = item.nazwa.charAt(0).toUpperCase() + item.nazwa.slice(1);
+      if (existing.has(name.toLowerCase())) { skipped++; return; }
+      const cat = SCAN_CATEGORIES.includes(item.kategoria) ? item.kategoria : 'inne';
+      app.data.pantry.push({
+        id: 'scan_' + Date.now() + '_' + idx,
+        name, category: cat,
+        qty: this._qtys[idx] || item.ilosc || '',
+        emoji: item.emoji || '📦',
+        inStock: true
+      });
+      existing.add(name.toLowerCase());
+      added++;
+    });
+
+    Store.save(app.data);
+    app.ui.closeModal();
+    app.nav.switch('zakupy');
+    app.ui.showToast(`✅ Dodano ${added} produktów${skipped > 0 ? ` (${skipped} już było)` : ''}`);
+  }
+};
+
 // --- WATER ---
 app.water = {
   getWaterGlassImage(pct) {
@@ -2071,6 +2747,12 @@ app.settings = {
         cookLabel.textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
       }
     }
+    
+    // Gemini key
+    const keyInput = document.getElementById('settings-gemini-key');
+    if (keyInput) {
+      keyInput.value = app.data.settings?.geminiKey || '';
+    }
   },
 
   saveKcal(userId) {
@@ -2197,6 +2879,15 @@ app.settings = {
     app.data.cookTogether = document.getElementById('cook-together').checked;
     document.getElementById('cook-together-label').textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
     Store.save(app.data);
+  },
+
+  saveGeminiKey() {
+    const input = document.getElementById('settings-gemini-key');
+    if (input) {
+      app.data.settings.geminiKey = input.value.trim();
+      Store.save(app.data);
+      app.ui.showToast('✅ Klucz API zapisany');
+    }
   },
 
   exportData() {

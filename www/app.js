@@ -258,7 +258,8 @@ const Store = {
       water: [],
       mealPlan: {},
       settings: {
-        theme: 'dark'
+        theme: 'dark',
+        geminiKey: ''
       }
     };
   }
@@ -1535,6 +1536,259 @@ app.zakupy = {
   }
 };
 
+// --- SCANNER (AI-powered photo recognition) ---
+const SCAN_CATEGORIES = ['białko', 'nabiał', 'warzywa', 'owoce', 'węglowodany', 'tłuszcze', 'przyprawy', 'napoje', 'gotowe dania', 'inne'];
+const SCAN_CAT_LABELS = {
+  'białko': '🥩 Białko', 'nabiał': '🧀 Nabiał', 'warzywa': '🥦 Warzywa',
+  'owoce': '🍎 Owoce', 'węglowodany': '🍞 Węglowodany', 'tłuszcze': '🫒 Tłuszcze',
+  'przyprawy': '🧂 Przyprawy', 'napoje': '🥤 Napoje', 'gotowe dania': '🍲 Gotowe',
+  'inne': '📦 Inne'
+};
+
+app.scanner = {
+  API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+  _items: [],
+  _selected: [],
+  _qtys: [],
+
+  getApiKey() {
+    return (app.data.settings && app.data.settings.geminiKey) || '';
+  },
+
+  scanPantry() {
+    const key = this.getApiKey();
+    if (!key) {
+      app.ui.openModal('🔑 Klucz API Gemini', `
+        <div style="text-align:center;padding:8px 0">
+          <div style="font-size:48px;margin-bottom:8px">🤖</div>
+          <p style="font-size:13px;color:#4F5E53;margin-bottom:10px">Do skanowania potrzebuję darmowego klucza API Gemini:</p>
+          <ol style="text-align:left;font-size:12px;color:#68776D;line-height:1.8;margin-bottom:12px;padding-left:20px">
+            <li>Wejdź na <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#728E7C">aistudio.google.com/apikey</a></li>
+            <li>Kliknij "Create API key"</li>
+            <li>Skopiuj klucz i wklej poniżej</li>
+          </ol>
+          <input type="text" id="gemini-key-input" placeholder="Wklej klucz AIza..." 
+            style="width:100%;padding:10px 14px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#FAF8F2">
+          <button onclick="app.scanner._saveAndScan()" 
+            style="width:100%;padding:12px;margin-top:8px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer">
+            ✓ Zapisz i skanuj
+          </button>
+        </div>
+      `);
+      return;
+    }
+    this._openCamera();
+  },
+
+  _saveAndScan() {
+    const key = document.getElementById('gemini-key-input').value.trim();
+    if (key) {
+      app.data.settings.geminiKey = key;
+      Store.save(app.data);
+      app.ui.closeModal();
+      this._openCamera();
+    }
+  },
+
+  _openCamera() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0';
+    document.body.appendChild(input);
+
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      document.body.removeChild(input);
+      if (!file) return;
+
+      app.ui.openModal('🔄 Skanowanie...', `
+        <div style="text-align:center;padding:24px">
+          <div style="font-size:56px;margin-bottom:12px">📸</div>
+          <p style="color:#68776D;font-size:13px">Analizuję zdjęcie przez AI...</p>
+          <div style="width:100%;height:4px;background:#E8EDE8;border-radius:4px;margin-top:16px;overflow:hidden">
+            <div style="width:40%;height:100%;background:linear-gradient(90deg,#7DA08A,#4F735C);border-radius:4px;animation:scan-progress 1.2s ease-in-out infinite"></div>
+          </div>
+          <style>@keyframes scan-progress{0%{width:20%}50%{width:80%}100%{width:20%}}</style>
+        </div>
+      `);
+
+      this._analyze(file);
+    });
+
+    input.click();
+  },
+
+  async _analyze(file) {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result.split(',')[1];
+      const key = this.getApiKey();
+
+      try {
+        const resp = await fetch(`${this.API_URL}?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: `Jesteś asystentem rozpoznawania produktów spożywczych.
+Przeanalizuj zdjęcie i wypisz WSZYSTKIE widoczne produkty spożywcze.
+Dla każdego produktu podaj:
+- nazwa: po polsku (np. "Jogurt naturalny", "Pierś z kurczaka")
+- kategoria: białko|nabiał|warzywa|owoce|węglowodany|tłuszcze|napoje|przyprawy|gotowe dania|inne
+- ilosc: szacunkowa ilość (np. "500g", "2 sztuki", "1 opakowanie")
+- emoji: odpowiedni emoji
+
+Zwróć TYLKO tablicę JSON, bez formatowania:
+[{"nazwa":"...","kategoria":"...","ilosc":"...","emoji":"..."}]
+Jeśli nic nie widzisz: []` },
+                { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } }
+              ]
+            }]
+          })
+        });
+
+        const result = await resp.json();
+        if (!resp.ok) throw new Error(result.error?.message || `Błąd ${resp.status}`);
+
+        const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+        let items = [];
+        try {
+          const match = text.match(/\[[\s\S]*?\]/);
+          items = match ? JSON.parse(match[0]) : JSON.parse(text);
+        } catch(e) {
+          items = [];
+        }
+        if (!Array.isArray(items)) items = [];
+
+        if (items.length === 0) {
+          app.ui.openModal('📸 Skanowanie', `
+            <div style="text-align:center;padding:20px">
+              <div style="font-size:48px;margin-bottom:8px">🔍</div>
+              <p style="color:#68776D;font-size:13px">Nie znaleziono produktów. Zrób lepsze zdjęcie.</p>
+              <button onclick="app.scanner.scanPantry()" 
+                style="width:100%;padding:12px;margin-top:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFF;font-size:15px;font-weight:600;cursor:pointer">
+                📸 Skanuj ponownie
+              </button>
+            </div>
+          `);
+          return;
+        }
+
+        this._showResults(items);
+
+      } catch (err) {
+        const isQuota = err.message.includes('quota') || err.message.includes('429') || err.message.includes('RESOURCE_EXHAUSTED');
+        app.ui.openModal('❌ Błąd', `
+          <div style="text-align:center;padding:16px">
+            <div style="font-size:40px;margin-bottom:8px">${isQuota ? '💸' : '⚠️'}</div>
+            <p style="color:#68776D;font-size:13px">${err.message}</p>
+            ${isQuota ? '<p style="font-size:12px;color:#8AA08E;margin-top:6px">Darmowy limit wyczerpany — spróbuj za chwilę.</p>' : ''}
+            <button onclick="app.scanner.scanPantry()" 
+              style="width:100%;padding:12px;margin-top:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFF;font-size:15px;font-weight:600;cursor:pointer">
+              🔄 Spróbuj ponownie
+            </button>
+          </div>
+        `);
+      }
+    };
+    reader.readAsDataURL(file);
+  },
+
+  _showResults(items) {
+    this._items = items;
+    this._selected = items.map(() => true);
+    this._qtys = items.map(i => i.ilosc || '');
+
+    const grouped = {};
+    items.forEach((item, idx) => {
+      const cat = SCAN_CATEGORIES.includes(item.kategoria) ? item.kategoria : 'inne';
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(idx);
+    });
+
+    let html = `
+      <p style="font-size:13px;color:#4F5E53;margin-bottom:8px">
+        ✅ Znaleziono <strong>${items.length}</strong> produktów:
+      </p>
+      <div style="max-height:45vh;overflow-y:auto;margin-bottom:8px">`;
+
+    SCAN_CATEGORIES.forEach(cat => {
+      const indices = grouped[cat];
+      if (!indices) return;
+      html += `<div style="margin-bottom:4px">
+        <div style="font-size:11px;font-weight:600;color:#4F5E53;margin-bottom:2px;padding:0 4px">${SCAN_CAT_LABELS[cat] || cat}</div>`;
+      indices.forEach(gi => {
+        const item = items[gi];
+        const fid = `sc-${gi}`;
+        html += `
+        <div style="display:flex;align-items:center;gap:4px;padding:5px 8px;margin-bottom:2px;background:#F5F8F5;border-radius:8px;border:1px solid #E8EDE8">
+          <input type="checkbox" id="${fid}" checked onchange="app.scanner._toggle(${gi})" style="accent-color:#728E7C;width:15px;height:15px">
+          <label for="${fid}" style="flex:1;font-size:12px;color:#1F2621;cursor:pointer">${item.emoji || '📦'} ${item.nazwa}</label>
+          <input type="text" value="${this._qtys[gi]}" onchange="app.scanner._setQty(${gi},this.value)"
+            placeholder="ilość" style="width:60px;padding:3px 6px;border:1px solid #D0D8D0;border-radius:6px;font-size:10px;background:#FAF8F2;text-align:center">
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    html += `</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="app.scanner._confirmAdd()" 
+          style="flex:1;padding:11px;border:none;border-radius:12px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFF;font-size:14px;font-weight:600;cursor:pointer">
+          ✓ Dodaj zaznaczone
+        </button>
+        <button onclick="app.ui.closeModal()" 
+          style="padding:11px 14px;border:1px solid #C8D0C8;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:14px;font-weight:500;cursor:pointer">
+          ✕ Anuluj
+        </button>
+      </div>`;
+
+    app.ui.openModal('📸 Wyniki skanowania', html);
+  },
+
+  _toggle(idx) {
+    if (idx >= 0 && idx < this._selected.length) {
+      this._selected[idx] = !this._selected[idx];
+    }
+  },
+
+  _setQty(idx, val) {
+    if (idx >= 0 && idx < this._qtys.length) {
+      this._qtys[idx] = val;
+    }
+  },
+
+  _confirmAdd() {
+    if (!app.data.pantry) app.data.pantry = [];
+    const existing = new Set(app.data.pantry.map(i => i.name.toLowerCase().trim()));
+    let added = 0, skipped = 0;
+
+    this._items.forEach((item, idx) => {
+      if (!this._selected[idx]) return;
+      const name = item.nazwa.charAt(0).toUpperCase() + item.nazwa.slice(1);
+      if (existing.has(name.toLowerCase())) { skipped++; return; }
+      const cat = SCAN_CATEGORIES.includes(item.kategoria) ? item.kategoria : 'inne';
+      app.data.pantry.push({
+        id: 'scan_' + Date.now() + '_' + idx,
+        name, category: cat,
+        qty: this._qtys[idx] || item.ilosc || '',
+        emoji: item.emoji || '📦',
+        inStock: true
+      });
+      existing.add(name.toLowerCase());
+      added++;
+    });
+
+    Store.save(app.data);
+    app.ui.closeModal();
+    app.nav.switch('zakupy');
+    app.ui.showToast(`✅ Dodano ${added} produktów${skipped > 0 ? ` (${skipped} już było)` : ''}`);
+  }
+};
+
 // --- WATER ---
 app.water = {
   getWaterGlassImage(pct) {
@@ -1695,6 +1949,12 @@ app.settings = {
     // Cook together
     document.getElementById('cook-together').checked = app.data.cookTogether;
     document.getElementById('cook-together-label').textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
+    
+    // Gemini key
+    const keyInput = document.getElementById('settings-gemini-key');
+    if (keyInput) {
+      keyInput.value = app.data.settings.geminiKey || '';
+    }
   },
 
   updateKcal(userId, val) {
@@ -1724,6 +1984,15 @@ app.settings = {
     app.data.cookTogether = document.getElementById('cook-together').checked;
     document.getElementById('cook-together-label').textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
     Store.save(app.data);
+  },
+
+  saveGeminiKey() {
+    const input = document.getElementById('settings-gemini-key');
+    if (input) {
+      app.data.settings.geminiKey = input.value.trim();
+      Store.save(app.data);
+      app.ui.showToast('✅ Klucz API zapisany');
+    }
   },
 
   resetAll() {
