@@ -235,11 +235,15 @@
           <div id="settings-appliances" class="appliance-grid"></div>
         </div>
         <div class="card settings-section" style="margin-bottom:20px">
+          <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Połączone profile</div>
+          <div id="settings-pairing"><div style="font-size:12px;color:#9AABA0">Ładowanie...</div></div>
+        </div>
+        <div class="card settings-section" style="margin-bottom:20px">
           <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Razem czy osobno?</div>
           <div class="toggle">
-            <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()">
+            <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()" ${app.auth.getActiveUser()?.pairedWith ? '' : 'disabled'}>
             <span class="toggle-slider"></span>
-            <span id="cook-together-label" style="font-size:13px;color:#4F5E53">Gotujecie razem</span>
+            <span id="cook-together-label" style="font-size:13px;color:#4F5E53">${app.data.cookTogether ? 'Gotujecie razem' : (app.auth.getActiveUser()?.pairedWith ? 'Gotujecie osobno' : 'Połącz profile, by gotować razem')}</span>
           </div>
         </div>
         <div class="card settings-section" style="margin-bottom:20px">

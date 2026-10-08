@@ -242,8 +242,8 @@ const Store = {
     return {
       activeUser: null,
       users: [
-        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, waterGoal: 2000, avatar: '👩' },
-        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨' }
+        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, waterGoal: 2000, avatar: '👩', pairedWith: null, pairRequestFrom: null },
+        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨', pairedWith: null, pairRequestFrom: null }
       ],
       pantry: [
         { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', emoji: '🥚', inStock: true },
@@ -1761,26 +1761,82 @@ app.water = {
 // --- SETTINGS ---
 app.settings = {
   render() {
+    const activeUser = app.auth.getActiveUser();
+    
     // Users
     const usersContainer = document.getElementById('settings-users');
     let userHtml = '';
     app.data.users.forEach(u => {
+      const isActive = u.id === activeUser.id;
+      const kcalEditable = app.data._kcalEditing === u.id;
       userHtml += `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #EEF2EE">
           <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;border-radius:50%;background:${u.id === 'renata' ? '#E8D5C8' : '#C8DCF0'};display:flex;align-items:center;justify-content:center;font-size:16px">${u.id === 'renata' ? '👩' : '👨'}</div>
+            <div style="width:36px;height:36px;border-radius:50%;background:${u.id === 'renata' ? '#E8D5C8' : '#C8DCF0'};display:flex;align-items:center;justify-content:center;font-size:16px">${u.avatar || '👤'}</div>
             <div>
               <div style="font-size:14px;font-weight:600;color:#1F2621">${u.name}</div>
-              <div style="font-size:11px;color:#9AABA0">Cel: ${u.kcal} kcal/dzień</div>
+              <div style="font-size:11px;color:#9AABA0">
+                ${u.pairedWith ? `🧑‍🤝‍🧑 Połączony z ${app.data.users.find(x => x.id === u.pairedWith)?.name || u.pairedWith}` : '—'}
+              </div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <label style="font-size:11px;color:#9AABA0">kcal:</label>
-            <input type="number" value="${u.kcal}" onchange="app.settings.updateKcal('${u.id}', this.value)" min="1000" max="4000" style="width:65px;padding:6px 8px;border-radius:10px;background:#F5F8F5;color:#1F2621;border:1px solid #DEEAE2;font-size:13px;text-align:center;font-family:inherit">
+          <div style="display:flex;align-items:center;gap:6px">
+            ${kcalEditable ? `
+              <input type="number" id="kcal-input-${u.id}" value="${u.kcal}" min="800" max="4000" style="width:65px;padding:6px 8px;border-radius:10px;background:#F5F8F5;color:#1F2621;border:1px solid #7DA08A;font-size:13px;text-align:center;font-family:inherit">
+              <button onclick="app.settings.saveKcal('${u.id}')" style="padding:6px 10px;border:none;border-radius:10px;background:#7DA08A;color:#FFF;font-size:12px;cursor:pointer;font-weight:600">✓</button>
+            ` : `
+              <span style="font-size:13px;font-weight:600;color:#4F5E53;margin-right:4px">${u.kcal} kcal</span>
+              <button onclick="app.settings._kcalEditing = '${u.id}'; app.settings.render()" style="padding:4px 8px;border:1px solid #D6E0D6;border-radius:8px;background:transparent;color:#68776D;font-size:11px;cursor:pointer">✎</button>
+            `}
           </div>
         </div>`;
     });
     usersContainer.innerHTML = userHtml;
+
+    // Pairing section
+    const pairContainer = document.getElementById('settings-pairing');
+    if (pairContainer) {
+      const myUser = app.data.users.find(u => u.id === activeUser.id);
+      const pairedUser = myUser?.pairedWith ? app.data.users.find(u => u.id === myUser.pairedWith) : null;
+      const otherUsers = app.data.users.filter(u => u.id !== activeUser.id);
+      
+      let pairHtml = '';
+      
+      // Pending request from someone else
+      if (myUser?.pairRequestFrom) {
+        const requester = app.data.users.find(u => u.id === myUser.pairRequestFrom);
+        pairHtml += `
+          <div style="background:#FFF8E8;border:1px solid #E8DDB0;border-radius:12px;padding:10px;margin-bottom:10px">
+            <div style="font-size:13px;color:#4F5E53;margin-bottom:8px">📩 ${requester?.name || 'Ktoś'} chce gotować z Tobą!</div>
+            <div style="display:flex;gap:8px">
+              <button onclick="app.settings.acceptPair('${myUser.pairRequestFrom}')" style="flex:1;padding:8px;border:none;border-radius:10px;background:#7DA08A;color:#FFF;font-size:12px;cursor:pointer;font-weight:600">✓ Akceptuj</button>
+              <button onclick="app.settings.rejectPair()" style="flex:1;padding:8px;border:1px solid #D6E0D6;border-radius:10px;background:transparent;color:#68776D;font-size:12px;cursor:pointer">✕ Odrzuć</button>
+            </div>
+          </div>`;
+      }
+      
+      if (pairedUser) {
+        pairHtml += `
+          <div style="background:#EFF5F0;border:1px solid #C8D8C8;border-radius:12px;padding:10px;margin-bottom:10px">
+            <div style="font-size:13px;color:#4F5E53;margin-bottom:6px">🧑‍🤝‍🧑 Gotujecie razem z ${pairedUser.name}</div>
+            <div style="font-size:11px;color:#9AABA0;margin-bottom:8px">Przy posiłkach możesz wybrać tryb 👤 solo lub 👫 wspólny</div>
+            <button onclick="app.settings.removePair()" style="padding:6px 12px;border:1px solid #D6C8C8;border-radius:10px;background:transparent;color:#C07060;font-size:11px;cursor:pointer">Rozłącz</button>
+          </div>`;
+      } else if (!myUser?.pairRequestFrom) {
+        pairHtml += `
+          <div style="font-size:13px;color:#4F5E53;margin-bottom:8px">Połącz się z drugą osobą:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">`;
+        otherUsers.forEach(u => {
+          pairHtml += `
+            <button onclick="app.settings.requestPair('${u.id}')" style="padding:8px 14px;border:1px solid #D6E0D6;border-radius:12px;background:#F5F8F5;color:#4F5E53;font-size:12px;cursor:pointer">
+              ${u.avatar || '👤'} ${u.name}
+            </button>`;
+        });
+        pairHtml += `</div>`;
+      }
+      
+      pairContainer.innerHTML = pairHtml;
+    }
 
     // Appliances
     const appContainer = document.getElementById('settings-appliances');
@@ -1797,20 +1853,90 @@ app.settings = {
     });
     appContainer.innerHTML = appHtml;
 
-    // Cook together
-    document.getElementById('cook-together').checked = app.data.cookTogether;
-    document.getElementById('cook-together-label').textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
+    // Cook together toggle
+    const cookToggle = document.getElementById('cook-together');
+    const cookLabel = document.getElementById('cook-together-label');
+    if (cookToggle && cookLabel) {
+      const isPaired = myUser?.pairedWith;
+      if (isPaired) {
+        cookToggle.disabled = false;
+        cookToggle.checked = app.data.cookTogether;
+        cookLabel.textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
+      } else {
+        cookToggle.disabled = true;
+        cookToggle.checked = false;
+        cookLabel.textContent = 'Połącz profile, by gotować razem';
+      }
+    }
   },
 
-  updateKcal(userId, val) {
-    const kcal = parseInt(val);
-    if (isNaN(kcal) || kcal < 800) return;
+  saveKcal(userId) {
+    const input = document.getElementById('kcal-input-' + userId);
+    if (!input) return;
+    const kcal = parseInt(input.value);
+    if (isNaN(kcal) || kcal < 800 || kcal > 4000) {
+      app.ui.showToast('Podaj wartość między 800 a 4000 kcal');
+      return;
+    }
     const user = app.data.users.find(u => u.id === userId);
     if (user) {
       user.kcal = kcal;
+      app.data._kcalEditing = null;
       Store.save(app.data);
       app.dashboard.render();
+      this.render();
+      app.ui.showToast('✓ Zapisano kaloryczność');
     }
+  },
+
+  requestPair(targetUserId) {
+    const activeUser = app.auth.getActiveUser();
+    const target = app.data.users.find(u => u.id === targetUserId);
+    if (!target) return;
+    target.pairRequestFrom = activeUser.id;
+    Store.save(app.data);
+    this.render();
+    app.ui.showToast('📩 Zaproszenie wysłane do ' + target.name);
+  },
+
+  acceptPair(requesterId) {
+    const activeUser = app.auth.getActiveUser();
+    const me = app.data.users.find(u => u.id === activeUser.id);
+    const requester = app.data.users.find(u => u.id === requesterId);
+    if (!me || !requester) return;
+    me.pairedWith = requesterId;
+    requester.pairedWith = activeUser.id;
+    me.pairRequestFrom = null;
+    requester.pairRequestFrom = null;
+    app.data.cookTogether = true;
+    Store.save(app.data);
+    this.render();
+    app.ui.showToast('🧑‍🤝‍🧑 Połączono! Możecie gotować razem');
+  },
+
+  rejectPair() {
+    const activeUser = app.auth.getActiveUser();
+    const me = app.data.users.find(u => u.id === activeUser.id);
+    if (!me) return;
+    const requester = app.data.users.find(u => u.id === me.pairRequestFrom);
+    if (requester) requester.pairRequestFrom = null;
+    me.pairRequestFrom = null;
+    Store.save(app.data);
+    this.render();
+  },
+
+  removePair() {
+    const activeUser = app.auth.getActiveUser();
+    const me = app.data.users.find(u => u.id === activeUser.id);
+    if (!me || !me.pairedWith) return;
+    const partner = app.data.users.find(u => u.id === me.pairedWith);
+    if (partner) { partner.pairedWith = null; partner.pairRequestFrom = null; }
+    me.pairedWith = null;
+    me.pairRequestFrom = null;
+    app.data.cookTogether = false;
+    Store.save(app.data);
+    this.render();
+    app.ui.showToast('Rozłączono');
   },
 
   toggleAppliance(id) {
