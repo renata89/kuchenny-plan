@@ -661,7 +661,7 @@ app.mealplan = {
 
       const timeLabel = m.time || (m.category === 'breakfast' ? 'ŚNIADANIE' : m.category === 'lunch' ? 'OBIAD' : m.category === 'dinner' ? 'WIECZERZA' : 'POSIŁEK');
       const whomClass = m.shared ? 'shared' : (m.forUser || 'renata');
-      const isShared = m.shared && app.data.cookTogether;
+      const isShared = m.shared;
       // Get macros for the other person when shared
       const otherUserKey = activeUser.id === 'renata' ? 'husband' : 'renata';
       const otherKcal = isShared && m[otherUserKey] ? (m[otherUserKey].kcal || 0) : 0;
@@ -1255,12 +1255,11 @@ app.mealplan = {
     const plan = app.data.mealPlan[dateStr];
     if (!plan || !plan.meals[mealIdx]) return;
     const mealName = plan.meals[mealIdx].name;
-    if (confirm(`Usunąć "${mealName}" z planu?`)) {
-      plan.meals.splice(mealIdx, 1);
-      Store.save(app.data);
-      this.renderDay(dateStr);
-      if (dateStr === getToday()) app.dashboard.render();
-    }
+    plan.meals.splice(mealIdx, 1);
+    Store.save(app.data);
+    this.renderDay(dateStr);
+    if (dateStr === getToday()) app.dashboard.render();
+    app.ui.showToast('✕ Usunięto: ' + mealName);
   }
 };
 
