@@ -1766,16 +1766,17 @@ app.settings = {
     let userHtml = '';
     app.data.users.forEach(u => {
       userHtml += `
-        <div class="user-card">
-          <div>
-            <div class="user-name">${u.name}</div>
-            <div class="user-kcal">Cel: ${u.kcal} kcal/dzień</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #EEF2EE">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:50%;background:${u.id === 'renata' ? '#E8D5C8' : '#C8DCF0'};display:flex;align-items:center;justify-content:center;font-size:16px">${u.id === 'renata' ? '👩' : '👨'}</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:#1F2621">${u.name}</div>
+              <div style="font-size:11px;color:#9AABA0">Cel: ${u.kcal} kcal/dzień</div>
+            </div>
           </div>
-          <div class="user-edit">
-            <label style="font-size:12px;color:var(--muted)">kcal:</label>
-            <input type="number" value="${u.kcal}" 
-              onchange="app.settings.updateKcal('${u.id}', this.value)"
-              min="1000" max="4000">
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:11px;color:#9AABA0">kcal:</label>
+            <input type="number" value="${u.kcal}" onchange="app.settings.updateKcal('${u.id}', this.value)" min="1000" max="4000" style="width:65px;padding:6px 8px;border-radius:10px;background:#F5F8F5;color:#1F2621;border:1px solid #DEEAE2;font-size:13px;text-align:center;font-family:inherit">
           </div>
         </div>`;
     });
