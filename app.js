@@ -10,7 +10,7 @@ const MEAL_DB = {
       name: 'Jajecznica z serem',
       category: 'breakfast',
       time: 'Śniadanie (8:00)',
-      ingredients: ['jajka', 'ser żółty', 'masło', 'chleb żytni'],
+      ingredients: [{name: 'jajka', amount: '2 szt.'}, {name: 'ser żółty', amount: '50g'}, {name: 'masło', amount: '15g'}, {name: 'chleb żytni', amount: '2 kromki (60g)'}],
       macros: { kcal: 420, protein: 28, fat: 28, carbs: 14, fiber: 2 },
       tags: [],
       instructions: 'Roztop masło na patelni. Wbij jajka, mieszaj. Pod koniec dodaj starty ser. Podawaj z kromką chleba.',
@@ -24,7 +24,7 @@ const MEAL_DB = {
       name: 'Tofu scramble z fetą',
       category: 'breakfast',
       time: 'Śniadanie (8:00)',
-      ingredients: ['tofu', 'feta', 'oliwa', 'chleb żytni'],
+      ingredients: [{name: 'tofu', amount: '150g'}, {name: 'feta', amount: '60g'}, {name: 'oliwa', amount: '15ml (1 łyżka)'}, {name: 'chleb żytni', amount: '2 kromki (60g)'}],
       macros: { kcal: 390, protein: 26, fat: 24, carbs: 16, fiber: 3 },
       tags: ['wegetariańskie'],
       instructions: 'Rozgnieć tofu widelcem. Smaż na oliwie 5 min z ulubionymi przyprawami. Dodaj pokruszoną fetę. Podawaj z chlebem.',
@@ -38,7 +38,7 @@ const MEAL_DB = {
       name: 'Jajka zapiekane w airfryer',
       category: 'breakfast',
       time: 'Śniadanie (8:00)',
-      ingredients: ['jajka', 'ser żółty', 'chleb żytni'],
+      ingredients: [{name: 'jajka', amount: '2 szt.'}, {name: 'ser żółty', amount: '50g'}, {name: 'chleb żytni', amount: '2 kromki (60g)'}],
       macros: { kcal: 380, protein: 25, fat: 26, carbs: 12, fiber: 1 },
       tags: ['airfryer'],
       instructions: 'Rozbij jajka do foremki silikonowej. Posyp serem. Airfryer 170°C, 10 min. Podawaj z chlebem.',
@@ -52,7 +52,7 @@ const MEAL_DB = {
       name: 'Omlet z serem (TM6)',
       category: 'breakfast',
       time: 'Śniadanie (8:00)',
-      ingredients: ['jajka', 'ser żółty', 'masło'],
+      ingredients: [{name: 'jajka', amount: '2 szt.'}, {name: 'ser żółty', amount: '50g'}, {name: 'masło', amount: '15g'}],
       macros: { kcal: 400, protein: 27, fat: 30, carbs: 3, fiber: 0 },
       tags: ['thermomix'],
       instructions: 'TM6: jajka do misy, 10s/obr. 4. Dodaj ser, 5s/obr. 3. Wlej do formy. Piecz w airfryer lub na patelni 180°C/12min.',
@@ -66,7 +66,7 @@ const MEAL_DB = {
       name: 'Twarożek z rzodkiewką',
       category: 'breakfast',
       time: 'Śniadanie (8:00)',
-      ingredients: ['twaróg', 'rzodkiewka', 'chleb żytni'],
+      ingredients: [{name: 'twaróg', amount: '150g'}, {name: 'rzodkiewka', amount: '4 szt. (40g)'}, {name: 'chleb żytni', amount: '2 kromki (60g)'}],
       macros: { kcal: 340, protein: 28, fat: 12, carbs: 28, fiber: 4 },
       tags: ['wegetariańskie'],
       instructions: 'Rozgnieć twaróg. Dodaj pokrojoną rzodkiewkę, szczypiorek. Podawaj z chlebem żytnim.',
@@ -82,7 +82,7 @@ const MEAL_DB = {
       name: 'Kurczak z airfryera + warzywa',
       category: 'lunch',
       time: 'Obiad (14:00)',
-      ingredients: ['pierś z kurczaka', 'brokuły', 'ziemniaki', 'oliwa'],
+      ingredients: [{name: 'pierś z kurczaka', amount: '150g'}, {name: 'brokuły', amount: '100g'}, {name: 'ziemniaki', amount: '150g'}, {name: 'oliwa', amount: '15ml (1 łyżka)'}],
       macros: { kcal: 520, protein: 48, fat: 18, carbs: 35, fiber: 6 },
       tags: ['airfryer', 'wysokobiałkowe'],
       instructions: 'Kurczaka pokrój w paski, zamarynuj. Airfryer 180°C/15 min. Warzywa ugotuj na parze lub airfryer 170°C/10min.',
@@ -96,7 +96,7 @@ const MEAL_DB = {
       name: 'Tofu stir-fry z warzywami',
       category: 'lunch',
       time: 'Obiad (14:00)',
-      ingredients: ['tofu', 'papryka', 'cukinia', 'sos sojowy', 'ryż brązowy'],
+      ingredients: [{name: 'tofu', amount: '150g'}, {name: 'papryka', amount: '100g (1/2 szt.)'}, {name: 'cukinia', amount: '100g'}, {name: 'sos sojowy', amount: '15ml'}, {name: 'ryż brązowy', amount: '60g (suchy)'}],
       macros: { kcal: 450, protein: 28, fat: 16, carbs: 50, fiber: 5 },
       tags: ['wegetariańskie'],
       instructions: 'Tofu pokrój w kostkę, obsmaż na oliwie. Dodaj warzywa, smaż 5 min. Dodaj sos sojowy. Podawaj z ryżem.',
@@ -110,7 +110,7 @@ const MEAL_DB = {
       name: 'Zapiekanka z tofu i fetą (TM6)',
       category: 'lunch',
       time: 'Obiad (14:00)',
-      ingredients: ['tofu', 'feta', 'pomidory', 'cukinia', 'oliwa'],
+      ingredients: [{name: 'tofu', amount: '150g'}, {name: 'feta', amount: '60g'}, {name: 'pomidory', amount: '100g'}, {name: 'cukinia', amount: '100g'}, {name: 'oliwa', amount: '15ml (1 łyżka)'}],
       macros: { kcal: 480, protein: 30, fat: 28, carbs: 22, fiber: 4 },
       tags: ['thermomix', 'wegetariańskie'],
       instructions: 'TM6: Warzywa do misy 5s/obr.5. Tofu rozgnieć, wymieszaj z fetą i jajkiem. Piecz w piekarniku 180°C/25min.',
@@ -124,7 +124,7 @@ const MEAL_DB = {
       name: 'Łosoś z warzywami na parze',
       category: 'lunch',
       time: 'Obiad (14:00)',
-      ingredients: ['łosoś', 'brokuły', 'marchewka', 'oliwa', 'kasza gryczana'],
+      ingredients: [{name: 'łosoś', amount: '150g'}, {name: 'brokuły', amount: '100g'}, {name: 'marchewka', amount: '80g (1 szt.)'}, {name: 'oliwa', amount: '15ml (1 łyżka)'}, {name: 'kasza gryczana', amount: '60g (sucha)'}],
       macros: { kcal: 550, protein: 42, fat: 24, carbs: 38, fiber: 5 },
       tags: ['wysokobiałkowe', 'zdrowe tłuszcze'],
       instructions: 'Łososia skrop cytryną, posyp przyprawami. Gotuj na parze w TM6 (Varoma) 20min/Varoma/obr.1. Podawaj z kaszą i warzywami.',
@@ -138,7 +138,7 @@ const MEAL_DB = {
       name: 'Curry z ciecierzycą (TM6)',
       category: 'lunch',
       time: 'Obiad (14:00)',
-      ingredients: ['ciecierzyca', 'mleko kokosowe', 'pomidory', 'szpinak', 'ryż'],
+      ingredients: [{name: 'ciecierzyca', amount: '120g (ugotowana)'}, {name: 'mleko kokosowe', amount: '100ml'}, {name: 'pomidory', amount: '100g'}, {name: 'szpinak', amount: '80g'}, {name: 'ryż', amount: '60g (suchy)'}],
       macros: { kcal: 480, protein: 22, fat: 24, carbs: 52, fiber: 10 },
       tags: ['thermomix', 'wegetariańskie', 'wysokobłonnikowe'],
       instructions: 'TM6: Cebula i czosnek 5s/obr.5. Dodaj przyprawy, 3min/120°C/obr.1. Dodaj pomidory i mleko kokosowe, 15min/100°C/obr.1. Pod koniec dodaj ciecierzycę i szpinak. Podawaj z ryżem.',
@@ -154,7 +154,7 @@ const MEAL_DB = {
       name: 'Sałatka z fetą i awokado',
       category: 'dinner',
       time: 'Kolacja (20:00)',
-      ingredients: ['feta', 'awokado', 'mix sałat', 'ogórek', 'pomidor', 'oliwa'],
+      ingredients: [{name: 'feta', amount: '60g'}, {name: 'awokado', amount: '100g (1/2 szt.)'}, {name: 'mix sałat', amount: '60g'}, {name: 'ogórek', amount: '100g (1/2 szt.)'}, {name: 'pomidor', amount: '100g (1 szt.)'}, {name: 'oliwa', amount: '15ml (1 łyżka)'}],
       macros: { kcal: 380, protein: 14, fat: 30, carbs: 12, fiber: 6 },
       tags: ['wegetariańskie', 'bezglutenowe'],
       instructions: 'Pokrój warzywa i fetę. Wymieszaj z mixem sałat. Polej oliwą.',
@@ -168,7 +168,7 @@ const MEAL_DB = {
       name: 'Tosty z serem w airfryer',
       category: 'dinner',
       time: 'Kolacja (20:00)',
-      ingredients: ['chleb żytni', 'ser żółty', 'pomidor'],
+      ingredients: [{name: 'chleb żytni', amount: '2 kromki (60g)'}, {name: 'ser żółty', amount: '50g'}, {name: 'pomidor', amount: '100g (1 szt.)'}],
       macros: { kcal: 360, protein: 20, fat: 18, carbs: 30, fiber: 3 },
       tags: ['airfryer'],
       instructions: 'Złóż tosty z serem i pomidorem. Airfryer 170°C/8 min. Podawaj z sałatą.',
@@ -182,7 +182,7 @@ const MEAL_DB = {
       name: 'Twaróg z warzywami',
       category: 'dinner',
       time: 'Kolacja (20:00)',
-      ingredients: ['twaróg', 'ogórek', 'rzodkiewka', 'chleb żytni'],
+      ingredients: [{name: 'twaróg', amount: '150g'}, {name: 'ogórek', amount: '100g (1/2 szt.)'}, {name: 'rzodkiewka', amount: '4 szt. (40g)'}, {name: 'chleb żytni', amount: '2 kromki (60g)'}],
       macros: { kcal: 320, protein: 26, fat: 10, carbs: 30, fiber: 4 },
       tags: ['wegetariańskie', 'wysokobiałkowe'],
       instructions: 'Wymieszaj twaróg z pokrojonymi warzywami i szczypiorkiem. Podawaj z chlebem.',
@@ -196,7 +196,7 @@ const MEAL_DB = {
       name: 'Omlet warzywny',
       category: 'dinner',
       time: 'Kolacja (20:00)',
-      ingredients: ['jajka', 'papryka', 'cukinia', 'pomidor'],
+      ingredients: [{name: 'jajka', amount: '2 szt.'}, {name: 'papryka', amount: '100g (1/2 szt.)'}, {name: 'cukinia', amount: '100g'}, {name: 'pomidor', amount: '100g (1 szt.)'}],
       macros: { kcal: 340, protein: 24, fat: 22, carbs: 10, fiber: 3 },
       tags: ['wegetariańskie', 'bezglutenowe'],
       instructions: 'Roztrzep jajka, dodaj pokrojone warzywa. Smaż na patelni lub TM6 10min/100°C/obr.1.',
@@ -210,7 +210,7 @@ const MEAL_DB = {
       name: 'Sałatka z tuńczykiem',
       category: 'dinner',
       time: 'Kolacja (20:00)',
-      ingredients: ['tuńczyk w puszce', 'mix sałat', 'ogórek', 'pomidor', 'oliwa', 'chleb żytni'],
+      ingredients: [{name: 'tuńczyk w puszce', amount: ''}, {name: 'mix sałat', amount: '60g'}, {name: 'ogórek', amount: '100g (1/2 szt.)'}, {name: 'pomidor', amount: '100g (1 szt.)'}, {name: 'oliwa', amount: '15ml (1 łyżka)'}, {name: 'chleb żytni', amount: '2 kromki (60g)'}],
       macros: { kcal: 370, protein: 30, fat: 18, carbs: 20, fiber: 4 },
       tags: ['wysokobiałkowe'],
       instructions: 'Wymieszaj tuńczyka z warzywami i sałatą. Dodaj oliwę. Podawaj z kromką chleba.',
@@ -513,7 +513,7 @@ app.dashboard = {
 
     // Group meals by type
     const mealTypes = { 'śniadanie': [], 'obiad': [], 'kolacja': [], 'przekąska': [], 'posiłek': [] };
-    const labels = { 'śniadanie': 'PORANNY CHLEB', 'obiad': 'BIESIADA', 'kolacja': 'WIECZERZA', 'przekąska': 'PRZEKĄSKA', 'posiłek': 'POSIŁEK' };
+    const labels = { 'śniadanie': 'ŚNIADANIE', 'obiad': 'OBIAD', 'kolacja': 'WIECZERZA', 'przekąska': 'PRZEKĄSKA', 'posiłek': 'POSIŁEK' };
 
     plan.meals.forEach(m => {
       const timeStr = (m.time || m.category || '').toLowerCase();
@@ -649,7 +649,7 @@ app.mealplan = {
         <span id="day-remaining">pozostało: — kcal</span>
       </div>`;
     
-    plan.meals.forEach(m => {
+    plan.meals.forEach((m, idx) => {
       const kcal = m[userKey] ? (m[userKey].kcal || 0) : 0;
       const protein = m[userKey] ? (m[userKey].protein || 0) : 0;
       const fat = m[userKey] ? (m[userKey].fat || 0) : 0;
@@ -659,13 +659,20 @@ app.mealplan = {
       totalFat += fat;
       totalCarbs += carbs;
 
-      const timeLabel = m.time || (m.category === 'breakfast' ? 'PORANNY CHLEB' : m.category === 'lunch' ? 'BIESIADA' : m.category === 'dinner' ? 'WIECZERZA' : 'POSIŁEK');
+      const timeLabel = m.time || (m.category === 'breakfast' ? 'ŚNIADANIE' : m.category === 'lunch' ? 'OBIAD' : m.category === 'dinner' ? 'WIECZERZA' : 'POSIŁEK');
       const whomClass = m.shared ? 'shared' : (m.forUser || 'renata');
+      const isShared = m.shared && app.data.cookTogether;
+      // Look up recipe data for portion info
+      const allRecipes = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+      const recipeData = allRecipes.find(r => r.id === m.recipeId);
       html += `
         <div class="meal-card ${whomClass}" style="margin-bottom:8px;padding:12px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
             <div style="font-size:13px;font-weight:700;color:#4A6150;text-transform:uppercase;letter-spacing:0.5px;font-family:'Cinzel',serif">${timeLabel}</div>
-            <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px;background:transparent;border:none;cursor:pointer">🔄</button>
+            <div style="display:flex;gap:4px">
+              <button class="btn-sm" onclick="app.mealplan.toggleShared('${dateStr}', ${idx})" style="padding:3px 8px;font-size:11px;background:${isShared ? '#D6E8D6' : 'transparent'};border:1px solid ${isShared ? '#7DA08A' : '#C8D0C8'};border-radius:8px;cursor:pointer;color:#4F5E53" title="Gotuj z Rafałem">${isShared ? '👫' : '👤'}</button>
+              <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px;background:transparent;border:none;cursor:pointer">🔄</button>
+            </div>
           </div>
           <div style="font-size:14px;font-weight:600;color:#1F2621;margin-bottom:4px">${m.name}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -673,6 +680,19 @@ app.mealplan = {
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${protein}g</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${fat}g</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${carbs}g</span>
+          </div>
+          <button onclick="app.mealplan.toggleDetails('${m.recipeId}')" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
+          <div id="details-${m.recipeId}" style="display:none;margin-top:8px;padding:10px;background:#FAFCFA;border-radius:12px;border:1px solid #E8EFE8">
+            <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:6px">🛒 Składniki:</div>
+            <ul style="margin:0 0 10px 0;padding-left:18px;font-size:12px;color:#4F5E53;line-height:1.7">
+              ${(m.ingredients||[]).map(i => `<li>${i.name}${i.amount ? ' — ' + i.amount : ''}</li>`).join('')}
+            </ul>
+            ${isShared ? `
+            <div style="font-size:11px;color:#4F5E53;background:#EFF5F0;padding:6px 10px;border-radius:8px;margin-bottom:8px">
+              <strong>Porcje:</strong> Renata ×1 · Rafał ×${Math.round((recipeData && recipeData.husband_portion) || 1.5)}
+            </div>` : ''}
+            <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:4px">👨‍🍳 Przygotowanie:</div>
+            <p style="margin:0;font-size:12px;color:#68776D;line-height:1.6">${m.instructions}</p>
           </div>
         </div>`;
     });
@@ -811,7 +831,8 @@ app.mealplan = {
       category: category,
       tags: recipe.tags || [],
       shared: shared,
-      instructions: recipe.instructions
+      instructions: recipe.instructions,
+      ingredients: recipe.ingredients || []
     };
 
     if (shared) {
@@ -837,7 +858,7 @@ app.mealplan = {
       <div class="text-muted" style="margin-bottom:12px">${appliancesHtml}</div>
       <h4 style="margin-bottom:8px">Składniki na 1 porcję (Renata):</h4>
       <ul style="margin-bottom:12px;padding-left:20px;color:var(--muted)">
-        ${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}
+        ${recipe.ingredients.map(i => `<li>${i.name}${i.amount ? ' — <strong>' + i.amount + '</strong>' : ''}</li>`).join('')}
       </ul>
       <h4 style="margin-bottom:8px">Przepis:</h4>
       <p style="color:var(--muted);line-height:1.6">${recipe.instructions}</p>
@@ -996,7 +1017,7 @@ app.mealplan = {
 
       <h4 style="margin-bottom:4px;font-size:13px;color:#1F2621">🛒 Składniki</h4>
       <ul style="margin-bottom:10px;padding-left:18px;font-size:12px;color:#4F5E53">
-        ${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}
+        ${recipe.ingredients.map(i => `<li>${i.name}${i.amount ? ' — <strong>' + i.amount + '</strong>' : ''}</li>`).join('')}
       </ul>
 
       <h4 style="margin-bottom:4px;font-size:13px;color:#1F2621">👨‍🍳 Przygotowanie</h4>
@@ -1019,7 +1040,7 @@ app.mealplan = {
     const existingNames = new Set(app.data.pantry.map(i => i.name.toLowerCase().trim()));
 
     recipe.ingredients.forEach(ingredient => {
-      const name = ingredient.trim();
+      const name = ingredient.name ? ingredient.name.trim() : String(ingredient).trim();
       const nameLower = name.toLowerCase();
       if (!existingNames.has(nameLower)) {
         // Determine category based on common keywords
@@ -1185,6 +1206,26 @@ app.mealplan = {
     this.renderDay(dateStr);
     if (dateStr === getToday()) app.dashboard.render();
     app.ui.showToast('✓ Dodano: ' + name);
+  },
+
+  toggleDetails(recipeId) {
+    const el = document.getElementById('details-' + recipeId);
+    if (el) {
+      const isHidden = el.style.display === 'none';
+      el.style.display = isHidden ? 'block' : 'none';
+      const btn = el.parentElement.querySelector('button');
+      if (btn) btn.textContent = isHidden ? '📖 Ukryj składniki i przepis' : '📖 Pokaż składniki i przepis';
+    }
+  },
+
+  toggleShared(dateStr, mealIdx) {
+    const plan = app.data.mealPlan[dateStr];
+    if (!plan || !plan.meals[mealIdx]) return;
+    const meal = plan.meals[mealIdx];
+    meal.shared = !meal.shared;
+    Store.save(app.data);
+    this.renderDay(dateStr);
+    if (dateStr === getToday()) app.dashboard.render();
   }
 };
 
