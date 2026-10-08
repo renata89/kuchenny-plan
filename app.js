@@ -512,14 +512,16 @@ app.dashboard = {
     let html = '';
 
     // Group meals by type
-    const mealTypes = { 'śniadanie': [], 'obiad': [], 'kolacja': [] };
-    const labels = { 'śniadanie': 'ŚNIADANIE', 'obiad': 'OBIAD', 'kolacja': 'KOLACJA' };
+    const mealTypes = { 'śniadanie': [], 'obiad': [], 'kolacja': [], 'przekąska': [], 'posiłek': [] };
+    const labels = { 'śniadanie': 'ŚNIADANIE', 'obiad': 'OBIAD', 'kolacja': 'KOLACJA', 'przekąska': 'PRZEKĄSKA', 'posiłek': 'POSIŁEK' };
 
     plan.meals.forEach(m => {
       const timeStr = (m.time || m.category || '').toLowerCase();
-      let key = 'kolacja';
+      let key = 'posiłek';
       if (timeStr.includes('śniadanie') || timeStr.includes('breakfast')) key = 'śniadanie';
       else if (timeStr.includes('obiad') || timeStr.includes('lunch')) key = 'obiad';
+      else if (timeStr.includes('kolacja') || timeStr.includes('dinner')) key = 'kolacja';
+      else if (timeStr.includes('przekąska') || timeStr.includes('snack')) key = 'przekąska';
       mealTypes[key].push(m);
     });
 
