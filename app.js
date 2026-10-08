@@ -669,7 +669,7 @@ const MEAL_DB = {
       shared: true,
       renata_portion: 1,
       husband_portion: 1.4
-    }
+    },
     {
       id: 'dn-salatka-brokul-fitatu',
       name: 'Sałatka z brokułu i pestek dyni',
