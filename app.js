@@ -145,6 +145,51 @@ const MEAL_DB = {
       appliances: ['thermomix'],
       shared: true,
       renata_portion: 1,
+      husband_portion: 1.4
+    },
+    {
+      id: 'lu-pulpety-indycze-tm6',
+      name: 'Pulpety indycze nadziewane mozzarellą',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'mięso indycze mielone', amount: '200g'}, {name: 'mozzarella', amount: '60g'}, {name: 'jajko', amount: '1 szt.'}, {name: 'bułka tarta', amount: '20g'}, {name: 'pomidory krojone', amount: '200g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'oliwa', amount: '10ml'}, {name: 'bazylia', amount: '3g'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 480, protein: 42, fat: 24, carbs: 18, fiber: 3 },
+      tags: ['thermomix', 'wysokobiałkowe'],
+      instructions: 'Cebulę i czosnek wsyp do misy, rozdrobnić 5s/obr.5. Dodać mięso mielone, jajko, bułkę tartą, sól i pieprz — wymieszać 20s/obr.4. Formować pulpety z kawałkiem mozzarelli w środku. Pomidory wlać do misy, dodać bazylię — 5min/100°C/obr.1. Ułożyć pulpety w koszyku Varoma — 25min/Varoma/obr.1. Podawać z kaszą lub ryżem.',
+      appliances: ['thermomix'],
+      image: 'https://source.unsplash.com/400x300/?meatballs-tomato',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.5
+    },
+    {
+      id: 'lu-kurczak-papryka-tm6',
+      name: 'Kurczak w sosie paprykowym z ryżem',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'pierś z kurczaka', amount: '180g'}, {name: 'papryka czerwona', amount: '100g'}, {name: 'cebula', amount: '50g'}, {name: 'śmietanka 18%', amount: '50ml'}, {name: 'koncentrat pomidorowy', amount: '30g'}, {name: 'ryż', amount: '60g (suchy)'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'papryka słodka', amount: '5g'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 510, protein: 45, fat: 14, carbs: 52, fiber: 4 },
+      tags: ['thermomix', 'wysokobiałkowe'],
+      instructions: 'Cebulę, czosnek i paprykę do misy — rozdrobnić 5s/obr.5. Dodać oliwę — 3min/120°C/obr.1. Dodać kurczaka pokrojonego w kawałki, koncentrat pomidorowy, śmietankę i przyprawy — 15min/100°C/obr.1. Ryż ugotować osobno. Podawać kurczaka z ryżem.',
+      appliances: ['thermomix'],
+      image: 'https://source.unsplash.com/400x300/?chicken-paprika',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.5
+    },
+    {
+      id: 'lu-curry-soczewica-tm6',
+      name: 'Curry z soczewicy z kurczakiem',
+      category: 'lunch',
+      time: 'Obiad (14:00)',
+      ingredients: [{name: 'pierś z kurczaka', amount: '150g'}, {name: 'soczewica czerwona', amount: '60g (sucha)'}, {name: 'mleko kokosowe', amount: '100ml'}, {name: 'pomidory krojone', amount: '150g'}, {name: 'cebula', amount: '50g'}, {name: 'imbir', amount: '10g'}, {name: 'curry', amount: '5g'}, {name: 'kurkuma', amount: '2g'}, {name: 'sól', amount: '2g'}],
+      macros: { kcal: 460, protein: 38, fat: 18, carbs: 38, fiber: 8 },
+      tags: ['thermomix', 'wysokobiałkowe', 'wysokobłonnikowe'],
+      instructions: 'Cebulę i imbir do misy — rozdrobnić 5s/obr.5. Dodać oliwę i przyprawy — 3min/120°C/obr.1. Dodać kurczaka pokrojonego w kostkę, soczewicę, pomidory, mleko kokosowe i sól — 20min/100°C/obr.1. Podawać z ryżem lub samodzielnie. Posypać kolendrą.',
+      appliances: ['thermomix'],
+      image: 'https://source.unsplash.com/400x300/?curry-lentil',
+      shared: true,
+      renata_portion: 1,
       husband_portion: 1.5
     }
   ],
@@ -218,6 +263,36 @@ const MEAL_DB = {
       shared: true,
       renata_portion: 1,
       husband_portion: 1.4
+    },
+    {
+      id: 'dn-losos-varoma-tm6',
+      name: 'Łosoś z warzywami na parze (Varoma)',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'łosoś', amount: '150g'}, {name: 'brokuły', amount: '100g'}, {name: 'marchewka', amount: '80g'}, {name: 'cukinia', amount: '80g'}, {name: 'sok z cytryny', amount: '15ml'}, {name: 'koperek', amount: '5g'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 380, protein: 34, fat: 22, carbs: 12, fiber: 5 },
+      tags: ['thermomix', 'wysokobiałkowe', 'bezglutenowe'],
+      instructions: 'Do misy wlać 500ml wody. Łososia skropić cytryną, posolić i popieprzyć. Ułożyć w górnej części Varoma. Warzywa pokroić w słupki, ułożyć w dolnej części Varoma. Gotować 20min/Varoma/obr.1. Posypać koperkiem przed podaniem.',
+      appliances: ['thermomix'],
+      image: 'https://source.unsplash.com/400x300/?salmon-steamed-vegetables',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.4
+    },
+    {
+      id: 'dn-zupa-krem-brokuly-tm6',
+      name: 'Zupa krem z brokułów',
+      category: 'dinner',
+      time: 'Kolacja (20:00)',
+      ingredients: [{name: 'brokuły', amount: '200g'}, {name: 'ziemniak', amount: '100g'}, {name: 'cebula', amount: '50g'}, {name: 'czosnek', amount: '2 ząbki'}, {name: 'bulion warzywny', amount: '300ml'}, {name: 'śmietanka 18%', amount: '30ml'}, {name: 'sól', amount: '2g'}, {name: 'pieprz', amount: '1g'}],
+      macros: { kcal: 180, protein: 10, fat: 8, carbs: 20, fiber: 6 },
+      tags: ['thermomix', 'wegetariańskie', 'niskokaloryczne'],
+      instructions: 'Cebulę i czosnek do misy — rozdrobnić 5s/obr.5. Dodać oliwę — 3min/120°C/obr.1. Dodać brokuły, ziemniaka i bulion — 20min/100°C/obr.1. Zmiksować 30s/obr.10. Dodać śmietankę, sól i pieprz — wymieszać 10s/obr.3. Podawać z grzankami.',
+      appliances: ['thermomix'],
+      image: 'https://source.unsplash.com/400x300/?broccoli-soup',
+      shared: true,
+      renata_portion: 1,
+      husband_portion: 1.3
     }
   ]
 };
@@ -1404,7 +1479,7 @@ app.recipes = {
       html += `
         <div class="card meal-card" style="margin-bottom:10px;cursor:pointer" onclick="app.recipes.showDetail('${r.id}')">
           <div style="display:flex;gap:12px">
-            <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#E8EFE8,#D6E0D6);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px">🍽️</div>
+            <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#E8EFE8,#D6E0D6);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden">${r.image ? `<img src="${r.image}" alt="${r.name}" style="width:100%;height:100%;object-fit:cover">` : '🍽️'}</div>
             <div style="flex:1;min-width:0">
               <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${pills}</div>
               <div class="meal-name">${r.name}</div>
