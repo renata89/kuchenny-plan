@@ -1722,7 +1722,73 @@ const PRICE_DB = {
 };
 
 app.priceChecker = {
-  // Get estimated price for an ingredient at a specific store
+  _promos: null,
+  _lastFetch: null,
+
+  // Try to fetch latest promos from GitHub raw
+  async fetchLatest() {
+    const urls = [
+      'https://raw.githubusercontent.com/renata89/kuchenny-plan/main/promos.json',
+      'promos.json'  // local fallback
+    ];
+    
+    for (const url of urls) {
+      try {
+        const resp = await fetch(url, { cache: 'no-cache' });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && data.stores) {
+            this._promos = data;
+            this._lastFetch = new Date().toISOString();
+            // Cache in localStorage
+            try {
+              localStorage.setItem('kp_promos', JSON.stringify(data));
+            } catch(e) {}
+            return true;
+          }
+        }
+      } catch(e) {
+        // Try next URL
+      }
+    }
+    
+    // Try localStorage cache
+    try {
+      const cached = localStorage.getItem('kp_promos');
+      if (cached) {
+        this._promos = JSON.parse(cached);
+        return true;
+      }
+    } catch(e) {}
+    
+    return false;
+  },
+
+  // Get promo price (checks live data first, then DB)
+  getPromoPrice(storeId, itemName) {
+    const name = itemName.toLowerCase().trim();
+    
+    // Check manual promos first
+    if (app.data.promos?.[storeId]?.[name]) {
+      return app.data.promos[storeId][name].price;
+    }
+    
+    // Check fetched promos
+    if (this._promos?.stores?.[storeId]?.deals) {
+      for (const deal of this._promos.stores[storeId].deals) {
+        const dealName = (deal.name || '').toLowerCase();
+        const normName = (deal.normalized || dealName);
+        if (dealName.includes(name) || name.includes(dealName) || normName.includes(name)) {
+          return deal.price;
+        }
+      }
+    }
+    
+    // Fallback to hardcoded price DB
+    return this.getPrice(itemName, storeId);
+  },
+  
+  // Get hardcoded price from database (fallback)
   getPrice(ingredientName, storeId) {
     const name = ingredientName.toLowerCase().trim();
     for (const [key, data] of Object.entries(PRICE_DB)) {
@@ -2668,6 +2734,9 @@ app.settings = {
 app.init = function() {
   this.nav.init();
   this.pantry.initFilters();
+  
+  // Try to fetch latest promos
+  this.priceChecker.fetchLatest();
   
   if (!app.data.activeUser) {
     // Show start screen

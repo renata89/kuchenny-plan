@@ -1,0 +1,175 @@
+{
+  "generated": "2026-10-08T22:42:04.743531",
+  "stores": {
+    "biedronka": {
+      "source": "https://www.gazetki.pl/sklepy/biedronka/",
+      "updated": "2026-10-08",
+      "deals": [
+        {
+          "name": "Jajka 10 szt",
+          "price": 8.99,
+          "old_price": 12.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Mleko 1L",
+          "price": 2.99,
+          "old_price": 3.49,
+          "unit": "l",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Masło 200g",
+          "price": 4.49,
+          "old_price": 5.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Pierś z kurczaka 1kg",
+          "price": 21.99,
+          "old_price": 27.99,
+          "unit": "kg",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Chleb pszenny",
+          "price": 2.99,
+          "old_price": 3.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        }
+      ]
+    },
+    "lidl": {
+      "source": "https://www.gazetki.pl/sklepy/lidl/",
+      "updated": "2026-10-08",
+      "deals": [
+        {
+          "name": "Jajka 10 szt",
+          "price": 9.49,
+          "old_price": 12.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Mleko 1L",
+          "price": 3.19,
+          "old_price": 3.69,
+          "unit": "l",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Masło 200g",
+          "price": 4.79,
+          "old_price": 5.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Łosoś 200g",
+          "price": 18.99,
+          "old_price": 24.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Ogórki 1kg",
+          "price": 4.99,
+          "old_price": 7.99,
+          "unit": "kg",
+          "timestamp": "2026-10-08"
+        }
+      ]
+    },
+    "auchan": {
+      "source": "https://www.gazetki.pl/sklepy/auchan/",
+      "updated": "2026-10-08",
+      "deals": [
+        {
+          "name": "Jajka 10 szt",
+          "price": 9.99,
+          "old_price": 13.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Mleko 1L",
+          "price": 3.29,
+          "old_price": 3.79,
+          "unit": "l",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Oliwa z oliwek 500ml",
+          "price": 18.99,
+          "old_price": 24.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Makaron 500g",
+          "price": 3.49,
+          "old_price": 4.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        }
+      ]
+    },
+    "dino": {
+      "source": "https://www.gazetki.pl/sklepy/dino/",
+      "updated": "2026-10-08",
+      "deals": [
+        {
+          "name": "Jajka 10 szt",
+          "price": 8.49,
+          "old_price": 11.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Mleko 1L",
+          "price": 2.89,
+          "old_price": 3.29,
+          "unit": "l",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Masło 200g",
+          "price": 4.29,
+          "old_price": 5.49,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        }
+      ]
+    },
+    "carrefour": {
+      "source": "https://www.gazetki.pl/sklepy/carrefour/",
+      "updated": "2026-10-08",
+      "deals": [
+        {
+          "name": "Jajka 10 szt",
+          "price": 10.99,
+          "old_price": 14.99,
+          "unit": "szt",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Mleko 1L",
+          "price": 3.49,
+          "old_price": 3.99,
+          "unit": "l",
+          "timestamp": "2026-10-08"
+        },
+        {
+          "name": "Cukier 1kg",
+          "price": 3.99,
+          "old_price": 4.99,
+          "unit": "kg",
+          "timestamp": "2026-10-08"
+        }
+      ]
+    }
+  }
+}
