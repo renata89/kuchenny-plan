@@ -236,9 +236,9 @@
           <div style="margin-top:16px;padding-top:12px;border-top:1px solid #EEF2EE">
             <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:10px">Razem czy osobno?</div>
             <div class="toggle">
-              <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()" ${app.auth.getActiveUser()?.pairedWith || app.data.cookTogether ? '' : 'disabled'}>
+              <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()">
               <span class="toggle-slider"></span>
-              <span id="cook-together-label" style="font-size:13px;color:#4F5E53">${app.data.cookTogether ? 'Gotujecie razem' : (app.auth.getActiveUser()?.pairedWith ? 'Gotujecie osobno' : 'Połącz profile, by gotować razem')}</span>
+              <span id="cook-together-label" style="font-size:13px;color:#4F5E53">Ładowanie...</span>
             </div>
           </div>
         </div>
@@ -257,10 +257,10 @@
         <div class="card settings-section" style="margin-bottom:28px">
           <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:10px">Dane</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
-            <button class="btn-sm" onclick="app.settings.confirmReset()">🗑️ Resetuj wszystko</button>
-            <button class="btn-sm" onclick="app.settings.exportData()">📥 Eksport</button>
+            <button class="btn-sm" onclick="app.settings.confirmReset()" style="flex:1;min-width:80px">🗑️ Resetuj</button>
+            <button class="btn-sm" onclick="app.settings.exportData()" style="flex:1;min-width:80px">📥 Eksport</button>
             <input type="file" id="import-file" accept=".json" style="display:none" onchange="app.settings.importData(event)">
-            <button class="btn-sm" onclick="document.getElementById('import-file').click()">📤 Import</button>
+            <button class="btn-sm" onclick="document.getElementById('import-file').click()" style="flex:1;min-width:80px">📤 Import</button>
           </div>
         </div>
       </section>

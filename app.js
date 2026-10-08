@@ -1306,10 +1306,10 @@ app.recipes = {
     let html = '<div style="margin-bottom:10px">';
     
     // Main category pills
-    html += '<div style="font-size:10px;font-weight:600;color:#9AABA0;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Posiłek</div>';
+    html += '<div style="font-size:11px;font-weight:700;color:#4F5E53;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Posiłek</div>';
     html += '<div class="filter-bar">';
     html += `<button class="filter-btn ${this.currentFilter === 'all' ? 'active' : ''}" onclick="app.recipes.setFilter('all')">Wszystkie</button>`;
-    const catLabels = { breakfast: 'Śniadania', lunch: 'Obiady', dinner: 'Kolacje' };
+    const catLabels = { breakfast: 'Śniadania', lunch: 'Obiady', dinner: 'Kolacje', snack: 'Przekąski', other: 'Inne' };
     const allCats = [...new Set(all.map(r => r.category))];
     allCats.forEach(c => {
       html += `<button class="filter-btn ${this.currentFilter === c ? 'active' : ''}" onclick="app.recipes.setFilter('${c}')">${catLabels[c] || c}</button>`;
@@ -1318,7 +1318,7 @@ app.recipes = {
 
     // Appliance filters
     if (activeAppliances.length > 0) {
-      html += '<div style="font-size:10px;font-weight:600;color:#9AABA0;margin:8px 0 6px;text-transform:uppercase;letter-spacing:1px">Sprzęt</div>';
+      html += '<div style="font-size:11px;font-weight:700;color:#4F5E53;margin:10px 0 6px;text-transform:uppercase;letter-spacing:1px">Sprzęt</div>';
       html += '<div class="filter-bar">';
       const applianceLabels = { airfryer: '🔥 Air Fryer', thermomix: '⚙️ TM6', lidlomix: '⚙️ Lidlomix', piekarnik: '🔥 Piekarnik', blender: '🔄 Blender', parowar: '♨️ Parowar', grill: '🍖 Grill', slowcooker: '🍲 Slow Cooker', gofrownica: '🧇 Gofrownica', mikrofalowka: '📡 Mikrofalówka', kuchenka: '🔥 Kuchenka', robot: '⚙️ Robot' };
       activeAppliances.forEach(a => {
@@ -1329,7 +1329,7 @@ app.recipes = {
 
     // Dietary tags (only when a main filter is active)
     if (this.currentFilter !== 'all') {
-      html += '<div style="font-size:10px;font-weight:600;color:#9AABA0;margin:8px 0 6px;text-transform:uppercase;letter-spacing:1px">Kategoria</div>';
+      html += '<div style="font-size:11px;font-weight:700;color:#4F5E53;margin:10px 0 6px;text-transform:uppercase;letter-spacing:1px">Kategoria</div>';
       html += '<div class="filter-bar" style="flex-wrap:wrap">';
       [...allTags].forEach(t => {
         const active = this.subFilter === t;
@@ -1399,11 +1399,16 @@ app.recipes = {
 
       html += `
         <div class="card meal-card" style="margin-bottom:10px;cursor:pointer" onclick="app.recipes.showDetail('${r.id}')">
-          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${pills}</div>
-          <div class="meal-name">${r.name}</div>
-          <div class="meal-macros">
-            <span class="meal-macro">Renata: 🔥${macrosR.kcal}kcal | B${macrosR.protein}g T${macrosR.fat}g W${macrosR.carbs}g</span>
-            <span class="meal-macro">Rafał: 🔥${macrosH.kcal}kcal | B${macrosH.protein}g T${macrosH.fat}g W${macrosH.carbs}g</span>
+          <div style="display:flex;gap:12px">
+            <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#E8EFE8,#D6E0D6);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px">🍽️</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${pills}</div>
+              <div class="meal-name">${r.name}</div>
+              <div class="meal-macros" style="margin-top:4px">
+                <span class="meal-macro">Renata: 🔥${macrosR.kcal}kcal | B${macrosR.protein}g T${macrosR.fat}g W${macrosR.carbs}g</span>
+                <span class="meal-macro">Rafał: 🔥${macrosH.kcal}kcal | B${macrosH.protein}g T${macrosH.fat}g W${macrosH.carbs}g</span>
+              </div>
+            </div>
           </div>
         </div>`;
     });
@@ -1939,20 +1944,29 @@ app.settings = {
       });
       displayEl.textContent = names.length ? names.join(', ') : '—';
     }
+    
+    // Handle details summary text change
+    const details = document.getElementById('appliance-details');
+    if (details) {
+      details.addEventListener('toggle', function() {
+        const summary = this.querySelector('summary');
+        if (summary) summary.textContent = this.open ? 'Zwiń listę sprzętów' : 'Rozwiń listę sprzętów';
+      });
+    }
 
-    // Cook together toggle
+    // Cook together toggle - handled fully by JS
     const cookToggle = document.getElementById('cook-together');
     const cookLabel = document.getElementById('cook-together-label');
     if (cookToggle && cookLabel) {
+      const myUser = app.data.users.find(u => u.id === activeUser.id);
       const isPaired = myUser?.pairedWith;
-      if (isPaired) {
-        cookToggle.disabled = false;
-        cookToggle.checked = app.data.cookTogether;
-        cookLabel.textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
-      } else {
-        cookToggle.disabled = true;
+      cookToggle.disabled = !isPaired;
+      if (!isPaired) {
         cookToggle.checked = false;
         cookLabel.textContent = 'Połącz profile, by gotować razem';
+      } else {
+        cookToggle.checked = app.data.cookTogether;
+        cookLabel.textContent = app.data.cookTogether ? 'Gotujecie razem' : 'Gotujecie osobno';
       }
     }
   },
@@ -2039,16 +2053,23 @@ app.settings = {
   },
 
   confirmReset() {
-    if (confirm('Czy na pewno chcesz zresetować wszystkie dane?')) {
-      if (confirm('Wszystkie dane zostaną nieodwracalnie usunięte. Jesteś pewna, że chcesz kontynuować?')) {
-        localStorage.removeItem(Store.key);
-        app.data = Store.defaults();
-        Store.save(app.data);
-        app.nav.switch('dashboard');
-        app.dashboard.render();
-        app.ui.showToast('✓ Dane zresetowane');
-      }
-    }
+    app.ui.openModal('🗑️ Resetowanie danych',
+      `<p style="color:#4F5E53;margin-bottom:12px;line-height:1.6">Czy na pewno chcesz zresetować wszystkie dane?</p>
+      <p style="color:#C07060;font-size:12px;margin-bottom:16px">Wszystkie dane zostaną nieodwracalnie usunięte.</p>
+      <div style="display:flex;gap:8px">
+        <button onclick="app.settings.doReset()" style="flex:1;padding:10px;border:none;border-radius:12px;background:#C07060;color:#FFF;font-size:13px;font-weight:600;cursor:pointer">✓ Tak, usuń wszystko</button>
+        <button onclick="app.ui.closeModal()" style="flex:1;padding:10px;border:1px solid #D6E0D6;border-radius:12px;background:transparent;color:#68776D;font-size:13px;cursor:pointer">Anuluj</button>
+      </div>`);
+  },
+
+  doReset() {
+    localStorage.removeItem(Store.key);
+    app.data = Store.defaults();
+    Store.save(app.data);
+    app.ui.closeModal();
+    app.nav.switch('dashboard');
+    app.dashboard.render();
+    app.ui.showToast('✓ Dane zresetowane');
   },
 
   toggleCookTogether() {
