@@ -1800,6 +1800,9 @@ app.init = function() {
   } else {
     document.getElementById('view-start').style.display = 'none';
     document.getElementById('view-dashboard').style.display = 'block';
+    // Show nav on restore
+    const nav = document.querySelector('.floating-nav');
+    if (nav) nav.style.display = 'flex';
     this.dashboard.render();
     this.water.updateUI();
   }
