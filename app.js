@@ -562,8 +562,10 @@ app.dashboard = {
           font-weight: 700;
           color: #728E7C;
           letter-spacing: 1.5px;
-          padding: 10px 16px 4px;
-          text-transform: uppercase;
+          padding: 6px 16px;
+          background: rgba(114,142,124,0.08);
+          border-radius: 8px;
+          margin: 6px 8px 2px;
           font-family: 'Cinzel', serif;
         }
         .dash-meal-item {
