@@ -246,12 +246,12 @@ const Store = {
         { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨' }
       ],
       pantry: [
-        { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', qtyNum: 12, unit: 'szt', remaining: 12, lowStockThreshold: 3, emoji: '🥚', inStock: false },
-        { id: 'p2', name: 'Ser żółty', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, emoji: '🧀', inStock: false },
-        { id: 'p3', name: 'Chleb żytni', category: 'węglowodany', qty: '1 bochenek', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, emoji: '🍞', inStock: false },
-        { id: 'p4', name: 'Tofu', category: 'białko', qty: '300g', qtyNum: 300, unit: 'g', remaining: 300, lowStockThreshold: 100, emoji: '🧊', inStock: false },
-        { id: 'p5', name: 'Feta', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, emoji: '🧀', inStock: false },
-        { id: 'p6', name: 'Oliwa z oliwek', category: 'tłuszcze', qty: 'butelka', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, emoji: '', inStock: false }
+        { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', qtyNum: 12, unit: 'szt', remaining: 12, lowStockThreshold: 3, expiryDate: null, emoji: '🥚', inStock: false },
+        { id: 'p2', name: 'Ser żółty', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, expiryDate: null, emoji: '🧀', inStock: false },
+        { id: 'p3', name: 'Chleb żytni', category: 'węglowodany', qty: '1 bochenek', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, expiryDate: null, emoji: '🍞', inStock: false },
+        { id: 'p4', name: 'Tofu', category: 'białko', qty: '300g', qtyNum: 300, unit: 'g', remaining: 300, lowStockThreshold: 100, expiryDate: null, emoji: '🧊', inStock: false },
+        { id: 'p5', name: 'Feta', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, expiryDate: null, emoji: '🧀', inStock: false },
+        { id: 'p6', name: 'Oliwa z oliwek', category: 'tłuszcze', qty: 'butelka', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, expiryDate: null, emoji: '', inStock: false }
       ],
       appliances: ['airfryer', 'thermomix'],
       cookTogether: true,
@@ -1338,6 +1338,7 @@ app.pantry = {
               ${isDepleted ? '🔄' : ''}
             </div>
           ` : ''}
+          ${app.pantry.renderExpiryBadge(item)}
         </div>`;
     });
 
@@ -1376,6 +1377,11 @@ app.pantry = {
       </div>
       <label>Próg niskiego stanu (alert gdy <=)</label>
       <input type="number" id="pantry-threshold" placeholder="np. 50" min="0">
+      <label>Data ważności (opcjonalnie)</label>
+      <div style="display:flex;gap:6px">
+        <input type="date" id="pantry-expiry" style="flex:1;padding:10px 14px;border:1px solid #D0D8D0;border-radius:12px;font-size:13px;font-family:inherit;background:#FAF8F2">
+        <button class="btn-sm" onclick="app.scanner.scanSingleExpiry()" title="Skanuj datę z opakowania" style="flex-shrink:0;padding:10px">📷</button>
+      </div>
       <label>Emoji (opcjonalnie)</label>
       <input type="text" id="pantry-emoji" placeholder="np. 🥩" maxlength="2">
       <button class="btn-primary" onclick="app.pantry.add()">Dodaj do spiżarni</button>
@@ -1389,6 +1395,8 @@ app.pantry = {
     const qtyNum = parseFloat(document.getElementById('pantry-qty-num').value) || 1;
     const unit = document.getElementById('pantry-unit').value;
     const threshold = parseInt(document.getElementById('pantry-threshold').value) || Math.max(1, Math.round(qtyNum * 0.2));
+    const expiryEl = document.getElementById('pantry-expiry');
+    const expiryDate = expiryEl ? expiryEl.value || null : null;
     const emojiElement = document.getElementById('pantry-emoji');
     const emoji = emojiElement ? (emojiElement.value.trim() || '📦') : '📦';
 
@@ -1400,6 +1408,7 @@ app.pantry = {
       qtyNum, unit,
       remaining: qtyNum,
       lowStockThreshold: threshold,
+      expiryDate,
       emoji,
       inStock: false
     });
@@ -1412,6 +1421,23 @@ app.pantry = {
     app.data.pantry = app.data.pantry.filter(i => i.id !== id);
     Store.save(app.data);
     this.render();
+  },
+
+  renderExpiryBadge(item) {
+    if (!item.expiryDate) return '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const expiry = new Date(item.expiryDate + 'T12:00:00');
+    const diffDays = Math.round((expiry - today) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return `<div class="expiry-badge expired">Przeterminowane ${Math.abs(diffDays)}d temu</div>`;
+    } else if (diffDays === 0) {
+      return `<div class="expiry-badge expires-today">📅 Dziś!</div>`;
+    } else if (diffDays <= 3) {
+      return `<div class="expiry-badge expiring">📅 Za ${diffDays} dni</div>`;
+    } else {
+      return `<div class="expiry-badge ok">${item.expiryDate}</div>`;
+    }
   }
 };
 
@@ -1748,10 +1774,37 @@ app.pantryManager = {
   getStockSummary() {
     const low = this.getLowStockItems();
     const depleted = this.getDepletedItems();
+    const expiring = this.getExpiringItems();
     let parts = [];
-    if (low.length > 0) parts.push(`⚠️ Kończy się: ${low.map(i => i.name).join(', ')}`);
-    if (depleted.length > 0) parts.push(`🛒 Wykorzystane: ${depleted.map(i => i.name).join(', ')}`);
+    if (low.length > 0) parts.push('⚠️ Kończy się: ' + low.map(i => i.name).join(', '));
+    if (depleted.length > 0) parts.push('🛒 Wykorzystane: ' + depleted.map(i => i.name).join(', '));
+    if (expiring.length > 0) parts.push('📅 Za chwilę przeterminowane: ' + expiring.map(i => i.name + ' (' + i.expiryDate + ')').join(', '));
     return parts;
+  },
+
+  // Get items expiring within N days
+  getExpiringItems(days = 3) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const limit = new Date(today);
+    limit.setDate(limit.getDate() + days);
+    
+    return (app.data.pantry || []).filter(i => {
+      if (!i.expiryDate || i.inStock) return false;
+      const expiry = new Date(i.expiryDate + 'T12:00:00');
+      return expiry >= today && expiry <= limit;
+    });
+  },
+
+  // Get already expired items
+  getExpiredItems() {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    return (app.data.pantry || []).filter(i => {
+      if (!i.expiryDate || i.inStock) return false;
+      const expiry = new Date(i.expiryDate + 'T12:00:00');
+      return expiry < today;
+    });
   }
 };
 
@@ -1859,9 +1912,10 @@ Dla każdego produktu podaj:
 - kategoria: białko|nabiał|warzywa|owoce|węglowodany|tłuszcze|napoje|przyprawy|gotowe dania|inne
 - ilosc: szacunkowa ilość (np. "500g", "2 sztuki", "1 opakowanie")
 - emoji: odpowiedni emoji
+- data_waznosci: data ważności jeśli widoczna na opakowaniu w formacie YYYY-MM-DD, lub null jeśli nie widać
 
 Zwróć TYLKO tablicę JSON, bez formatowania:
-[{"nazwa":"...","kategoria":"...","ilosc":"...","emoji":"..."}]
+[{"nazwa":"...","kategoria":"...","ilosc":"...","emoji":"...","data_waznosci":null}]
 Jeśli nic nie widzisz: []` },
                 { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } }
               ]
@@ -2017,12 +2071,30 @@ Jeśli nic nie widzisz: []` },
       // Calculate low stock threshold (default: 20% of total or minimum 1)
       const threshold = Math.max(1, Math.round(qtyNum * 0.2));
       
+      // Parse expiry date
+      let expiryDate = null;
+      if (item.data_waznosci) {
+        // Try to parse various date formats
+        const dateStr = String(item.data_waznosci);
+        const dateMatch = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (dateMatch) {
+          expiryDate = dateMatch[1] + '-' + dateMatch[2].padStart(2,'0') + '-' + dateMatch[3].padStart(2,'0');
+        } else {
+          // Try DD-MM-YYYY or DD.MM.YYYY
+          const altMatch = dateStr.match(/(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/);
+          if (altMatch) {
+            expiryDate = altMatch[3] + '-' + altMatch[2].padStart(2,'0') + '-' + altMatch[1].padStart(2,'0');
+          }
+        }
+      }
+      
       app.data.pantry.push({
         id: 'scan_' + Date.now() + '_' + idx,
         name, category: cat,
         qty: qtyText || (qtyNum + ' ' + unit),
         qtyNum, unit, remaining: qtyNum,
         lowStockThreshold: threshold,
+        expiryDate,
         emoji: item.emoji || '📦',
         inStock: false
       });
@@ -2034,6 +2106,93 @@ Jeśli nic nie widzisz: []` },
     app.ui.closeModal();
     app.nav.switch('zakupy');
     app.ui.showToast(`✅ Dodano ${added} produktów${skipped > 0 ? ` (${skipped} już było)` : ''}`);
+  },
+
+  // Scan a single expiry date from a product package
+  scanSingleExpiry() {
+    const key = this.getApiKey();
+    if (!key) {
+      app.ui.openModal('🔑 Klucz API Gemini', '<p style="color:#68776D">Najpierw dodaj klucz w Ustawieniach.</p>');
+      return;
+    }
+    
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0';
+    document.body.appendChild(input);
+    
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      document.body.removeChild(input);
+      if (!file) return;
+      
+      app.ui.openModal('📅 Skanowanie daty...', `
+        <div style="text-align:center;padding:20px">
+          <div style="font-size:48px;margin-bottom:8px">📅</div>
+          <p style="color:#68776D;font-size:13px">Odczytuję datę ważności...</p>
+          <div style="width:100%;height:3px;background:#E8EDE8;border-radius:4px;margin-top:12px;overflow:hidden">
+            <div style="width:40%;height:100%;background:linear-gradient(90deg,#7DA08A,#4F735C);border-radius:4px;animation:scan-progress 1.2s ease-in-out infinite"></div>
+          </div>
+        </div>
+      `);
+      
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = reader.result.split(',')[1];
+        try {
+          const resp = await fetch(`${this.API_URL}?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: 'Jesteś asystentem czytania dat ważności. Spójrz na zdjęcie opakowania produktu. Znajdź datę ważności (expiry date, best before, data przydatności, zużyć do, ważne do, termin przydatności). Zwróć TYLKO datę w formacie YYYY-MM-DD. Jeśli nie widzisz daty, zwróć "null". Żadnych innych słów, tylko data lub null.' },
+                  { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } }
+                ]
+              }]
+            })
+          });
+          
+          const result = await resp.json();
+          if (!resp.ok) throw new Error(result.error?.message || 'Błąd');
+          
+          const text = result.candidates?.[0]?.content?.parts?.[0]?.text || 'null';
+          const dateMatch = text.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+          
+          app.ui.closeModal();
+          
+          if (dateMatch) {
+            const formattedDate = dateMatch[1] + '-' + dateMatch[2].padStart(2,'0') + '-' + dateMatch[3].padStart(2,'0');
+            const expiryInput = document.getElementById('pantry-expiry');
+            if (expiryInput) {
+              expiryInput.value = formattedDate;
+              app.ui.showToast('📅 Data ważności: ' + formattedDate);
+            }
+          } else {
+            // Try DD-MM-YYYY or DD.MM.YYYY
+            const altMatch = text.match(/(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/);
+            if (altMatch) {
+              const formattedDate = altMatch[3] + '-' + altMatch[2].padStart(2,'0') + '-' + altMatch[1].padStart(2,'0');
+              const expiryInput = document.getElementById('pantry-expiry');
+              if (expiryInput) {
+                expiryInput.value = formattedDate;
+                app.ui.showToast('📅 Data ważności: ' + formattedDate);
+              }
+            } else {
+              app.ui.showToast('📅 Nie znaleziono daty na zdjęciu');
+            }
+          }
+        } catch(err) {
+          app.ui.closeModal();
+          app.ui.showToast('❌ Błąd: ' + err.message);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    input.click();
   }
 };
 

@@ -743,12 +743,12 @@ const Store = {
         { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨', pairedWith: null, pairRequestFrom: null, mealTimes: { breakfast: '8:00', lunch: '13:00', dinner: '20:00' }, activeMealTypes: ['breakfast', 'lunch', 'dinner'] }
       ],
       pantry: [
-        { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', qtyNum: 12, unit: 'szt', remaining: 12, lowStockThreshold: 3, emoji: '🥚', inStock: false },
-        { id: 'p2', name: 'Ser żółty', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, emoji: '🧀', inStock: false },
-        { id: 'p3', name: 'Chleb żytni', category: 'węglowodany', qty: '1 bochenek', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, emoji: '🍞', inStock: false },
-        { id: 'p4', name: 'Tofu', category: 'białko', qty: '300g', qtyNum: 300, unit: 'g', remaining: 300, lowStockThreshold: 100, emoji: '🧊', inStock: false },
-        { id: 'p5', name: 'Feta', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, emoji: '🧀', inStock: false },
-        { id: 'p6', name: 'Oliwa z oliwek', category: 'tłuszcze', qty: 'butelka', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, emoji: '', inStock: false }
+        { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', qtyNum: 12, unit: 'szt', remaining: 12, lowStockThreshold: 3, expiryDate: null, emoji: '🥚', inStock: false },
+        { id: 'p2', name: 'Ser żółty', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, expiryDate: null, emoji: '🧀', inStock: false },
+        { id: 'p3', name: 'Chleb żytni', category: 'węglowodany', qty: '1 bochenek', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, expiryDate: null, emoji: '🍞', inStock: false },
+        { id: 'p4', name: 'Tofu', category: 'białko', qty: '300g', qtyNum: 300, unit: 'g', remaining: 300, lowStockThreshold: 100, expiryDate: null, emoji: '🧊', inStock: false },
+        { id: 'p5', name: 'Feta', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, expiryDate: null, emoji: '🧀', inStock: false },
+        { id: 'p6', name: 'Oliwa z oliwek', category: 'tłuszcze', qty: 'butelka', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, expiryDate: null, emoji: '', inStock: false }
       ],
       appliances: ['airfryer', 'thermomix'],
       cookTogether: true,
@@ -2401,10 +2401,32 @@ app.pantryManager = {
   getStockSummary() {
     const low = this.getLowStockItems();
     const depleted = this.getDepletedItems();
+    const expiring = this.getExpiringItems();
     let parts = [];
     if (low.length > 0) parts.push('⚠️ Kończy się: ' + low.map(i => i.name).join(', '));
     if (depleted.length > 0) parts.push('🛒 Wykorzystane: ' + depleted.map(i => i.name).join(', '));
+    if (expiring.length > 0) parts.push('📅 Za chwilę przeterminowane: ' + expiring.map(i => i.name + ' (' + i.expiryDate + ')').join(', '));
     return parts;
+  },
+
+  getExpiringItems(days) {
+    if (days === undefined) days = 3;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const limit = new Date(today); limit.setDate(limit.getDate() + days);
+    return (app.data.pantry || []).filter(i => {
+      if (!i.expiryDate || i.inStock) return false;
+      const expiry = new Date(i.expiryDate + 'T12:00:00');
+      return expiry >= today && expiry <= limit;
+    });
+  },
+
+  getExpiredItems() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    return (app.data.pantry || []).filter(i => {
+      if (!i.expiryDate || i.inStock) return false;
+      const expiry = new Date(i.expiryDate + 'T12:00:00');
+      return expiry < today;
+    });
   }
 };
 
@@ -2512,9 +2534,10 @@ Dla każdego produktu podaj:
 - kategoria: białko|nabiał|warzywa|owoce|węglowodany|tłuszcze|napoje|przyprawy|gotowe dania|inne
 - ilosc: szacunkowa ilość (np. "500g", "2 sztuki", "1 opakowanie")
 - emoji: odpowiedni emoji
+- data_waznosci: data ważności jeśli widoczna na opakowaniu w formacie YYYY-MM-DD, lub null jeśli nie widać
 
 Zwróć TYLKO tablicę JSON, bez formatowania:
-[{"nazwa":"...","kategoria":"...","ilosc":"...","emoji":"..."}]
+[{"nazwa":"...","kategoria":"...","ilosc":"...","emoji":"...","data_waznosci":null}]
 Jeśli nic nie widzisz: []` },
                 { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } }
               ]
@@ -2663,12 +2686,28 @@ Jeśli nic nie widzisz: []` },
       }
       const threshold = Math.max(1, Math.round(qtyNum * 0.2));
       
+      // Parse expiry date
+      let expiryDate = null;
+      if (item.data_waznosci) {
+        const dateStr = String(item.data_waznosci);
+        const dateMatch = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (dateMatch) {
+          expiryDate = dateMatch[1] + '-' + dateMatch[2].padStart(2,'0') + '-' + dateMatch[3].padStart(2,'0');
+        } else {
+          const altMatch = dateStr.match(/(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/);
+          if (altMatch) {
+            expiryDate = altMatch[3] + '-' + altMatch[2].padStart(2,'0') + '-' + altMatch[1].padStart(2,'0');
+          }
+        }
+      }
+      
       app.data.pantry.push({
         id: 'scan_' + Date.now() + '_' + idx,
         name, category: cat,
         qty: qtyText || (qtyNum + ' ' + unit),
         qtyNum, unit, remaining: qtyNum,
         lowStockThreshold: threshold,
+        expiryDate,
         emoji: item.emoji || '📦',
         inStock: false
       });
@@ -2680,6 +2719,62 @@ Jeśli nic nie widzisz: []` },
     app.ui.closeModal();
     app.nav.switch('zakupy');
     app.ui.showToast(`✅ Dodano ${added} produktów${skipped > 0 ? ` (${skipped} już było)` : ''}`);
+  },
+
+  // Scan a single expiry date from a product package
+  scanSingleExpiry() {
+    const key = this.getApiKey();
+    if (!key) {
+      app.ui.openModal('🔑 Klucz API Gemini', '<p style="color:#68776D">Najpierw dodaj klucz w Ustawieniach.</p>');
+      return;
+    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0';
+    document.body.appendChild(input);
+    input.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      document.body.removeChild(input);
+      if (!file) return;
+      app.ui.openModal('📅 Skanowanie daty...', '<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:8px">📅</div><p style="color:#68776D;font-size:13px">Odczytuję datę ważności...</p><div style="width:100%;height:3px;background:#E8EDE8;border-radius:4px;margin-top:12px;overflow:hidden"><div style="width:40%;height:100%;background:linear-gradient(90deg,#7DA08A,#4F735C);border-radius:4px;animation:scan-progress 1.2s ease-in-out infinite"></div></div></div>');
+      var reader = new FileReader();
+      reader.onload = async function() {
+        var base64 = reader.result.split(',')[1];
+        try {
+          var resp = await fetch(app.scanner.API_URL + '?key=' + app.scanner.getApiKey(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [
+                { text: 'Jesteś asystentem czytania dat ważności. Spójrz na zdjęcie opakowania produktu. Znajdź datę ważności (expiry date, best before, data przydatności, zużyć do). Zwróć TYLKO datę w formacie YYYY-MM-DD. Jeśli nie widzisz daty, zwróć "null".' },
+                { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } }
+              ]}]
+            })
+          });
+          var result = await resp.json();
+          if (!resp.ok) throw new Error(result.error?.message || 'Błąd');
+          var text = result.candidates?.[0]?.content?.parts?.[0]?.text || 'null';
+          app.ui.closeModal();
+          var dateMatch = text.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+          if (dateMatch) {
+            var formatted = dateMatch[1] + '-' + dateMatch[2].padStart(2,'0') + '-' + dateMatch[3].padStart(2,'0');
+            var inp = document.getElementById('pantry-expiry');
+            if (inp) { inp.value = formatted; app.ui.showToast('📅 Data ważności: ' + formatted); }
+          } else {
+            var altMatch = text.match(/(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/);
+            if (altMatch) {
+              var formatted = altMatch[3] + '-' + altMatch[2].padStart(2,'0') + '-' + altMatch[1].padStart(2,'0');
+              var inp = document.getElementById('pantry-expiry');
+              if (inp) { inp.value = formatted; app.ui.showToast('📅 Data ważności: ' + formatted); }
+            } else { app.ui.showToast('📅 Nie znaleziono daty'); }
+          }
+        } catch(err) { app.ui.closeModal(); app.ui.showToast('❌ Błąd: ' + err.message); }
+      };
+      reader.readAsDataURL(file);
+    });
+    input.click();
   }
 };
 

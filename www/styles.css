@@ -515,6 +515,14 @@ body {
 .pantry-item .stock-info.depleted { color: #B55A4A; font-weight: 600; }
 .pantry-item.low-stock { border: 1px solid #F0D0C0; background: #FFF8F5; }
 .pantry-item.depleted { border: 1px solid #E0C8C4; background: #FFF5F2; opacity: 0.7; }
+.expiry-badge {
+  font-size: 9px; padding: 2px 6px; border-radius: 6px; margin-top: 4px;
+  display: inline-block; font-weight: 600;
+}
+.expiry-badge.expired { background: #FDD; color: #C0392B; }
+.expiry-badge.expires-today { background: #FFE8CC; color: #D08000; }
+.expiry-badge.expiring { background: #FFF0D0; color: #B07030; }
+.expiry-badge.ok { background: #E0F0E0; color: #4A7A5A; }
 .pantry-item .delete-btn {
   position: absolute; top: 6px; right: 6px;
   background: none; border: none; color: #68776D;
