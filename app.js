@@ -513,7 +513,7 @@ app.dashboard = {
 
     // Group meals by type
     const mealTypes = { 'śniadanie': [], 'obiad': [], 'kolacja': [], 'przekąska': [], 'posiłek': [] };
-    const labels = { 'śniadanie': 'ŚNIADANIE', 'obiad': 'OBIAD', 'kolacja': 'KOLACJA', 'przekąska': 'PRZEKĄSKA', 'posiłek': 'POSIŁEK' };
+    const labels = { 'śniadanie': 'PORANNY CHLEB', 'obiad': 'BIESIADA', 'kolacja': 'WIECZERZA', 'przekąska': 'PRZEKĄSKA', 'posiłek': 'POSIŁEK' };
 
     plan.meals.forEach(m => {
       const timeStr = (m.time || m.category || '').toLowerCase();
@@ -564,6 +564,7 @@ app.dashboard = {
           letter-spacing: 1.5px;
           padding: 10px 16px 4px;
           text-transform: uppercase;
+          font-family: 'Cinzel', serif;
         }
         .dash-meal-item {
           display: flex;
@@ -656,12 +657,12 @@ app.mealplan = {
       totalFat += fat;
       totalCarbs += carbs;
 
-      const timeLabel = m.time || (m.category === 'breakfast' ? 'Śniadanie' : m.category === 'lunch' ? 'Obiad' : m.category === 'dinner' ? 'Kolacja' : 'Posiłek');
+      const timeLabel = m.time || (m.category === 'breakfast' ? 'PORANNY CHLEB' : m.category === 'lunch' ? 'BIESIADA' : m.category === 'dinner' ? 'WIECZERZA' : 'POSIŁEK');
       const whomClass = m.shared ? 'shared' : (m.forUser || 'renata');
       html += `
         <div class="meal-card ${whomClass}" style="margin-bottom:8px;padding:12px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-            <div style="font-size:13px;font-weight:700;color:#4A6150;text-transform:uppercase;letter-spacing:0.5px">${timeLabel}</div>
+            <div style="font-size:13px;font-weight:700;color:#4A6150;text-transform:uppercase;letter-spacing:0.5px;font-family:'Cinzel',serif">${timeLabel}</div>
             <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px;background:transparent;border:none;cursor:pointer">🔄</button>
           </div>
           <div style="font-size:14px;font-weight:600;color:#1F2621;margin-bottom:4px">${m.name}</div>
