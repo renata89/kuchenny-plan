@@ -1622,16 +1622,6 @@ app.water = {
     this.updateFull();
   },
 
-  remind() {
-    const toast = document.getElementById('water-toast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 5000);
-  },
-
-  dismissToast() {
-    document.getElementById('water-toast').classList.remove('show');
-  },
-
   updateUI() {
     const total = this.getTotal();
     const activeUser = app.auth.getActiveUser();

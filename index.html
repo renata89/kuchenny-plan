@@ -100,10 +100,9 @@
             <span class="action-icon">⟳</span> Wyzeruj
           </button>
         </div>
-        <button class="water-reminder" onclick="app.water.remind()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-          Wypij pół szklanki wody!
-        </button>
+        <p class="water-motivation">
+          Pij pół szklanki wody — nawodnienie wspomaga metabolizm i odchudzanie 💧
+        </p>
       </div>
 
       <div id="dash-today-meals" class="card" style="margin-top:16px">
@@ -341,13 +340,7 @@
     </div>
   </div>
 
-  <!-- Water Toast -->
-  <div id="water-toast" class="toast">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5297C7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-    <span>Wypij pół szklanki wody!</span>
-    <button onclick="app.water.dismissToast()">✓</button>
   </div>
-</div>
 
 <script src="app.js"></script>
 <script>

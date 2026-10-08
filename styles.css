@@ -302,25 +302,14 @@ body {
   line-height: 1;
 }
 
-/* Water reminder banner */
-.water-reminder {
-  width: 100%;
-  margin-top: 8px;
-  background: #E5EFE7;
-  border-radius: 12px;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+/* Water reminder text */
+.water-motivation {
+  text-align: center;
+  margin: 8px 0 0;
   font-size: 12px;
-  font-weight: 500;
-  color: #29382C;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s;
+  color: #68776D;
+  line-height: 1.5;
 }
-.water-reminder:active { background: #D5E3D9; }
 
 /* Meal cards */
 .meal-card {
@@ -627,22 +616,6 @@ body {
   display: none;
 }
 
-/* Toast */
-.toast {
-  display: none; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-  background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
-  border: 1px solid rgba(191,225,249,0.4);
-  border-radius: 20px; padding: 14px 20px;
-  color: #1F2621; font-size: 14px; z-index: 150;
-  align-items: center; gap: 12px; max-width: 320px;
-  box-shadow: 0 12px 32px rgba(20,35,25,0.12);
-  animation: slideUp 0.3s ease; font-weight: 500;
-}
-.toast.show { display: flex; }
-.toast button {
-  background: #728E7C; color: #FFFFFF; border: none;
-  padding: 6px 16px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer;
-}
 @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
 
 /* Empty state */
