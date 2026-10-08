@@ -230,6 +230,10 @@
           <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:12px">Użytkownicy</div>
           <div id="settings-users"></div>
           <div style="margin-top:16px;padding-top:12px;border-top:1px solid #EEF2EE">
+            <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:10px">Godziny posiłków</div>
+            <div id="settings-mealtimes"></div>
+          </div>
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #EEF2EE">
             <div style="font-size:13px;font-weight:600;color:#4F5E53;margin-bottom:10px">Razem czy osobno?</div>
             <div class="toggle">
               <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()" ${app.auth.getActiveUser()?.pairedWith || app.data.cookTogether ? '' : 'disabled'}>

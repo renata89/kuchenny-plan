@@ -242,8 +242,8 @@ const Store = {
     return {
       activeUser: null,
       users: [
-        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, waterGoal: 2000, avatar: '👩', pairedWith: null, pairRequestFrom: null },
-        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨', pairedWith: null, pairRequestFrom: null }
+        { id: 'renata', name: 'Renata', kcal: 1600, protein: 120, fat: 50, carbs: 170, fiber: 25, waterGoal: 2000, avatar: '👩', pairedWith: null, pairRequestFrom: null, mealTimes: { breakfast: '8:00', lunch: '14:00', dinner: '20:00' } },
+        { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨', pairedWith: null, pairRequestFrom: null, mealTimes: { breakfast: '8:00', lunch: '14:00', dinner: '20:00' } }
       ],
       pantry: [
         { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', emoji: '🥚', inStock: true },
@@ -637,8 +637,11 @@ app.mealplan = {
 
     let totalActive = 0;
     let totalProtein = 0, totalFat = 0, totalCarbs = 0;
+    let totalOtherKcal = 0, totalOtherProtein = 0, totalOtherFat = 0, totalOtherCarbs = 0;
     const userKey = activeUser.id === 'renata' ? 'renata' : 'husband';
+    const otherUserKey = activeUser.id === 'renata' ? 'husband' : 'renata';
     const dailyGoal = activeUser.kcal || 1600;
+    const otherUserName = activeUser.id === 'renata' ? 'Rafał' : 'Renata';
     let html = `
       <div class="day-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <h3 style="margin:0">${formatDatePL(dateStr)}</h3>
@@ -668,6 +671,10 @@ app.mealplan = {
       const otherProtein = isShared && m[otherUserKey] ? (m[otherUserKey].protein || 0) : 0;
       const otherFat = isShared && m[otherUserKey] ? (m[otherUserKey].fat || 0) : 0;
       const otherCarbs = isShared && m[otherUserKey] ? (m[otherUserKey].carbs || 0) : 0;
+      totalOtherKcal += otherKcal;
+      totalOtherProtein += otherProtein;
+      totalOtherFat += otherFat;
+      totalOtherCarbs += otherCarbs;
       // Look up recipe portions for shared mode
       const allRecipes = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
       const foundRecipe = allRecipes.find(r => r.id === m.recipeId);
@@ -682,21 +689,21 @@ app.mealplan = {
               <button class="btn-sm" onclick="app.mealplan.deleteMeal('${dateStr}', ${idx})" style="padding:3px 8px;font-size:11px;background:transparent;border:none;cursor:pointer;color:#C07060" title="Usuń posiłek">✕</button>
             </div>
           </div>
-          <div style="font-size:14px;font-weight:600;color:#1F2621;margin-bottom:4px">${m.name}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="font-size:15px;font-weight:600;color:#1F2621;margin-bottom:6px">${m.name}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
             <span style="font-size:11px;font-weight:600;color:#4F5E53;margin-right:2px">${activeUser.name}:</span>
-            <span style="font-size:12px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 10px;border-radius:10px">${kcal} kcal</span>
-            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${protein}g</span>
-            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${fat}g</span>
-            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${carbs}g</span>
+            <span style="font-size:11px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 8px;border-radius:10px">${kcal} kcal</span>
+            <span style="font-size:10px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${protein}g</span>
+            <span style="font-size:10px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${fat}g</span>
+            <span style="font-size:10px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${carbs}g</span>
           </div>
           ${isShared ? `
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;padding-top:6px;border-top:1px dashed #D6E0D6">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;padding-top:6px;border-top:1px dashed #D6E0D6">
             <span style="font-size:11px;font-weight:600;color:#4F5E53;margin-right:2px">Rafał:</span>
-            <span style="font-size:12px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 10px;border-radius:10px">${otherKcal} kcal</span>
-            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${otherProtein}g</span>
-            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${otherFat}g</span>
-            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${otherCarbs}g</span>
+            <span style="font-size:11px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 8px;border-radius:10px">${otherKcal} kcal</span>
+            <span style="font-size:10px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${otherProtein}g</span>
+            <span style="font-size:10px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${otherFat}g</span>
+            <span style="font-size:10px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${otherCarbs}g</span>
           </div>` : ''}
           <button class="details-toggle-btn" onclick="app.mealplan.toggleDetails('${dateStr}', ${idx})" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
           <div id="details-${dateStr}-${idx}" style="display:none;margin-top:8px;padding:10px;background:#FAFCFA;border-radius:12px;border:1px solid #E8EFE8">
@@ -738,26 +745,30 @@ app.mealplan = {
       </button>`;
 
     // Macro summary
+    const hasOther = app.data.cookTogether && app.auth.getActiveUser()?.pairedWith && totalOtherKcal > 0;
     html += `
       <div class="day-macro-summary" style="position:sticky;bottom:0;margin-top:12px;padding:12px;background:#F5F8F5;border-radius:14px 14px 0 0;border:1px solid #E0E8E0;z-index:10">
-        <div style="font-size:12px;font-weight:600;color:#1F2621;margin-bottom:6px">📊 Podsumowanie makro</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center">
-          <div style="font-size:11px;color:#4F5E53">
-            <div style="font-weight:700;font-size:15px;color:#C47050">${totalActive}</div>
-            <div>kcal</div>
+        <div style="font-size:12px;font-weight:600;color:#1F2621;margin-bottom:8px">📊 Podsumowanie makro</div>
+        <div style="display:flex;gap:12px">
+          <div style="flex:1;padding:8px;background:#FFF;border-radius:10px;border:1px solid #E8EFE8">
+            <div style="font-size:10px;font-weight:600;color:#9AABA0;margin-bottom:4px">${activeUser.name}</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;text-align:center">
+              <div><div style="font-weight:700;font-size:14px;color:#C47050">${totalActive}</div><div style="font-size:9px;color:#9AABA0">kcal</div></div>
+              <div><div style="font-weight:700;font-size:12px;color:#4F5E53">${totalProtein}g</div><div style="font-size:9px;color:#9AABA0">B</div></div>
+              <div><div style="font-weight:700;font-size:12px;color:#4F5E53">${totalFat}g</div><div style="font-size:9px;color:#9AABA0">T</div></div>
+              <div><div style="font-weight:700;font-size:12px;color:#4F5E53">${totalCarbs}g</div><div style="font-size:9px;color:#9AABA0">W</div></div>
+            </div>
           </div>
-          <div style="font-size:11px;color:#4F5E53">
-            <div style="font-weight:700;font-size:13px;color:#4F5E53">${totalProtein}g</div>
-            <div>Białko</div>
-          </div>
-          <div style="font-size:11px;color:#4F5E53">
-            <div style="font-weight:700;font-size:13px;color:#4F5E53">${totalFat}g</div>
-            <div>Tłuszcz</div>
-          </div>
-          <div style="font-size:11px;color:#4F5E53">
-            <div style="font-weight:700;font-size:13px;color:#4F5E53">${totalCarbs}g</div>
-            <div>Węgl.</div>
-          </div>
+          ${hasOther ? `
+          <div style="flex:1;padding:8px;background:#FFF;border-radius:10px;border:1px solid #E8EFE8">
+            <div style="font-size:10px;font-weight:600;color:#9AABA0;margin-bottom:4px">${otherUserName}</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;text-align:center">
+              <div><div style="font-weight:700;font-size:14px;color:#C47050">${totalOtherKcal}</div><div style="font-size:9px;color:#9AABA0">kcal</div></div>
+              <div><div style="font-weight:700;font-size:12px;color:#4F5E53">${totalOtherProtein}g</div><div style="font-size:9px;color:#9AABA0">B</div></div>
+              <div><div style="font-weight:700;font-size:12px;color:#4F5E53">${totalOtherFat}g</div><div style="font-size:9px;color:#9AABA0">T</div></div>
+              <div><div style="font-weight:700;font-size:12px;color:#4F5E53">${totalOtherCarbs}g</div><div style="font-size:9px;color:#9AABA0">W</div></div>
+            </div>
+          </div>` : ''}
         </div>
       </div>`;
 
@@ -1371,7 +1382,6 @@ app.recipes = {
       // Build pill filters as chips on the card
       let pills = '';
       const typeLabel = { breakfast: 'Śniadania', lunch: 'Obiady', dinner: 'Kolacje' }[r.category] || r.category;
-      pills += `<span class="meal-tag" onclick="app.recipes.setFilter('${r.category}')" style="cursor:pointer">${typeLabel}</span>`;
       const appLabels = { airfryer: 'Air Fryer', thermomix: 'TM6', lidlomix: 'Lidlomix', piekarnik: 'Piekarnik', blender: 'Blender', parowar: 'Parowar', grill: 'Grill', slowcooker: 'Slow Cooker', mikrofalowka: 'Mikrofalówka', kuchenka: 'Kuchenka', robot: 'Robot' };
       (r.appliances || []).forEach(a => {
         if (app.data.appliances?.includes(a)) {
@@ -1391,7 +1401,6 @@ app.recipes = {
         <div class="card meal-card" style="margin-bottom:10px;cursor:pointer" onclick="app.recipes.showDetail('${r.id}')">
           <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${pills}</div>
           <div class="meal-name">${r.name}</div>
-          <div class="meal-time" style="font-size:11px;color:#9AABA0;margin-bottom:6px">${r.time} • ${r.ingredients.length} składników</div>
           <div class="meal-macros">
             <span class="meal-macro">Renata: 🔥${macrosR.kcal}kcal | B${macrosR.protein}g T${macrosR.fat}g W${macrosR.carbs}g</span>
             <span class="meal-macro">Rafał: 🔥${macrosH.kcal}kcal | B${macrosH.protein}g T${macrosH.fat}g W${macrosH.carbs}g</span>
@@ -1835,6 +1844,20 @@ app.settings = {
         </div>`;
     });
     usersContainer.innerHTML = userHtml;
+
+    // Meal times per user
+    const mtContainer = document.getElementById('settings-mealtimes');
+    if (mtContainer) {
+      const myUser = app.data.users.find(u => u.id === activeUser.id);
+      const times = myUser?.mealTimes || { breakfast: '8:00', lunch: '14:00', dinner: '20:00' };
+      const mtLabels = { breakfast: 'Śniadanie', lunch: 'Obiad', dinner: 'Kolacja' };
+      mtContainer.innerHTML = Object.keys(mtLabels).map(key => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EEF2EE">
+          <span style="font-size:13px;color:#4F5E53">${mtLabels[key]}</span>
+          <input type="time" value="${times[key] || '08:00'}" onchange="app.settings.setMealTime('${key}', this.value)" style="padding:4px 8px;border:1px solid #DEEAE2;border-radius:8px;background:#F5F8F5;color:#1F2621;font-size:13px;font-family:inherit">
+        </div>
+      `).join('');
+    }
 
     // Pairing section
     const pairContainer = document.getElementById('settings-pairing');
