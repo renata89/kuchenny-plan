@@ -675,6 +675,7 @@ app.mealplan = {
             <div style="display:flex;gap:4px">
               <button class="btn-sm" onclick="app.mealplan.toggleShared('${dateStr}', ${idx})" style="padding:3px 8px;font-size:11px;background:${isShared ? '#D6E8D6' : 'transparent'};border:1px solid ${isShared ? '#7DA08A' : '#C8D0C8'};border-radius:8px;cursor:pointer;color:#4F5E53" title="Gotuj ${isShared ? 'z Rafałem' : 'sam(a)'}">${isShared ? '👫' : '👤'}</button>
               <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px;background:transparent;border:none;cursor:pointer">🔄</button>
+              <button class="btn-sm" onclick="app.mealplan.deleteMeal('${dateStr}', ${idx})" style="padding:3px 8px;font-size:11px;background:transparent;border:none;cursor:pointer;color:#C07060" title="Usuń posiłek">✕</button>
             </div>
           </div>
           <div style="font-size:14px;font-weight:600;color:#1F2621;margin-bottom:4px">${m.name}</div>
@@ -1231,6 +1232,18 @@ app.mealplan = {
     Store.save(app.data);
     this.renderDay(dateStr);
     if (dateStr === getToday()) app.dashboard.render();
+  },
+
+  deleteMeal(dateStr, mealIdx) {
+    const plan = app.data.mealPlan[dateStr];
+    if (!plan || !plan.meals[mealIdx]) return;
+    const mealName = plan.meals[mealIdx].name;
+    if (confirm(`Usunąć "${mealName}" z planu?`)) {
+      plan.meals.splice(mealIdx, 1);
+      Store.save(app.data);
+      this.renderDay(dateStr);
+      if (dateStr === getToday()) app.dashboard.render();
+    }
   }
 };
 
