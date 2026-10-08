@@ -145,6 +145,13 @@
           </div>
         </div>
         <div id="recipe-categories" class="recipe-cats"></div>
+        <div style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <input type="text" id="recipe-ingredient-search" placeholder="Szukaj składnika..." oninput="app.recipes.filterByIngredient(this.value)" style="flex:1;padding:8px 12px;border:1px solid #D6E0D6;border-radius:12px;font-size:13px;background:#F5F8F5;color:#1F2621;font-family:inherit">
+            <button onclick="app.recipes.clearIngredients()" style="padding:6px 10px;border:1px solid #D6E0D6;border-radius:10px;background:transparent;color:#C07060;font-size:12px;cursor:pointer">✕ Wyczyść</button>
+          </div>
+          <div id="recipe-selected-ingredients" style="display:flex;flex-wrap:wrap;gap:4px;min-height:20px"></div>
+        </div>
         <div id="recipe-list" class="recipe-list"></div>
       </section>
 

@@ -246,12 +246,12 @@ const Store = {
         { id: 'rafal', name: 'Rafał', kcal: 2100, protein: 140, fat: 65, carbs: 220, fiber: 30, waterGoal: 2500, avatar: '👨' }
       ],
       pantry: [
-        { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', emoji: '🥚', inStock: true },
-        { id: 'p2', name: 'Ser żółty', category: 'nabiał', qty: '200g', emoji: '🧀', inStock: true },
-        { id: 'p3', name: 'Chleb żytni', category: 'węglowodany', qty: '1 bochenek', emoji: '🍞', inStock: true },
-        { id: 'p4', name: 'Tofu', category: 'białko', qty: '300g', emoji: '🧊', inStock: true },
-        { id: 'p5', name: 'Feta', category: 'nabiał', qty: '200g', emoji: '🧀', inStock: true },
-        { id: 'p6', name: 'Oliwa z oliwek', category: 'tłuszcze', qty: 'butelka', emoji: '', inStock: true }
+        { id: 'p1', name: 'Jajka', category: 'białko', qty: '12 szt', qtyNum: 12, unit: 'szt', remaining: 12, lowStockThreshold: 3, emoji: '🥚', inStock: false },
+        { id: 'p2', name: 'Ser żółty', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, emoji: '🧀', inStock: false },
+        { id: 'p3', name: 'Chleb żytni', category: 'węglowodany', qty: '1 bochenek', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, emoji: '🍞', inStock: false },
+        { id: 'p4', name: 'Tofu', category: 'białko', qty: '300g', qtyNum: 300, unit: 'g', remaining: 300, lowStockThreshold: 100, emoji: '🧊', inStock: false },
+        { id: 'p5', name: 'Feta', category: 'nabiał', qty: '200g', qtyNum: 200, unit: 'g', remaining: 200, lowStockThreshold: 50, emoji: '🧀', inStock: false },
+        { id: 'p6', name: 'Oliwa z oliwek', category: 'tłuszcze', qty: 'butelka', qtyNum: 1, unit: 'szt', remaining: 1, lowStockThreshold: 0, emoji: '', inStock: false }
       ],
       appliances: ['airfryer', 'thermomix'],
       cookTogether: true,
@@ -753,6 +753,24 @@ app.mealplan = {
     Store.save(app.data);
     this.renderDay(dateStr);
     if (dateStr === getToday()) app.dashboard.render();
+    
+    // Deduct from pantry and show summary
+    const stockResult = app.pantryManager.deductForDay(dateStr);
+    if (stockResult.deducted.length > 0 || stockResult.missing.length > 0) {
+      const lowStock = app.pantryManager.getStockSummary();
+      let msg = [];
+      if (stockResult.deducted.length > 0) {
+        msg.push(`✅ Odjęto ${stockResult.deducted.length} składników`);
+      }
+      if (stockResult.missing.length > 0) {
+        const missingNames = [...new Set(stockResult.missing.map(m => m.name))];
+        msg.push(`🛒 Brakuje: ${missingNames.join(', ')}`);
+      }
+      if (lowStock.length > 0) {
+        msg.push(lowStock.join(' | '));
+      }
+      setTimeout(() => app.ui.showToast(msg.join(' · ')), 500);
+    }
   },
 
   generateWeek() {
@@ -1298,12 +1316,28 @@ app.pantry = {
 
     let html = '';
     filtered.forEach(item => {
+      const remaining = item.remaining !== undefined ? item.remaining : null;
+      const total = item.qtyNum || null;
+      const isLowStock = remaining !== null && item.lowStockThreshold !== undefined && remaining <= item.lowStockThreshold && remaining > 0;
+      const isDepleted = remaining !== null && remaining <= 0;
+      const stockPct = (remaining !== null && total > 0) ? Math.round((remaining / total) * 100) : null;
+      
       html += `
-        <div class="pantry-item">
+        <div class="pantry-item ${isLowStock ? 'low-stock' : ''} ${isDepleted ? 'depleted' : ''}">
           <button class="delete-btn" onclick="app.pantry.remove('${item.id}')">✕</button>
           <div class="emoji">${item.emoji || '📦'}</div>
           <div class="name">${item.name}</div>
           <div class="qty">${item.qty || ''}</div>
+          ${remaining !== null ? `
+            <div class="stock-bar-wrap">
+              <div class="stock-bar ${stockPct <= 25 ? 'low' : ''}" style="width:${Math.min(100, stockPct || 100)}%"></div>
+            </div>
+            <div class="stock-info ${isLowStock ? 'low' : ''} ${isDepleted ? 'depleted' : ''}">
+              ${remaining}/${total || '?'} ${item.unit || ''}
+              ${isLowStock ? '⚠️' : ''}
+              ${isDepleted ? '🔄' : ''}
+            </div>
+          ` : ''}
         </div>`;
     });
 
@@ -1321,16 +1355,27 @@ app.pantry = {
   },
 
   showAddForm() {
-    const categories = ['białko', 'nabiał', 'warzywa', 'węglowodany', 'tłuszcze', 'przyprawy', 'inne'];
+    const categories = ['białko', 'nabiał', 'warzywa', 'owoce', 'węglowodany', 'tłuszcze', 'przyprawy', 'napoje', 'gotowe dania', 'inne'];
     const catOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    const unitOptions = PANTRY_UNITS.map(u => `<option value="${u}">${u}</option>`).join('');
 
     app.ui.openModal('Dodaj produkt', `
       <label>Nazwa produktu</label>
       <input type="text" id="pantry-name" placeholder="np. Pierś z kurczaka">
       <label>Kategoria</label>
       <select id="pantry-category">${catOptions}</select>
-      <label>Ilość (opcjonalnie)</label>
-      <input type="text" id="pantry-qty" placeholder="np. 500g, 1 opakowanie">
+      <div style="display:flex;gap:8px">
+        <div style="flex:1">
+          <label>Ilość</label>
+          <input type="number" id="pantry-qty-num" placeholder="np. 500" min="0" step="0.1">
+        </div>
+        <div style="flex:0 0 110px">
+          <label>Jednostka</label>
+          <select id="pantry-unit">${unitOptions}</select>
+        </div>
+      </div>
+      <label>Próg niskiego stanu (alert gdy <=)</label>
+      <input type="number" id="pantry-threshold" placeholder="np. 50" min="0">
       <label>Emoji (opcjonalnie)</label>
       <input type="text" id="pantry-emoji" placeholder="np. 🥩" maxlength="2">
       <button class="btn-primary" onclick="app.pantry.add()">Dodaj do spiżarni</button>
@@ -1341,16 +1386,22 @@ app.pantry = {
     const name = document.getElementById('pantry-name').value.trim();
     if (!name) return;
     const category = document.getElementById('pantry-category').value;
-    const qty = document.getElementById('pantry-qty').value.trim();
-    const emoji = document.getElementById('pantry-emoji').value.trim() || '📦';
+    const qtyNum = parseFloat(document.getElementById('pantry-qty-num').value) || 1;
+    const unit = document.getElementById('pantry-unit').value;
+    const threshold = parseInt(document.getElementById('pantry-threshold').value) || Math.max(1, Math.round(qtyNum * 0.2));
+    const emojiElement = document.getElementById('pantry-emoji');
+    const emoji = emojiElement ? (emojiElement.value.trim() || '📦') : '📦';
 
     app.data.pantry.push({
       id: 'p' + Date.now(),
       name,
       category,
-      qty,
+      qty: qtyNum + ' ' + unit,
+      qtyNum, unit,
+      remaining: qtyNum,
+      lowStockThreshold: threshold,
       emoji,
-      inStock: true
+      inStock: false
     });
     Store.save(app.data);
     app.ui.closeModal();
@@ -1533,6 +1584,174 @@ app.zakupy = {
     app.ui.closeModal();
     this.render();
     app.ui.showToast('✓ Dodano: ' + name);
+  }
+};
+
+// --- PANTRY MANAGER (stock tracking, ingredient matching, deduction) ---
+const PANTRY_UNITS = ['szt', 'g', 'ml', 'kg', 'opakowanie', 'kromki', 'garść', 'łyżka', 'szklanka', 'butelka', 'puszka', 'strąk', 'główka', 'liść'];
+
+// Standard amounts per ingredient for deduction (per meal serving)
+const STD_INGREDIENT_AMOUNT = {
+  'jajka': { qtyNum: 2, unit: 'szt' }, 'jajko': { qtyNum: 2, unit: 'szt' },
+  'ser żółty': { qtyNum: 50, unit: 'g' },
+  'masło': { qtyNum: 15, unit: 'g' },
+  'chleb żytni': { qtyNum: 2, unit: 'kromki' },
+  'tofu': { qtyNum: 150, unit: 'g' },
+  'feta': { qtyNum: 60, unit: 'g' },
+  'oliwa': { qtyNum: 15, unit: 'ml' },
+  'oliwa z oliwek': { qtyNum: 15, unit: 'ml' },
+  'pierś z kurczaka': { qtyNum: 180, unit: 'g' },
+  'kurczak': { qtyNum: 180, unit: 'g' },
+  'brokuł': { qtyNum: 1, unit: 'szt' }, 'brokuły': { qtyNum: 1, unit: 'szt' },
+  'ziemniaki': { qtyNum: 200, unit: 'g' }, 'ziemniak': { qtyNum: 200, unit: 'g' },
+  'papryka': { qtyNum: 1, unit: 'szt' },
+  'cukinia': { qtyNum: 1, unit: 'szt' },
+  'pomidor': { qtyNum: 1, unit: 'szt' }, 'pomidory': { qtyNum: 1, unit: 'szt' },
+  'ogórek': { qtyNum: 1, unit: 'szt' },
+  'marchew': { qtyNum: 1, unit: 'szt' }, 'marchewka': { qtyNum: 1, unit: 'szt' },
+  'cebula': { qtyNum: 1, unit: 'szt' },
+  'czosnek': { qtyNum: 2, unit: 'szt' },
+  'szpinak': { qtyNum: 80, unit: 'g' },
+  'mix sałat': { qtyNum: 80, unit: 'g' }, 'sałata': { qtyNum: 80, unit: 'g' },
+  'awokado': { qtyNum: 1, unit: 'szt' },
+  'łosoś': { qtyNum: 180, unit: 'g' },
+  'tuńczyk': { qtyNum: 1, unit: 'puszka' },
+  'tuńczyk w puszce': { qtyNum: 1, unit: 'puszka' },
+  'ryż brązowy': { qtyNum: 80, unit: 'g' }, 'ryż': { qtyNum: 80, unit: 'g' },
+  'kasza gryczana': { qtyNum: 80, unit: 'g' }, 'kasza': { qtyNum: 80, unit: 'g' },
+  'makaron': { qtyNum: 100, unit: 'g' },
+  'mleko kokosowe': { qtyNum: 200, unit: 'ml' },
+  'ciecierzyca': { qtyNum: 150, unit: 'g' },
+  'sos sojowy': { qtyNum: 15, unit: 'ml' },
+  'twaróg': { qtyNum: 150, unit: 'g' },
+  'rzodkiewka': { qtyNum: 4, unit: 'szt' },
+  'jogurt grecki': { qtyNum: 50, unit: 'g' },
+  'szczypiorek': { qtyNum: 1, unit: 'garść' },
+  'pestki dyni': { qtyNum: 20, unit: 'g' },
+  'sok z cytryny': { qtyNum: 10, unit: 'ml' },
+  'miód': { qtyNum: 15, unit: 'g' },
+  'jogurt naturalny': { qtyNum: 150, unit: 'g' },
+  'płatki owsiane': { qtyNum: 50, unit: 'g' },
+  'banan': { qtyNum: 1, unit: 'szt' },
+  'jabłko': { qtyNum: 1, unit: 'szt' }
+};
+
+app.pantryManager = {
+  // Find matching pantry item for an ingredient name
+  findMatch(ingredientName) {
+    const pantry = app.data.pantry || [];
+    const name = ingredientName.toLowerCase().trim();
+    
+    // Try exact match first
+    let match = pantry.find(i => i.name.toLowerCase().trim() === name);
+    if (match) return match;
+    
+    // Try includes match (e.g. "pierś z kurczaka" matches "Kurczak")
+    match = pantry.find(i => {
+      const pName = i.name.toLowerCase().trim();
+      // Check if ingredient name is contained in pantry item name or vice versa
+      return pName.includes(name) || name.includes(pName) ||
+             name.split(' ').some(w => w.length > 3 && pName.includes(w));
+    });
+    return match || null;
+  },
+
+  // Get standard amount for an ingredient
+  getStandardAmount(ingredientName) {
+    const name = ingredientName.toLowerCase().trim();
+    // Try exact match
+    if (STD_INGREDIENT_AMOUNT[name]) return { ...STD_INGREDIENT_AMOUNT[name] };
+    // Try partial match
+    for (const [key, val] of Object.entries(STD_INGREDIENT_AMOUNT)) {
+      if (name.includes(key) || key.includes(name)) return { ...val };
+    }
+    // Default fallback
+    return { qtyNum: 1, unit: 'szt' };
+  },
+
+  // Deduct ingredients for a single recipe from pantry
+  deductForRecipe(recipeId) {
+    const allMeals = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+    const recipe = allMeals.find(m => m.id === recipeId);
+    if (!recipe) return { deducted: [], missing: [] };
+    
+    const ingredients = recipe.ingredients;
+    const deducted = [];
+    const missing = [];
+    
+    ingredients.forEach(ing => {
+      // Handle both string and object formats
+      const name = typeof ing === 'string' ? ing : (ing.name || '');
+      if (!name) return;
+      
+      const match = this.findMatch(name);
+      const amount = this.getStandardAmount(name);
+      
+      if (match && match.remaining !== undefined) {
+        const deductQty = amount.qtyNum;
+        const before = match.remaining;
+        if (match.remaining > 0) {
+          match.remaining = Math.max(0, match.remaining - deductQty);
+          deducted.push({ name: match.name, before, after: match.remaining, deducted: deductQty, unit: amount.unit });
+        } else {
+          missing.push({ name: match.name, needed: deductQty, available: 0 });
+        }
+      } else {
+        missing.push({ name: name, note: 'brak w spiżarni' });
+      }
+    });
+    
+    Store.save(app.data);
+    return { deducted, missing };
+  },
+
+  // Deduct for all meals in a day plan
+  deductForDay(dateStr) {
+    const plan = app.data.mealPlan[dateStr];
+    if (!plan || !plan.meals) return { totalDeducted: [], totalMissing: [] };
+    
+    let allDeducted = [];
+    let allMissing = [];
+    
+    plan.meals.forEach(m => {
+      if (m.recipeId && !m.recipeId.startsWith('custom_')) {
+        const result = this.deductForRecipe(m.recipeId);
+        allDeducted = allDeducted.concat(result.deducted);
+        allMissing = allMissing.concat(result.missing);
+      }
+    });
+    
+    // Deduplicate
+    const seen = new Set();
+    allDeducted = allDeducted.filter(d => {
+      const key = d.name + d.deducted;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    
+    return { deducted: allDeducted, missing: allMissing };
+  },
+
+  // Get low stock items
+  getLowStockItems() {
+    const pantry = (app.data.pantry || []).filter(i => !i.inStock && i.remaining !== undefined);
+    return pantry.filter(i => i.remaining <= (i.lowStockThreshold || 0) && i.remaining > 0);
+  },
+
+  // Get depleted items (completely used up)
+  getDepletedItems() {
+    return (app.data.pantry || []).filter(i => !i.inStock && i.remaining !== undefined && i.remaining <= 0);
+  },
+
+  // Generate low stock summary text
+  getStockSummary() {
+    const low = this.getLowStockItems();
+    const depleted = this.getDepletedItems();
+    let parts = [];
+    if (low.length > 0) parts.push(`⚠️ Kończy się: ${low.map(i => i.name).join(', ')}`);
+    if (depleted.length > 0) parts.push(`🛒 Wykorzystane: ${depleted.map(i => i.name).join(', ')}`);
+    return parts;
   }
 };
 
@@ -1771,10 +1990,39 @@ Jeśli nic nie widzisz: []` },
       const name = item.nazwa.charAt(0).toUpperCase() + item.nazwa.slice(1);
       if (existing.has(name.toLowerCase())) { skipped++; return; }
       const cat = SCAN_CATEGORIES.includes(item.kategoria) ? item.kategoria : 'inne';
+      
+      // Parse quantity into structured data
+      const qtyText = this._qtys[idx] || item.ilosc || '';
+      let qtyNum = 1, unit = 'szt';
+      parseQty: {
+        const match = qtyText.match(/^(\d+(?:[.,]\d+)?)\s*(g|ml|kg|l|szt|sztuki|sztuk|opakowanie|kromki|garść|łyżka|szklanka|butelka|puszka|strąk|główka|liść|kg|szt)?$/i);
+        if (match) {
+          qtyNum = parseFloat(match[1].replace(',', '.'));
+          unit = (match[2] || 'szt').toLowerCase();
+          if (unit === 'sztuki' || unit === 'sztuk') unit = 'szt';
+          break parseQty;
+        }
+        // Try to extract number even from messy text
+        const numMatch = qtyText.match(/(\d+)/);
+        if (numMatch) qtyNum = parseInt(numMatch[1]);
+        // Determine unit from keywords
+        if (/g\b/.test(qtyText)) unit = 'g';
+        else if (/ml\b/.test(qtyText)) unit = 'ml';
+        else if (/kg\b/.test(qtyText)) { unit = 'g'; qtyNum *= 1000; }
+        else if (/szt|sztuki|sztuk|sztuka|jajko|jajka/.test(qtyText.toLowerCase())) unit = 'szt';
+        else if (/butelka|butelk/.test(qtyText.toLowerCase())) unit = 'szt';
+        else if (/opakowanie/.test(qtyText.toLowerCase())) unit = 'szt';
+      }
+      
+      // Calculate low stock threshold (default: 20% of total or minimum 1)
+      const threshold = Math.max(1, Math.round(qtyNum * 0.2));
+      
       app.data.pantry.push({
         id: 'scan_' + Date.now() + '_' + idx,
         name, category: cat,
-        qty: this._qtys[idx] || item.ilosc || '',
+        qty: qtyText || (qtyNum + ' ' + unit),
+        qtyNum, unit, remaining: qtyNum,
+        lowStockThreshold: threshold,
         emoji: item.emoji || '📦',
         inStock: false
       });
