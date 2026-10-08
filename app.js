@@ -2448,7 +2448,7 @@ Jeśli nic nie widzisz: []` },
         name, category: cat,
         qty: this._qtys[idx] || item.ilosc || '',
         emoji: item.emoji || '📦',
-        inStock: true
+        inStock: false
       });
       existing.add(name.toLowerCase());
       added++;
