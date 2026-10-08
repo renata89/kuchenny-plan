@@ -681,8 +681,8 @@ app.mealplan = {
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${fat}g</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${carbs}g</span>
           </div>
-          <button onclick="app.mealplan.toggleDetails('${m.recipeId}')" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
-          <div id="details-${m.recipeId}" style="display:none;margin-top:8px;padding:10px;background:#FAFCFA;border-radius:12px;border:1px solid #E8EFE8">
+          <button class="details-toggle-btn" onclick="app.mealplan.toggleDetails('${dateStr}', ${idx})" data-meal="${dateStr}-${idx}" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
+          <div id="details-${dateStr}-${idx}" style="display:none;margin-top:8px;padding:10px;background:#FAFCFA;border-radius:12px;border:1px solid #E8EFE8">
             <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:6px">🛒 Składniki:</div>
             <ul style="margin:0 0 10px 0;padding-left:18px;font-size:12px;color:#4F5E53;line-height:1.7">
               ${(m.ingredients||[]).map(i => `<li>${i.name}${i.amount ? ' — ' + i.amount : ''}</li>`).join('')}
@@ -704,17 +704,16 @@ app.mealplan = {
       </button>`;
 
     // Macro summary
-    const protColor = totalProtein >= (activeUser.protein || 100) ? '#4A6150' : '#D0805C';
     html += `
-      <div style="margin-top:12px;padding:12px;background:#F5F8F5;border-radius:14px;border:1px solid #E0E8E0">
+      <div class="day-macro-summary" style="position:sticky;bottom:0;margin-top:12px;padding:12px;background:#F5F8F5;border-radius:14px 14px 0 0;border:1px solid #E0E8E0;z-index:10">
         <div style="font-size:12px;font-weight:600;color:#1F2621;margin-bottom:6px">📊 Podsumowanie makro</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center">
           <div style="font-size:11px;color:#4F5E53">
-            <div style="font-weight:700;font-size:13px;color:#C47050">${totalActive}</div>
+            <div style="font-weight:700;font-size:15px;color:#C47050">${totalActive}</div>
             <div>kcal</div>
           </div>
           <div style="font-size:11px;color:#4F5E53">
-            <div style="font-weight:700;font-size:13px;color:${protColor}">${totalProtein}g</div>
+            <div style="font-weight:700;font-size:13px;color:#4F5E53">${totalProtein}g</div>
             <div>Białko</div>
           </div>
           <div style="font-size:11px;color:#4F5E53">
@@ -723,7 +722,7 @@ app.mealplan = {
           </div>
           <div style="font-size:11px;color:#4F5E53">
             <div style="font-weight:700;font-size:13px;color:#4F5E53">${totalCarbs}g</div>
-            <div>Węglowodany</div>
+            <div>Węgl.</div>
           </div>
         </div>
       </div>`;
@@ -1208,14 +1207,13 @@ app.mealplan = {
     app.ui.showToast('✓ Dodano: ' + name);
   },
 
-  toggleDetails(recipeId) {
-    const el = document.getElementById('details-' + recipeId);
-    if (el) {
-      const isHidden = el.style.display === 'none';
-      el.style.display = isHidden ? 'block' : 'none';
-      const btn = el.parentElement.querySelector('button');
-      if (btn) btn.textContent = isHidden ? '📖 Ukryj składniki i przepis' : '📖 Pokaż składniki i przepis';
-    }
+  toggleDetails(dateStr, mealIdx) {
+    const el = document.getElementById('details-' + dateStr + '-' + mealIdx);
+    if (!el) return;
+    const isHidden = el.style.display === 'none';
+    el.style.display = isHidden ? 'block' : 'none';
+    const btn = el.parentElement.querySelector('.details-toggle-btn');
+    if (btn) btn.textContent = isHidden ? '📖 Ukryj składniki i przepis' : '📖 Pokaż składniki i przepis';
   },
 
   toggleShared(dateStr, mealIdx) {
