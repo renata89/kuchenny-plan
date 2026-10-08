@@ -1,0 +1,26 @@
+{
+  "name": "kuchenny-plan",
+  "version": "1.0.0",
+  "description": "Planer posiłków dla dwóch osób z różnymi celami kalorycznymi.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renata89/kuchenny-plan.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/renata89/kuchenny-plan/issues"
+  },
+  "homepage": "https://github.com/renata89/kuchenny-plan#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3"
+  }
+}

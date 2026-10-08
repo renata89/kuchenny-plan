@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#EDE8DE">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Ostatnia Wieczerza</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍳</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="phone-frame">
+  <div class="organic-bg"></div>
+  <div class="content">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="dynamic-island"></div>
+      <div class="status-icons">
+        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M2 17h20v2H2zm1.15-4.05L4 11.92V7a8 8 0 0 1 16 0v4.92l.85 1.03a1 1 0 0 1-.78 1.63H3.93a1 1 0 0 1-.78-1.63z"/></svg>
+      </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="scroll-main" id="views">
+    <!-- Start Screen -->
+    <section id="view-start" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px 40px;text-align:center">
+      <div style="margin-bottom:0px">
+        <img src="logo-last-supper.png" alt="Ostatnia Wieczerza" style="width:270px;height:auto;display:block;margin:0 auto">
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0px;margin-bottom:16px">
+        <img src="ornate-o.png" alt="" style="height:150px;width:auto;display:block;flex-shrink:0;opacity:0.85">
+        <div style="text-align:left">
+          <h1 style="font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:#1F2621;margin:0;white-space:nowrap">statnia Wieczerza</h1>
+          <p style="color:#8AA08E;font-size:12px;margin:2px 0 0;line-height:1.2">aplikacja dietetyczna dla ateistów</p>
+        </div>
+      </div>
+      <p style="color:#68776D;font-size:13px;margin-bottom:16px">Wybierz profil</p>
+      <button onclick="app.auth.select('renata')" style="width:100%;max-width:260px;padding:16px;border:none;border-radius:22px;background:linear-gradient(135deg,#7DA08A,#4F735C);color:#FFFFFF;font-size:18px;font-weight:700;cursor:pointer;margin-bottom:12px;box-shadow:0 4px 12px rgba(79,115,92,0.25)" id="btn-start-renata">
+        Renata
+      </button>
+      <button onclick="app.auth.select('rafal')" style="width:100%;max-width:260px;padding:16px;border:none;border-radius:22px;background:linear-gradient(135deg,#3A5A8A,#1a2a4a);color:#FFFFFF;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(26,42,74,0.25)" id="btn-start-rafal">
+        Rafał
+      </button>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" style="display:none">
+      <div class="screen-header" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <h1>Plan Dnia</h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="date-label" id="dash-date"></span>
+          <button onclick="app.auth.switchUser()" style="background:none;border:none;color:#4F5E53;font-size:18px;cursor:pointer;padding:4px" title="Zmień użytkownika">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="dash-user-card" style="margin-bottom:16px"></div>
+
+      <div id="dash-water" class="card">
+        <div class="water-header">
+          <div class="water-header-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            <span>Woda dzisiaj</span>
+          </div>
+          <div class="water-header-right">
+            <span class="ml-count" id="dash-water-count">0 ml</span>
+          </div>
+        </div>
+        <div class="water-glass-wrap">
+          <img id="water-glass-img" src="water-glass.jpg" alt="Szklanka wody" style="width:250px;height:auto;display:block;margin:4px auto">
+        </div>
+        <div class="water-actions">
+          <button class="btn-water" onclick="app.water.add(150)">
+            <span class="water-btn-label">+150 ml</span>
+            <span class="water-btn-desc">pół szklanki</span>
+          </button>
+          <button class="btn-water" onclick="app.water.add(300)">
+            <span class="water-btn-label">+300 ml</span>
+            <span class="water-btn-desc">szklanka</span>
+          </button>
+          <button class="btn-water" onclick="app.water.add(500)">
+            <span class="water-btn-label">+500 ml</span>
+            <span class="water-btn-desc">mała butelka</span>
+          </button>
+        </div>
+        <div class="water-footer-actions">
+          <button class="btn-water-action" onclick="app.water.undo()">
+            <span class="action-icon">↩</span> Cofnij
+          </button>
+          <button class="btn-water-action danger" onclick="app.water.reset()">
+            <span class="action-icon">⟳</span> Wyzeruj
+          </button>
+        </div>
+        <button class="water-reminder" onclick="app.water.remind()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          Wypij pół szklanki wody!
+        </button>
+      </div>
+
+      <div id="dash-today-meals" class="card" style="margin-top:16px">
+        <div class="water-header">
+          <div class="water-header-left">
+            <span>Jadłospis na dziś</span>
+          </div>
+          <div class="water-header-right">
+            <span class="dash-section-badge" id="dash-meals-kcal"></span>
+          </div>
+        </div>
+        <div id="dash-today-meals-content">
+          <p class="text-muted" style="font-size:13px;padding:12px;text-align:center">Brak wygenerowanego planu</p>
+        </div>
+      </div>
+    </section>
+
+      <!-- MEAL PLAN -->
+      <section id="view-mealplan" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <h1>Plan Tygodnia</h1>
+          </div>
+          <button class="btn-sm" onclick="app.mealplan.generateWeek()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><polyline points="20 6 9 17 4 12"/><path d="M20 6v6"/><path d="M16 6h4v4"/></svg>
+            Generuj
+          </button>
+        </div>
+        <div id="week-tabs" class="week-tabs" style="margin-top:8px"></div>
+        <div id="day-detail"></div>
+      </section>
+
+      <!-- RECIPES -->
+      <section id="view-recipes" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <h1>Przepisy</h1>
+          </div>
+        </div>
+        <div id="recipe-categories" class="recipe-cats"></div>
+        <div id="recipe-list" class="recipe-list"></div>
+      </section>
+
+      <!-- PANTRY -->
+      <section id="view-pantry" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+            <h1>Spiżarnia</h1>
+          </div>
+          <button class="btn-sm" onclick="app.pantry.showAddForm()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Dodaj
+          </button>
+        </div>
+        <div id="pantry-filter" class="pantry-filter"></div>
+        <div id="pantry-items" class="pantry-grid"></div>
+      </section>
+
+      <!-- WATER FULL -->
+      <section id="view-water" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            <h1>Nawodnienie</h1>
+          </div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="water-circle-container">
+            <svg class="water-circle" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="54" fill="none" stroke="#E5ECE5" stroke-width="8"/>
+              <circle id="water-progress" cx="60" cy="60" r="54" fill="none" stroke="#3B9EE5" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              <text x="60" y="56" text-anchor="middle" fill="#1F2621" font-size="22" font-weight="bold" id="water-circle-ml">0</text>
+              <text x="60" y="76" text-anchor="middle" fill="#68776D" font-size="12">ml</text>
+            </svg>
+          </div>
+          <div class="water-stats">
+            <div>Cel: <strong id="water-target" style="color:#1F2621">2000 ml</strong></div>
+            <div id="water-cups-today">0 szklanek dzisiaj</div>
+            <div id="water-last-reminder"></div>
+          </div>
+          <div class="water-actions-lg">
+            <button class="btn-water-lg" onclick="app.water.add(150)">
+              <span class="water-btn-label-lg">+150 ml</span>
+              <span class="water-btn-desc">pół szklanki</span>
+            </button>
+            <button class="btn-water-lg" onclick="app.water.add(300)">
+              <span class="water-btn-label-lg">+300 ml</span>
+              <span class="water-btn-desc">szklanka</span>
+            </button>
+            <button class="btn-water-lg" onclick="app.water.add(500)">
+              <span class="water-btn-label-lg">+500 ml</span>
+              <span class="water-btn-desc">mała butelka</span>
+            </button>
+          </div>
+          <div class="water-footer-actions">
+            <button class="btn-water-action" onclick="app.water.undo()">
+              <span class="action-icon">↩</span> Cofnij
+            </button>
+            <button class="btn-water-action danger" onclick="app.water.reset()">
+              <span class="action-icon">⟳</span> Wyzeruj
+            </button>
+          </div>
+          <div class="water-history">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              Historia dzisiaj
+            </h3>
+            <div id="water-log"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="view-settings" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <h1>Ustawienia</h1>
+          </div>
+        </div>
+        <div class="card settings-section">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Użytkownicy
+          </h3>
+          <div id="settings-users"></div>
+        </div>
+        <div class="card settings-section">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+            Sprzęt w kuchni
+          </h3>
+          <div id="settings-appliances" class="appliance-grid"></div>
+        </div>
+        <div class="card settings-section">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M17 21V7L8 3v14"/><path d="M8 17a2 2 0 0 1-2 2"/><path d="M14 17a2 2 0 0 1-2 2"/></svg>
+            Razem czy osobno?
+          </h3>
+          <div class="toggle">
+            <input type="checkbox" id="cook-together" onchange="app.settings.toggleCookTogether()">
+            <span class="toggle-slider"></span>
+            <span id="cook-together-label">Gotujecie razem</span>
+          </div>
+        </div>
+        <div class="card settings-section">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Dane
+          </h3>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button class="btn-sm" onclick="app.settings.resetAll()">Resetuj wszystko</button>
+            <button class="btn-sm" onclick="app.settings.exportData()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Eksport
+            </button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="app.settings.importData(event)">
+            <button class="btn-sm" onclick="document.getElementById('import-file').click()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ZAKUPY -->
+      <section id="view-zakupy" style="display:none">
+        <div class="screen-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <h1>Lista Zakupów</h1>
+          </div>
+          <button class="btn-sm" onclick="app.zakupy.showAddForm()" style="margin-right:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Dodaj
+          </button>
+          <button class="btn-sm" onclick="app.zakupy.clearBought()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            Wyczyść
+          </button>
+        </div>
+        <div id="zakupy-list"></div>
+      </section>
+    </div>
+
+    <!-- Floating Bottom Nav -->
+    <nav class="floating-nav">
+      <button class="nav-btn active" data-view="dashboard" aria-label="Plan">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span class="nav-label">Plan</span>
+      </button>
+      <button class="nav-btn" data-view="mealplan" aria-label="Kalendarz">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/>
+        </svg>
+        <span class="nav-label">Kalendarz</span>
+      </button>
+      <button class="nav-btn" data-view="recipes" aria-label="Przepisy">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+          <line x1="6" y1="17" x2="18" y2="17"/>
+        </svg>
+        <span class="nav-label">Przepisy</span>
+      </button>
+      <button class="nav-btn" data-view="zakupy" aria-label="Zakupy">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="nav-label">Zakupy</span>
+      </button>
+      <button class="nav-btn" data-view="settings" aria-label="Ustawienia">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span class="nav-label">Ustawienia</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal-overlay" class="modal-overlay" onclick="app.ui.closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <button class="modal-close" onclick="app.ui.closeModal()">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Water Toast -->
+  <div id="water-toast" class="toast">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5297C7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+    <span>Wypij pół szklanki wody!</span>
+    <button onclick="app.water.dismissToast()">✓</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+(function() {
+  // Direct event listeners for start buttons
+  function setupStartButtons() {
+    var btnR = document.getElementById('btn-start-renata');
+    var btnRaf = document.querySelector('button[onclick*="rafal"]');
+    if (btnR) btnR.onclick = function() { app.auth.select('renata'); };
+    if (btnRaf) btnRaf.onclick = function() { app.auth.select('rafal'); };
+  }
+  
+  var checkApp = function() {
+    if (typeof app !== 'undefined' && app.init) {
+      try {
+        app.init();
+        setupStartButtons();
+        console.log('App initialized successfully');
+      } catch(e) {
+        console.error('App init error:', e);
+        var el = document.getElementById('view-start');
+        if (el) el.innerHTML = '<p style="color:#c0392b;text-align:center;padding:40px">Błąd: ' + e.message + '</p>';
+      }
+    } else {
+      setTimeout(checkApp, 200);
+    }
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Clear old localStorage data on fresh load
+      try { localStorage.removeItem('kp_data'); } catch(e) {}
+      checkApp();
+    });
+  } else {
+    try { localStorage.removeItem('kp_data'); } catch(e) {}
+    checkApp();
+  }
+})();
+</script>
+</body>
+</html>

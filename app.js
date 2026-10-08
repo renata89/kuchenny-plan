@@ -511,21 +511,36 @@ app.dashboard = {
     let totalKcal = 0;
     let html = '';
 
+    // Group meals by type
+    const mealTypes = { 'śniadanie': [], 'obiad': [], 'kolacja': [] };
+    const labels = { 'śniadanie': 'ŚNIADANIE', 'obiad': 'OBIAD', 'kolacja': 'KOLACJA' };
+
     plan.meals.forEach(m => {
-      const kcal = m[userKey] ? (m[userKey].kcal || 0) : 0;
-      totalKcal += kcal;
+      const found = Object.keys(mealTypes).find(t => m.time && m.time.includes(t));
+      const key = found || 'kolacja';
+      mealTypes[key].push(m);
+    });
 
-      const emoji = m.time && m.time.includes('śniadanie') ? '🌅' :
-                    m.time && m.time.includes('obiad') ? '☀️' :
-                    m.time && m.time.includes('kolacja') ? '🌙' : '🍽️';
-      const displayKcal = kcal !== 0 ? kcal : '—';
+    Object.keys(mealTypes).forEach(type => {
+      const meals = mealTypes[type];
+      if (meals.length === 0) return;
 
-      html += `
+      html += `<div class="dash-meal-section">
+        <div class="dash-meal-header">${labels[type]}</div>`;
+
+      meals.forEach(m => {
+        const kcal = m[userKey] ? (m[userKey].kcal || 0) : 0;
+        totalKcal += kcal;
+        const displayKcal = kcal !== 0 ? kcal : '—';
+
+        html += `
         <div class="dash-meal-item">
-          <span class="dash-meal-emoji">${emoji}</span>
           <span class="dash-meal-name">${m.name}</span>
           <span class="dash-meal-kcal">${displayKcal} kcal</span>
         </div>`;
+      });
+
+      html += `</div>`;
     });
 
     container.innerHTML = html;
@@ -537,17 +552,25 @@ app.dashboard = {
       style.id = 'dash-meal-styles';
       style.textContent = `
         #dash-today-meals-content { padding: 8px 0; }
+        .dash-meal-section { margin-bottom: 4px; }
+        .dash-meal-header {
+          font-size: 11px;
+          font-weight: 700;
+          color: #728E7C;
+          letter-spacing: 1.5px;
+          padding: 10px 16px 4px;
+          text-transform: uppercase;
+        }
         .dash-meal-item {
           display: flex;
           align-items: center;
+          justify-content: space-between;
           gap: 10px;
-          padding: 10px 16px;
-          border-bottom: 1px solid #EEF2EE;
+          padding: 8px 16px;
           transition: background 0.1s;
         }
         .dash-meal-item:last-child { border-bottom: none; }
         .dash-meal-item:hover { background: #F8FBF8; }
-        .dash-meal-emoji { font-size: 16px; width: 24px; text-align: center; }
         .dash-meal-name { flex: 1; font-size: 13px; font-weight: 500; color: #1F2621; }
         .dash-meal-kcal { font-size: 12px; font-weight: 600; color: #4F5E53; background: #EFF3EF; padding: 2px 10px; border-radius: 10px; }
       `;
