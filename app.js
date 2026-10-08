@@ -668,6 +668,10 @@ app.mealplan = {
       const otherProtein = isShared && m[otherUserKey] ? (m[otherUserKey].protein || 0) : 0;
       const otherFat = isShared && m[otherUserKey] ? (m[otherUserKey].fat || 0) : 0;
       const otherCarbs = isShared && m[otherUserKey] ? (m[otherUserKey].carbs || 0) : 0;
+      // Look up recipe portions for shared mode
+      const allRecipes = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
+      const foundRecipe = allRecipes.find(r => r.id === m.recipeId);
+      const recipePortions = foundRecipe ? { renata: foundRecipe.renata_portion || 1, husband: foundRecipe.husband_portion || 1 } : null;
       html += `
         <div class="meal-card ${whomClass}" style="margin-bottom:8px;padding:12px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
@@ -695,9 +699,22 @@ app.mealplan = {
           </div>` : ''}
           <button class="details-toggle-btn" onclick="app.mealplan.toggleDetails('${dateStr}', ${idx})" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
           <div id="details-${dateStr}-${idx}" style="display:none;margin-top:8px;padding:10px;background:#FAFCFA;border-radius:12px;border:1px solid #E8EFE8">
-            <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:6px">🛒 Składniki:</div>
+            <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:6px">🛒 Składniki ${isShared ? '(łącznie na 2 osoby)' : ''}:</div>
             <ul style="margin:0 0 10px 0;padding-left:18px;font-size:12px;color:#4F5E53;line-height:1.7">
-              ${(m.ingredients||[]).map(i => `<li>${i.name}${i.amount ? ' — ' + i.amount : ''}</li>`).join('')}
+              ${(m.ingredients||[]).map(i => {
+                if (!isShared || !recipePortions) return `<li>${i.name}${i.amount ? ' — ' + i.amount : ''}</li>`;
+                // Calculate total amount for both people
+                const totalPortions = recipePortions.renata + recipePortions.husband;
+                const amt = i.amount || '';
+                const numMatch = amt.match(/^([\d.]+)\s*(.*)/);
+                if (numMatch) {
+                  const baseNum = parseFloat(numMatch[1]);
+                  const unit = numMatch[2];
+                  const totalNum = Math.round(baseNum * totalPortions * 10) / 10;
+                  return `<li>${i.name} — <strong>${totalNum}${unit}</strong> <span style="color:#9AABA0;font-size:10px">(× ${totalPortions} łącznie)</span></li>`;
+                }
+                return `<li>${i.name} — ${amt} <span style="color:#9AABA0;font-size:10px">(× ${totalPortions})</span></li>`;
+              }).join('')}
             </ul>
             <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:4px">👨‍🍳 Przygotowanie:</div>
             <p style="margin:0;font-size:12px;color:#68776D;line-height:1.6">${m.instructions}</p>
