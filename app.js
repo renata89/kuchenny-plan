@@ -662,15 +662,18 @@ app.mealplan = {
       const timeLabel = m.time || (m.category === 'breakfast' ? 'ŚNIADANIE' : m.category === 'lunch' ? 'OBIAD' : m.category === 'dinner' ? 'WIECZERZA' : 'POSIŁEK');
       const whomClass = m.shared ? 'shared' : (m.forUser || 'renata');
       const isShared = m.shared && app.data.cookTogether;
-      // Look up recipe data for portion info
-      const allRecipes = [...MEAL_DB.breakfast, ...MEAL_DB.lunch, ...MEAL_DB.dinner];
-      const recipeData = allRecipes.find(r => r.id === m.recipeId);
+      // Get macros for the other person when shared
+      const otherUserKey = activeUser.id === 'renata' ? 'husband' : 'renata';
+      const otherKcal = isShared && m[otherUserKey] ? (m[otherUserKey].kcal || 0) : 0;
+      const otherProtein = isShared && m[otherUserKey] ? (m[otherUserKey].protein || 0) : 0;
+      const otherFat = isShared && m[otherUserKey] ? (m[otherUserKey].fat || 0) : 0;
+      const otherCarbs = isShared && m[otherUserKey] ? (m[otherUserKey].carbs || 0) : 0;
       html += `
         <div class="meal-card ${whomClass}" style="margin-bottom:8px;padding:12px;border:1px solid #E0E8E0;border-radius:16px;background:#FFFFFF">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
             <div style="font-size:13px;font-weight:700;color:#4A6150;text-transform:uppercase;letter-spacing:0.5px;font-family:'Cinzel',serif">${timeLabel}</div>
             <div style="display:flex;gap:4px">
-              <button class="btn-sm" onclick="app.mealplan.toggleShared('${dateStr}', ${idx})" style="padding:3px 8px;font-size:11px;background:${isShared ? '#D6E8D6' : 'transparent'};border:1px solid ${isShared ? '#7DA08A' : '#C8D0C8'};border-radius:8px;cursor:pointer;color:#4F5E53" title="Gotuj z Rafałem">${isShared ? '👫' : '👤'}</button>
+              <button class="btn-sm" onclick="app.mealplan.toggleShared('${dateStr}', ${idx})" style="padding:3px 8px;font-size:11px;background:${isShared ? '#D6E8D6' : 'transparent'};border:1px solid ${isShared ? '#7DA08A' : '#C8D0C8'};border-radius:8px;cursor:pointer;color:#4F5E53" title="Gotuj ${isShared ? 'z Rafałem' : 'sam(a)'}">${isShared ? '👫' : '👤'}</button>
               <button class="btn-sm" onclick="app.mealplan.swapMeal('${dateStr}', '${m.recipeId}', '${m.category}')" style="padding:3px 10px;font-size:11px;background:transparent;border:none;cursor:pointer">🔄</button>
             </div>
           </div>
@@ -681,16 +684,20 @@ app.mealplan = {
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${fat}g</span>
             <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${carbs}g</span>
           </div>
-          <button class="details-toggle-btn" onclick="app.mealplan.toggleDetails('${dateStr}', ${idx})" data-meal="${dateStr}-${idx}" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
+          ${isShared ? `
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;padding-top:6px;border-top:1px dashed #D6E0D6">
+            <span style="font-size:11px;font-weight:600;color:#4F5E53;width:100%">👤 Dla Rafała:</span>
+            <span style="font-size:12px;font-weight:700;color:#C47050;background:#FFF5F0;padding:2px 10px;border-radius:10px">${otherKcal} kcal</span>
+            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">B ${otherProtein}g</span>
+            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">T ${otherFat}g</span>
+            <span style="font-size:11px;color:#4F5E53;background:#F0F5F0;padding:2px 8px;border-radius:8px">W ${otherCarbs}g</span>
+          </div>` : ''}
+          <button class="details-toggle-btn" onclick="app.mealplan.toggleDetails('${dateStr}', ${idx})" style="width:100%;padding:6px;margin-top:6px;border:none;border-radius:8px;background:#F5F8F5;color:#68776D;font-size:11px;cursor:pointer;font-weight:500">📖 Pokaż składniki i przepis</button>
           <div id="details-${dateStr}-${idx}" style="display:none;margin-top:8px;padding:10px;background:#FAFCFA;border-radius:12px;border:1px solid #E8EFE8">
             <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:6px">🛒 Składniki:</div>
             <ul style="margin:0 0 10px 0;padding-left:18px;font-size:12px;color:#4F5E53;line-height:1.7">
               ${(m.ingredients||[]).map(i => `<li>${i.name}${i.amount ? ' — ' + i.amount : ''}</li>`).join('')}
             </ul>
-            ${isShared ? `
-            <div style="font-size:11px;color:#4F5E53;background:#EFF5F0;padding:6px 10px;border-radius:8px;margin-bottom:8px">
-              <strong>Porcje:</strong> Renata ×1 · Rafał ×${Math.round((recipeData && recipeData.husband_portion) || 1.5)}
-            </div>` : ''}
             <div style="font-size:12px;font-weight:600;color:#4F5E53;margin-bottom:4px">👨‍🍳 Przygotowanie:</div>
             <p style="margin:0;font-size:12px;color:#68776D;line-height:1.6">${m.instructions}</p>
           </div>
