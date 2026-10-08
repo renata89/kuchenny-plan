@@ -306,9 +306,11 @@ body {
 .water-motivation {
   text-align: center;
   margin: 8px 0 0;
-  font-size: 12px;
-  color: #68776D;
+  font-size: 13px;
+  color: #4A5F50;
   line-height: 1.5;
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
 }
 
 /* Meal cards */
